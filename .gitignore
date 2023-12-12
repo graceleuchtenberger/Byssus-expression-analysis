@@ -5,3 +5,4 @@
 
 # big stuff
 data/raw-data/*
+output/fastqc/

@@ -38,7 +38,7 @@ mkdir ~/Github/byssus-exp-analysis/output/fastqc/untrimmed/
 eval "$(/opt/anaconda/anaconda3/bin/conda shell.bash hook)"
 conda activate
 
-cd fastqc/untrimmed/
+cd ~/Github/byssus-exp-analysis/output/fastqc/untrimmed/
 
 multiqc .
 

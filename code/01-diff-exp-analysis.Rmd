@@ -10,7 +10,7 @@ echo $PATH
 
 # Bring tag-seq data in from gannet
 ```{bash}
-mkdir raw-data/
+mkdir ~/Github/byssus-exp-analysis/data/raw-data/
 cd ~/Github/byssus-exp-analysis/data/raw-data/
 
 wget -r \
@@ -20,4 +20,15 @@ wget -r \
 --no-check-certificate
 ```
 
+# Run fastqc on untrimmed files
+```{bash}
+mkdir ~/Github/byssus-exp-analysis/output/fastqc/
+mkdir ~/Github/byssus-exp-analysis/output/fastqc/untrimmed/
+
+/home/shared/FastQC-0.12.1/fastqc \
+/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/data/raw-data/*.fastq.gz \
+--outdir /home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/fastqc/untrimmed/ \
+--quiet
+
+```
 

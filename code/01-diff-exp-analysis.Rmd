@@ -43,6 +43,11 @@ cd ~/Github/byssus-exp-analysis/output/fastqc/untrimmed/
 multiqc .
 
 ```
+# Download trimmed files
+```{bash}
+mkdir ../data/raw-trimmed/
+wget -e robots=off -np --input-file=../data/download.txt -P ../data/raw-trimmed/
+```
 
 # get transcriptome
 
@@ -64,10 +69,10 @@ index \
 ../data/Mtros-hq_transcripts.fasta
 ```
 
-
+# Quantify the indices
 ```{bash}
 # Set the paths
-DATA_DIRECTORY="../data"
+DATA_DIRECTORY="../data/raw-trimmed/"
 KALLISTO_INDEX="../output/Mtros-hq_transcripts.index"
 OUTPUT_DIRECTORY="../output/kallisto-quant"
 
@@ -75,7 +80,7 @@ OUTPUT_DIRECTORY="../output/kallisto-quant"
 # Iterate over all .fq.gz files in the data directory
 for FILE in "$DATA_DIRECTORY"/*.fastq.gz; do
     # Extract the base name of the file for naming the output folder
-    BASENAME=$(basename "$FILE" _R1_001.fastq.gz)
+    BASENAME=$(basename "$FILE" _L099_R1_cmb.trim.fastq.gz)
 
     # Create output directory for this sample
     SAMPLE_OUTPUT="$OUTPUT_DIRECTORY/$BASENAME"
@@ -88,14 +93,15 @@ done
 
 echo "Kallisto quantification complete."
 ```
-
+# Generate count matrices
 ```{bash}
-perl /home/shared/trinityrnaseq-v2.12.0/util/abundance_estimates_to_matrix.pl \
---est_method kallisto \
-    --gene_trans_map none \
-    --out_prefix ../analyses/07-kallisto \
-    --name_sample_by_basedir \
-     ../analyses/07-kallisto/T*
+     
+/home/shared/trinityrnaseq-v2.12.0/util/abundance_estimates_to_matrix.pl 
+--est_method kallisto 
+--gene_trans_map 'none' 
+--out_prefix ../output/kallisto-quant/abundance-matrices/ 
+--name_sample_by_basedir ../output/kallisto-quant/*/abundance.tsv `
 ```
+
 
 

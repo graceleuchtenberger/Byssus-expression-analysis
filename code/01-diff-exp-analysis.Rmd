@@ -58,17 +58,9 @@ curl -O https://owl.fish.washington.edu/halfshell/genomic-databank/Mtros-hq_tran
 
 # Execute the Kallisto tool located at the specified path
 /home/shared/kallisto_linux-v0.50.1/kallisto \
-  
-# Run the "index" command to build an index
 index \
-  
-# Set the number of threads to 20 for parallel processing
 -t 20 \
-  
-# Specify the output index file location and name
--i ../data/Mtros-hq_transcripts.index \
-
-# Provide the input fasta file containing the transcripts
+-i ../output/Mtros-hq_transcripts.index \
 ../data/Mtros-hq_transcripts.fasta
 ```
 
@@ -76,8 +68,8 @@ index \
 ```{bash}
 # Set the paths
 DATA_DIRECTORY="../data"
-KALLISTO_INDEX="../data/Mtros-hq_transcripts.index"
-OUTPUT_DIRECTORY="../analyses/07-kallisto"
+KALLISTO_INDEX="../output/Mtros-hq_transcripts.index"
+OUTPUT_DIRECTORY="../output/kallisto-quant"
 
 
 # Iterate over all .fq.gz files in the data directory

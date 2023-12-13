@@ -7,3 +7,5 @@
 data/raw-data/*
 data/*.fasta
 output/*.index
+output/kallisto-quant/
+data/raw-trimmed/

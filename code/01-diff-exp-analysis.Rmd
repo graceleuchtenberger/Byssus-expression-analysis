@@ -22,17 +22,16 @@ wget -r \
 
 # Run fastqc on untrimmed files
 ```{bash}
-mkdir ~/Github/byssus-exp-analysis/output/fastqc/
-mkdir ~/Github/byssus-exp-analysis/output/fastqc/untrimmed/
+mkdir ../output/fastqc/untrimmed/
 
 /home/shared/FastQC-0.12.1/fastqc \
-/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/data/raw-data/*.fastq.gz \
---outdir /home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/fastqc/untrimmed/ \
+../data/raw-data/*.fastq.gz \
+--outdir ../output/fastqc/untrimmed/ \
 --quiet
 
 ```
 
-# Run multiqc on fastqc files
+# Run multiqc on untrimmed fastqc files
 ```{bash}
 
 eval "$(/opt/anaconda/anaconda3/bin/conda shell.bash hook)"
@@ -47,6 +46,29 @@ multiqc .
 ```{bash}
 mkdir ../data/raw-trimmed/
 wget -e robots=off -np --input-file=../data/download.txt -P ../data/raw-trimmed/
+```
+
+
+# Run fastqc on trimmed files
+```{bash}
+mkdir ../output/fastqc/trimmed/
+/home/shared/FastQC-0.12.1/fastqc \
+../data/raw-trimmed/*.fastq.gz \
+--outdir ../output/fastqc/trimmed/ \
+--quiet
+
+```
+
+# Run multiqc on trimmed fastqc files
+```{bash}
+
+eval "$(/opt/anaconda/anaconda3/bin/conda shell.bash hook)"
+conda activate
+
+cd ../output/fastqc/trimmed/
+
+multiqc .
+
 ```
 
 # get transcriptome
@@ -96,12 +118,32 @@ echo "Kallisto quantification complete."
 # Generate count matrices
 ```{bash}
      
-/home/shared/trinityrnaseq-v2.12.0/util/abundance_estimates_to_matrix.pl 
---est_method kallisto 
---gene_trans_map 'none' 
---out_prefix ../output/kallisto-quant/abundance-matrices/ 
---name_sample_by_basedir ../output/kallisto-quant/*/abundance.tsv `
+perl /home/shared/trinityrnaseq-v2.12.0/util/abundance_estimates_to_matrix.pl \
+--est_method kallisto \
+--gene_trans_map 'none' \
+--out_prefix ../output/kallisto-quant/abundance-matrices \
+--name_sample_by_basedir \
+../output/kallisto-quant/*/abundance.tsv 
+
 ```
+# View abundance matrix
+```{bash}
+head ../output/kallisto-quant/abundance-matrices.isoform.counts.matrix
+```
+# Make counts matrix
+```{r, eval = TRUE}
+countmatrix <- read.delim("../output/kallisto-quant/abundance-matrices.isoform.counts.matrix", header = TRUE, sep = '\t')
+rownames(countmatrix) <- countmatrix$X
+countmatrix <- countmatrix[,-1]
+head(countmatrix)
+```
+
+# Make count matrix into integers
+```{r, eval=TRUE}
+countmatrix <- round(countmatrix, 0)
+str(countmatrix)
+```
+
 
 
 

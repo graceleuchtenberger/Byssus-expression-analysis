@@ -144,6 +144,71 @@ countmatrix <- round(countmatrix, 0)
 str(countmatrix)
 ```
 
+# Load in treatment info for DESeq
+```{r}
+#Load in the metadata
+library(dplyr)
+treatmentinfo <- read.csv("../data/PSMFC-mytilus-byssus-pilot-RNA-tagseq_raw.csv", header = TRUE, sep = ",")
+treatmentinfo
+
+```
+
+
+# Make file for sample and treatment ID (to be plugged into DESeq)
+```{r}
+# Get the tissue ID from the sample name
+treatmentinfo$tissue <- substr(treatmentinfo$sample.1, nchar(treatmentinfo$sample.1) - 0, nchar(treatmentinfo$sample.1))
+
+#Make subset of sample ID and tissue harvested
+tissuesub <- treatmentinfo[, c("sample.1","tissue")]
+
+#Specify FX samples for removal later
+FXsamples <- tissuesub %>% 
+  filter(tissuesub$tissue == "X") %>% 
+  select(sample.1)
+
+#Convert sample ID to character vector
+fX_ids <- as.vector(as.character(FXsamples$sample.1))
+
+#Change column names in count matrix to adjust to sample name in treatment info
+countmatrix_2 <- countmatrix
+new_column_names <- substr(names(countmatrix_2), 4, nchar(names(countmatrix_2)) - 5)
+names(countmatrix_2) <- new_column_names
+
+#Remove remaining periods that are at the front of column names
+remove_periods <- function(col_name) {
+  if (grepl("^\\.", col_name)) {
+    # Remove period from the beginning of the column name
+    return(sub("^\\.", "", col_name))
+  } else {
+    # Keep the column name unchanged
+    return(col_name)
+  }
+}
+
+# Apply the function to all column names
+new_column_names <- sapply(names(countmatrix_2), remove_periods)
+
+# Assign the modified column names to the data frame
+names(countmatrix_2) <- new_column_names
+
+#clean up data, get rid of NA's and blank cells, and put samples in order 
+countmatrix_2 <- countmatrix_2[ , order(names(countmatrix_2))]
+tissuesub <- tissuesub[order(tissuesub),]
+tissuesub <- tissuesub[complete.cases(tissuesub), ]
+tissuesub <- tissuesub[-c(1:4),]
+
+# Remove sample IDs that matched the FX samples
+countmatrix_2 <- countmatrix_2 %>% 
+  select(-all_of(fX_ids))
+tissuesub <- tissuesub %>% 
+  filter(!sample.1 %in% fX_ids)
+
+rownames(tissuesub) <- tissuesub$sample.1
+
+all(rownames(tissuesub) == colnames(countmatrix_2))
+```
+
 
 
 

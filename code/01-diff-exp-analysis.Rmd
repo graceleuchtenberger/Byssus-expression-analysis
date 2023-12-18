@@ -8,6 +8,26 @@ date: "2023-12-12"
 echo $PATH
 ```
 
+```{r load libraries}
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install(version = "3.16")
+
+BiocManager::install("DESeq2")
+library("DESeq2") # Bioconductor
+library("tidyverse")
+library("dplyr")
+library("pheatmap")
+library("RColorBrewer")
+library("genefilter") # Bioconductor
+library("ggplot2")
+library("gplots")
+library("limma") # Bioconductor
+library("spdep") 
+library("adegenet")
+library("tximport") # Bioconducto
+```
+
 # Bring tag-seq data in from gannet
 ```{bash}
 mkdir ~/Github/byssus-exp-analysis/data/raw-data/
@@ -206,9 +226,36 @@ tissuesub <- tissuesub %>%
 
 rownames(tissuesub) <- tissuesub$sample.1
 
+#Removing T047 from the treatment info because there isn't data for that, weirdly enough
+tissuesub <- tissuesub[-71,]
+
+#Check that columns and row names match
 all(rownames(tissuesub) == colnames(countmatrix_2))
 ```
 
+#### Construct DESeq2 dataset
 
+Create a DESeqDataSet design from gene count matrix and labels. Here we set the design to look at the difference in expression between foot and gill tissue
+
+```{r}
+#Set DESeq2 design
+library(DESeq2)
+gdds <- DESeqDataSetFromMatrix(countData = countmatrix_2,
+                              colData = tissuesub,
+                              design = ~tissue)
+rlog(gdds, blind = FALSE)
+
+```
+
+### Visualize gene count data
+
+We’re looking to see if the samples of the same infection status and temperature treatment cluster.
+
+#### Log-transform the count data
+First we are going to log-transform the data using a variance stabilizing transforamtion (vst). This is only for visualization purposes. Essentially, this is roughly similar to putting the data on the log2 scale. It will deal with the sampling variability of low counts by calculating within-group variability (if blind=FALSE).
+
+NOTE: Running `rlog` on this data produces the following helpful message from DESeq2:
+
+```
 
 

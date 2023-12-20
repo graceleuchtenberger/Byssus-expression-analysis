@@ -243,8 +243,6 @@ library(DESeq2)
 gdds <- DESeqDataSetFromMatrix(countData = countmatrix_2,
                               colData = tissuesub,
                               design = ~tissue)
-rlog(gdds, blind = FALSE)
-
 ```
 
 ### Visualize gene count data
@@ -254,8 +252,16 @@ We’re looking to see if the samples of the same infection status and temperatu
 #### Log-transform the count data
 First we are going to log-transform the data using a variance stabilizing transforamtion (vst). This is only for visualization purposes. Essentially, this is roughly similar to putting the data on the log2 scale. It will deal with the sampling variability of low counts by calculating within-group variability (if blind=FALSE).
 
-NOTE: Running `rlog` on this data produces the following helpful message from DESeq2:
+```{r}
+gvst <- vst(gdds, blind = FALSE)
 
+head (assay(gvst), 3)
+#-- note: fitType='parametric', but the dispersion trend was not well captured by the
+  # function: y = a/x + b, and a local regression fit was automatically substituted.
+  # specify fitType='local' or 'mean' to avoid this message next time.
 ```
+
+
+
 
 

@@ -177,15 +177,28 @@ treatmentinfo
 
 # Make file for sample and treatment ID (to be plugged into DESeq)
 ```{r}
-# Get the tissue ID from the sample name
+# Get the tissue ID from the sample name, extract last character of sample ID
 treatmentinfo$tissue <- substr(treatmentinfo$sample.1, nchar(treatmentinfo$sample.1) - 0, nchar(treatmentinfo$sample.1))
 
-#Make subset of sample ID and tissue harvested
-tissuesub <- treatmentinfo[, c("sample.1","tissue")]
+#extract last character of treatment ID to get day of treatment
+treatmentinfo$day <- substr(treatmentinfo$trt, nchar(treatmentinfo$trt) - 0, nchar(treatmentinfo$trt))
+
+#Extract treatment from treatment column
+## Split each entry based on underscores
+split_entries <- strsplit(treatmentinfo$trt, "_")
+
+## Extract the middle part (assuming there is a middle part)
+middle_parts <- sapply(split_entries, function(x) if(length(x) >= 3) x[2] else NA)
+
+## Assign the extracted middle parts to a new column named "middle"
+treatmentinfo$treatment <- middle_parts
+
+#Make subset of sample ID, treatment, tissue harvested, day
+treatmentinfo.2 <- treatmentinfo[, c("sample.1","tissue", "treatment", "day")]
 
 #Specify FX samples for removal later
-FXsamples <- tissuesub %>% 
-  filter(tissuesub$tissue == "X") %>% 
+FXsamples <- treatmentinfo.2 %>% 
+  filter(treatmentinfo.2$tissue == "X") %>% 
   select(sample.1)
 
 #Convert sample ID to character vector
@@ -215,20 +228,20 @@ names(countmatrix_2) <- new_column_names
 
 #clean up data, get rid of NA's and blank cells, and put samples in order 
 countmatrix_2 <- countmatrix_2[ , order(names(countmatrix_2))]
-tissuesub <- tissuesub[order(tissuesub),]
-tissuesub <- tissuesub[complete.cases(tissuesub), ]
-tissuesub <- tissuesub[-c(1:4),]
+treatmentinfo.2 <- treatmentinfo.2[order(treatmentinfo.2),]
+treatmentinfo.2 <- treatmentinfo.2[complete.cases(treatmentinfo.2), ]
 
 # Remove sample IDs that matched the FX samples
 countmatrix_2 <- countmatrix_2 %>% 
   select(-all_of(fX_ids))
-tissuesub <- tissuesub %>% 
+treatmentinfo.2 <- treatmentinfo.2 %>% 
   filter(!sample.1 %in% fX_ids)
 
-rownames(tissuesub) <- tissuesub$sample.1
+rownames(treatmentinfo.2) <- treatmentinfo.2$sample.1
 
 #Removing T047 from the treatment info because there isn't data for that, weirdly enough
-tissuesub <- tissuesub[-71,]
+removal <- which(rownames(treatmentinfo.2) %in% "T047F")
+treatmentinfo.2 <- treatmentinfo.2[-removal,]
 
 #Check that columns and row names match
 all(rownames(tissuesub) == colnames(countmatrix_2))

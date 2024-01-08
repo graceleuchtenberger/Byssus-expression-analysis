@@ -29,7 +29,7 @@ library("tximport") # Bioconductor
 library("RColorBrewer")
 ```
 
-# Bring tag-seq data in from gannet
+## Bring tag-seq data in from gannet
 ```{bash}
 mkdir ~/Github/byssus-exp-analysis/data/raw-data/
 cd ~/Github/byssus-exp-analysis/data/raw-data/
@@ -41,7 +41,7 @@ wget -r \
 --no-check-certificate
 ```
 
-# Run fastqc on untrimmed files
+## Run fastqc on untrimmed files
 ```{bash}
 mkdir ../output/fastqc/untrimmed/
 
@@ -52,7 +52,7 @@ mkdir ../output/fastqc/untrimmed/
 
 ```
 
-# Run multiqc on untrimmed fastqc files
+## Run multiqc on untrimmed fastqc files
 ```{bash}
 
 eval "$(/opt/anaconda/anaconda3/bin/conda shell.bash hook)"
@@ -63,14 +63,14 @@ cd ~/Github/byssus-exp-analysis/output/fastqc/untrimmed/
 multiqc .
 
 ```
-# Download trimmed files
+## Download trimmed files
 ```{bash}
 mkdir ../data/raw-trimmed/
 wget -e robots=off -np --input-file=../data/download.txt -P ../data/raw-trimmed/
 ```
 
 
-# Run fastqc on trimmed files
+## Run fastqc on trimmed files
 ```{bash}
 mkdir ../output/fastqc/trimmed/
 /home/shared/FastQC-0.12.1/fastqc \
@@ -80,7 +80,7 @@ mkdir ../output/fastqc/trimmed/
 
 ```
 
-# Run multiqc on trimmed fastqc files
+## Run multiqc on trimmed fastqc files
 ```{bash}
 
 eval "$(/opt/anaconda/anaconda3/bin/conda shell.bash hook)"
@@ -92,7 +92,7 @@ multiqc .
 
 ```
 
-# get transcriptome
+## get transcriptome
 
 ```{r, engine='bash'}
 cd ../data
@@ -100,7 +100,7 @@ curl -O https://owl.fish.washington.edu/halfshell/genomic-databank/Mtros-hq_tran
 ```
 
 
-# Create indices for transcriptome with Kallisto
+## Create indices for transcriptome with Kallisto
 ```{bash}
 # Build index
 
@@ -136,7 +136,7 @@ done
 
 echo "Kallisto quantification complete."
 ```
-# Generate count matrices
+## Generate count matrices
 ```{bash}
      
 perl /home/shared/trinityrnaseq-v2.12.0/util/abundance_estimates_to_matrix.pl \
@@ -147,11 +147,11 @@ perl /home/shared/trinityrnaseq-v2.12.0/util/abundance_estimates_to_matrix.pl \
 ../output/kallisto-quant/*/abundance.tsv 
 
 ```
-# View abundance matrix
+## View abundance matrix
 ```{bash}
 head ../output/kallisto-quant/abundance-matrices.isoform.counts.matrix
 ```
-# Make counts matrix
+## Make counts matrix
 ```{r, eval = TRUE}
 countmatrix <- read.delim("../output/kallisto-quant/abundance-matrices.isoform.counts.matrix", header = TRUE, sep = '\t')
 rownames(countmatrix) <- countmatrix$X
@@ -159,13 +159,13 @@ countmatrix <- countmatrix[,-1]
 head(countmatrix)
 ```
 
-# Make count matrix into integers
+## Make count matrix into integers
 ```{r, eval=TRUE}
 countmatrix <- round(countmatrix, 0)
 str(countmatrix)
 ```
 
-# Load in treatment info for DESeq
+## Load in treatment info for DESeq
 ```{r}
 #Load in the metadata
 library(dplyr)
@@ -175,7 +175,7 @@ treatmentinfo
 ```
 
 
-# Make file for sample and treatment ID (to be plugged into DESeq)
+## Make file for sample, treatment ID, day, and tissue (to be plugged into DESeq)
 ```{r}
 # Get the tissue ID from the sample name, extract last character of sample ID
 treatmentinfo$tissue <- substr(treatmentinfo$sample.1, nchar(treatmentinfo$sample.1) - 0, nchar(treatmentinfo$sample.1))
@@ -247,7 +247,102 @@ treatmentinfo.2 <- treatmentinfo.2[-removal,]
 all(rownames(tissuesub) == colnames(countmatrix_2))
 ```
 
-#### Construct DESeq2 dataset
+## DEG in the foot after exposure to ocean acidification
+```{r}
+# Filter data
+footOA <- treatmentinfo.2 %>%
+  filter(tissue == "F" | treatment == "control" | treatment == "OA" | day == "3") %>%
+  filter(!(treatment=="OW"| treatment=="DO" | day == "0" | tissue == "G"))
+countmatrix_FOA <- subset(countmatrix_2, select=row.names(footOA))
+
+# Calculate DESeq object
+dds <- DESeqDataSetFromMatrix(countData = countmatrix_FOA,
+                              colData = footOA,
+                              design = ~ treatment)
+
+dds <- DESeq(dds)
+resultsNames(dds) # lists the coefficients
+
+# Filtering: keep genes that have at least 10 counts across 1/3 of the samples - https://support.bioconductor.org/p/110307/
+keep <- rowSums(DESeq2::counts(dds) >= 10) >= ncol(countmatrix_FOA)/3
+dds <- dds[keep,]
+
+# Generate Contrasts
+contrast_list    <- c("treatment", "OA", "control") # order is important: factor, treatment group, control
+res_table        <- results(dds, contrast=contrast_list, alpha = 0.05)
+res_table_normal <- lfcShrink(dds,
+                              coef=2, 
+                              type="normal") # lfcThreshold = 0.585)  # a lfc threshold of 1 = 2-fold change, 0.585 = 1.5-fold change
+res_table_apeglm <- lfcShrink(dds,
+                              coef=2, 
+                              type="apeglm") # lfcThreshold = 0.585)  # a lfc threshold of 1 = 2-fold change, 0.585 = 1.5-fold change
+res_table_ashr   <- lfcShrink(dds,
+                              coef=2, 
+                              type="ashr")
+
+```
+## Visualize treatment differences in foot tissue
+
+```{r}
+# Filter data
+treatmentinfo.F <- treatmentinfo.2 %>% filter(tissue == "F" | day == "3") %>%
+  filter(!(day == "0" | tissue == "G"))
+countmatrix_F <- subset(countmatrix_2, select=row.names(treatmentinfo.F))
+
+# Calculate DESeq object
+dds <- DESeqDataSetFromMatrix(countData = countmatrix_F,
+                              colData = treatmentinfo.F ,
+                              design = ~ treatment)
+
+dds <- DESeq(dds)
+resultsNames(dds) # lists the coefficients
+
+# Plot PCA
+p <- pca(assay(vst(dds)), metadata = treatmentinfo.F)
+screeplot(p, axisLabSize = 18, titleLabSize = 22)
+
+bp0 <- biplot(p, showLoadings = FALSE, colby = 'treatment',
+    labSize = 5, pointSize = 5, sizeLoadingsNames = 5)
+
+bp0
+
+#Plot biplot
+
+bp1 <- biplot(p, x = "PC1", y = "PC2",
+              colby = 'treatment',
+              colkey = c('control' = 'royalblue1' , 
+                         'OA' = 'yellow'     ,
+                         'OW' = 'red' ,
+                         'DO' = 'green' ),
+              # shape = 'tissue',
+              # shapekey = c('foot' = 19,  # circle
+              #             'gill' = 17), # triangle
+              pointSize = 4,
+              showLoadings = FALSE,
+              lab = NULL,
+              drawConnectors = FALSE,
+              ellipse = TRUE,
+              ellipseLevel = 0.95,
+              ellipseFill = FALSE,
+              # ellipseFillKey = c('foot' = 'blue', 'gill' = 'green'),
+              ellipseAlpha = 1/4,
+              ellipseLineSize = 1,
+              # xlim = c(-150,150), ylim = c(-80, 50),
+              gridlines.major = FALSE,
+              gridlines.minor = FALSE,
+              borderWidth = 1,
+              legendPosition = 'top', legendLabSize = 16, legendIconSize = 6.0) + 
+              theme(axis.text.x       = element_text(size=16,color="black"),
+                    axis.text.y       = element_text(size=16,color="black"),
+                    axis.ticks.x      = element_line(color="black"),
+                    axis.ticks.y      = element_line(color="black"))
+bp1
+
+```
+
+
+
+# Construct DESeq2 dataset
 
 Create a DESeqDataSet design from gene count matrix and labels. Here we set the design to look at the difference in expression between foot and gill tissue
 
@@ -259,11 +354,11 @@ gdds <- DESeqDataSetFromMatrix(countData = countmatrix_2,
                               design = ~tissue)
 ```
 
-### Visualize gene count data
+## Visualize gene count data
 
 We’re looking to see if the samples of the same infection status and temperature treatment cluster.
 
-#### Log-transform the count data
+## Log-transform the count data
 First we are going to log-transform the data using a variance stabilizing transforamtion (vst). This is only for visualization purposes. Essentially, this is roughly similar to putting the data on the log2 scale. It will deal with the sampling variability of low counts by calculating within-group variability (if blind=FALSE).
 
 ```{r}
@@ -275,7 +370,7 @@ head (assay(gvst), 3)
   # specify fitType='local' or 'mean' to avoid this message next time.
 ```
 
-### Create a heat map
+## Create a heat map
 ```{r}
 gsampleDists <- dist(t(assay(gvst))) #calculate distance matix
 gsampleDistMatrix <- as.matrix(gsampleDists) #distance matrix
@@ -289,7 +384,7 @@ pheatmap(gsampleDistMatrix, #plot matrix
 ```
 
 
-#### Principal component plot of samples
+## Principal component plot of samples
 
 ```{r}
 gPCAdata <- plotPCA(gvst, intgroup = c("tissue"), returnData=TRUE)
@@ -301,7 +396,7 @@ ggplot(gPCAdata, aes(PC1, PC2, color=tissue)) +
   coord_fixed()
 ```
 
-### Differential Gene Expression Analysis
+## Differential Gene Expression Analysis
 
 NOTE: This will take a few minutes to run.
 ```{r}

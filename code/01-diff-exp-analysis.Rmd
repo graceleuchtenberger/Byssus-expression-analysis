@@ -26,7 +26,6 @@ library("limma") # Bioconductor
 library("spdep") 
 library("adegenet")
 library("tximport") # Bioconductor
-library("RColorBrewer")
 ```
 
 ## Bring tag-seq data in from gannet
@@ -294,11 +293,12 @@ dds <- DESeqDataSetFromMatrix(countData = countmatrix_F,
                               colData = treatmentinfo.F ,
                               design = ~ treatment)
 
-dds <- DESeq(dds)
-resultsNames(dds) # lists the coefficients
+dds2 <- DESeq(dds)
+resultsNames(dds2) # lists the coefficients
+dds2vst <- vst(dds2, blind = FALSE)
 
 # Plot PCA
-p <- pca(assay(vst(dds)), metadata = treatmentinfo.F)
+p <- plotPCA(dds2vst, intgroup = "treatment", returnData = TRUE)
 screeplot(p, axisLabSize = 18, titleLabSize = 22)
 
 bp0 <- biplot(p, showLoadings = FALSE, colby = 'treatment',

@@ -26,6 +26,17 @@ library("limma") # Bioconductor
 library("spdep") 
 library("adegenet")
 library("tximport") # Bioconductor
+BiocManager::install("vsn")
+BiocManager::install("tidybulk")
+BiocManager::install("goseq")
+BiocManager::install("affycoretools")
+BiocManager::install("EnhancedVolcano")
+BiocManager::install("pcaExplorer")
+BiocManager::install("apeglm")
+BiocManager::install("PCAtools")
+BiocManager::install("DESeq2PCA")
+library(pcaExplorer)
+library(PCAtools)
 ```
 
 ## Bring tag-seq data in from gannet
@@ -289,16 +300,16 @@ treatmentinfo.F <- treatmentinfo.2 %>% filter(tissue == "F" | day == "3") %>%
 countmatrix_F <- subset(countmatrix_2, select=row.names(treatmentinfo.F))
 
 # Calculate DESeq object
-dds <- DESeqDataSetFromMatrix(countData = countmatrix_F,
+dds2 <- DESeqDataSetFromMatrix(countData = countmatrix_F,
                               colData = treatmentinfo.F ,
                               design = ~ treatment)
 
-dds2 <- DESeq(dds)
+dds2 <- DESeq(dds2)
 resultsNames(dds2) # lists the coefficients
 dds2vst <- vst(dds2, blind = FALSE)
 
 # Plot PCA
-p <- plotPCA(dds2vst, intgroup = "treatment", returnData = TRUE)
+p <- pca(assay(dds2vst), metadata = treatmentinfo.F)
 screeplot(p, axisLabSize = 18, titleLabSize = 22)
 
 bp0 <- biplot(p, showLoadings = FALSE, colby = 'treatment',

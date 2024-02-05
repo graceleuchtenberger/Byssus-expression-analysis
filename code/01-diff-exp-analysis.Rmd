@@ -308,7 +308,9 @@ BiocManager::install("pcaExplorer")
 BiocManager::install("apeglm")
 BiocManager::install("PCAtools")
 install.packages("matrixStats", version = "1.1.0")
-
+library(PCAtools)
+library(BiocManager)
+library(pcaExplorer)
 
 # List of packages we want to install (run every time)
 load.lib<-c("DESeq2","edgeR","goseq","dplyr","GenomicFeatures","data.table","calibrate","affycoretools","data.table","vsn","tidybulk","ggplot2","cowplot","pheatmap","gplots","RColorBrewer","EnhancedVolcano","pcaExplorer","readxl","apeglm","ashr","tibble","plotly","sqldf","PCAtools","ggpubr","beepr","genefilter","ComplexHeatmap","circlize","scales","matrixStats")
@@ -324,68 +326,41 @@ sapply(load.lib,require,character=TRUE)
 
 ```
 
-
+## Visualize differences between treatment groups
 ```{r}
 # Filter data
 treatmentinfo.F <- treatmentinfo.2 %>% filter(tissue == "F" | day == "3") %>%
   filter(!(day == "0" | tissue == "G"))
+treatmentinfo.F$sample.1 <- factor(treatmentinfo.F$sample.1)
+treatmentinfo.F$tissue <- factor(treatmentinfo.F$tissue)
+treatmentinfo.F$treatment <- factor(treatmentinfo.F$treatment)
+treatmentinfo.F$day <- factor(treatmentinfo.F$day)
 countmatrix_F <- subset(countmatrix_2, select=row.names(treatmentinfo.F))
 
 # Calculate DESeq object
 dds2 <- DESeqDataSetFromMatrix(countData = countmatrix_F,
-                              colData = treatmentinfo.F ,
+                              colData = treatmentinfo.F,
                               design = ~ treatment)
 
 dds2 <- DESeq(dds2)
 resultsNames(dds2) # lists the coefficients
-dds2vst <- vst(dds2, blind = FALSE)
+summary(dds2)
 
 # Plot PCA
-p <- 0
-p <- pca(assay(dds2vst), metadata = treatmentinfo.F)
-screeplot(p, axisLabSize = 18, titleLabSize = 22)
 
-bp0 <- biplot(p, showLoadings = FALSE, colby = 'treatment',
-    labSize = 5, pointSize = 5, sizeLoadingsNames = 5)
+PCAdata <- plotPCA(vst(dds2), intgroup = c("treatment"), returnData=TRUE)
+percentVar <- round(100*attr(PCAdata, "percentVar")) #plot PCA of samples with all data
+ggplot(PCAdata, aes(PC1, PC2, color=treatment)) + 
+  geom_point(size=4, alpha = 5/10) +
+  xlab(paste0("PC1: ",percentVar[1],"% variance")) +
+  ylab(paste0("PC2: ",percentVar[2],"% variance")) + 
+  coord_fixed()
 
-bp0
-
-#Plot biplot
-
-bp1 <- biplot(p, x = "PC1", y = "PC2",
-              colby = 'treatment',
-              colkey = c('control' = 'royalblue1' , 
-                         'OA' = 'yellow'     ,
-                         'OW' = 'red' ,
-                         'DO' = 'green' ),
-              # shape = 'tissue',
-              # shapekey = c('foot' = 19,  # circle
-              #             'gill' = 17), # triangle
-              pointSize = 4,
-              showLoadings = FALSE,
-              lab = NULL,
-              drawConnectors = FALSE,
-              ellipse = TRUE,
-              ellipseLevel = 0.95,
-              ellipseFill = FALSE,
-              # ellipseFillKey = c('foot' = 'blue', 'gill' = 'green'),
-              ellipseAlpha = 1/4,
-              ellipseLineSize = 1,
-              # xlim = c(-150,150), ylim = c(-80, 50),
-              gridlines.major = FALSE,
-              gridlines.minor = FALSE,
-              borderWidth = 1,
-              legendPosition = 'top', legendLabSize = 16, legendIconSize = 6.0) + 
-              theme(axis.text.x       = element_text(size=16,color="black"),
-                    axis.text.y       = element_text(size=16,color="black"),
-                    axis.ticks.x      = element_line(color="black"),
-                    axis.ticks.y      = element_line(color="black"))
-bp1
-
+   
 ```
 
 
-
+# CODE THAT I USED FOR TISSUE TO TISSUE COMPARISON
 # Construct DESeq2 dataset
 
 Create a DESeqDataSet design from gene count matrix and labels. Here we set the design to look at the difference in expression between foot and gill tissue

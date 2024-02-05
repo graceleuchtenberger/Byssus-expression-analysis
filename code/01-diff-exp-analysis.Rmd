@@ -291,40 +291,6 @@ res_table_ashr   <- lfcShrink(dds,
                               type="ashr")
 
 ```
-## Visualize treatment differences in foot tissue
-```{r load_libraries, include = TRUE}
-### Load libraries
-
-## Install Rtools directly from (https://cran.r-project.org/bin/windows/Rtools/), then install these on first run:
-install.packages("BiocManager")
-install.packages("remotes")
-BiocManager::install("DESeq2")
-BiocManager::install("vsn")
-BiocManager::install("tidybulk")
-BiocManager::install("goseq")
-BiocManager::install("affycoretools")
-BiocManager::install("EnhancedVolcano")
-BiocManager::install("pcaExplorer")
-BiocManager::install("apeglm")
-BiocManager::install("PCAtools")
-install.packages("matrixStats", version = "1.1.0")
-library(PCAtools)
-library(BiocManager)
-library(pcaExplorer)
-
-# List of packages we want to install (run every time)
-load.lib<-c("DESeq2","edgeR","goseq","dplyr","GenomicFeatures","data.table","calibrate","affycoretools","data.table","vsn","tidybulk","ggplot2","cowplot","pheatmap","gplots","RColorBrewer","EnhancedVolcano","pcaExplorer","readxl","apeglm","ashr","tibble","plotly","sqldf","PCAtools","ggpubr","beepr","genefilter","ComplexHeatmap","circlize","scales","matrixStats")
-
-# Select only the packages that aren't currently installed (run every time)
-install.lib <- load.lib[!load.lib %in% installed.packages()]
-
-# And finally we install the missing packages, including their dependency.
-for(lib in install.lib) install.packages(lib,dependencies=TRUE)
-# After the installation process completes, we load all packages.
-sapply(load.lib,require,character=TRUE)
-
-
-```
 
 ## Visualize differences between treatment groups
 ```{r}
@@ -354,7 +320,9 @@ ggplot(PCAdata, aes(PC1, PC2, color=treatment)) +
   geom_point(size=4, alpha = 5/10) +
   xlab(paste0("PC1: ",percentVar[1],"% variance")) +
   ylab(paste0("PC2: ",percentVar[2],"% variance")) + 
-  coord_fixed()
+  coord_fixed()+
+  stat_ellipse()+
+  stat_ellipse(level=0.8)
 
 ```
 

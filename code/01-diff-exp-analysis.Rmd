@@ -356,7 +356,6 @@ ggplot(PCAdata, aes(PC1, PC2, color=treatment)) +
   ylab(paste0("PC2: ",percentVar[2],"% variance")) + 
   coord_fixed()
 
-   
 ```
 
 

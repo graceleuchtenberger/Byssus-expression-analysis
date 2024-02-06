@@ -9,7 +9,7 @@ treatmentinfo.control2  <- treatmentinfo.2 %>% filter(tissue == "F") %>%
   filter(!( tissue == "G"))
 
 treatmentinfo.control2 <- treatmentinfo.control2 %>%
-  mutate(treatment = ifelse(day == "0", paste("T_", treatment), treatment))
+  mutate(treatment = ifelse(day == "3" & treatment == "control", paste0(treatment, "_3"), treatment))
 
 countmatrix_truecon <- subset(countmatrix_2, select=row.names(treatmentinfo.control2))
 
@@ -28,7 +28,6 @@ ggplot(PCAdata, aes(PC1, PC2, color=treatment)) +
   xlab(paste0("PC1: ",percentVar[1],"% variance")) +
   ylab(paste0("PC2: ",percentVar[2],"% variance")) + 
   coord_fixed()+
-  stat_ellipse()+
   stat_ellipse(level=0.8)
 
 ```

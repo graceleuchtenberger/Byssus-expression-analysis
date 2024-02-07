@@ -172,7 +172,7 @@ ggplot(PCAdata, aes(PC1, PC2, color=day)) +
   xlab(paste0("PC1: ",percentVar[1],"% variance")) +
   ylab(paste0("PC2: ",percentVar[2],"% variance")) + 
   coord_fixed()+
-  stat_ellipse(level=0.95)
+  stat_ellipse()
 
 # Filtering: keep genes that have at least 10 counts across 1/3 of the samples - https://support.bioconductor.org/p/110307/
 keep <-  rowSums(DESeq2::counts(dds7) >= 10) >= ncol(countmatrix_Fcon)/3
@@ -180,7 +180,7 @@ dds7_filt <- dds7[keep,]
 
 # Generate Contrasts
 contrast_listcon    <- c("day", "3", "0") # order is important: factor, treatment group, control
-res_tablecon        <- results(dds7_filt, contrast=contrast_listcon, alpha = 0.05)
+res_tableconF        <- results(dds7_filt, contrast=contrast_listcon, alpha = 0.05)
 
-res_tablecon
+res_tableconF
 ```

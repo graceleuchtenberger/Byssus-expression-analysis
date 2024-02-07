@@ -1,0 +1,183 @@
+---
+title: "DGE_viz_gill"
+output: html_document
+date: "2024-02-06"
+---
+
+## Overall comparison with day zero control
+```{r}
+treatmentinfo.controlG  <- treatmentinfo.2 %>% filter(tissue == "G") %>%
+  filter(!( tissue == "F"))
+
+treatmentinfo.controlG <- treatmentinfo.controlG %>%
+  mutate(treatment = ifelse(day == "3" & treatment == "control", paste0(treatment, "_3"), treatment))
+
+countmatrix_G <- subset(countmatrix_2, select=row.names(treatmentinfo.controlG))
+
+ddsG <- DESeqDataSetFromMatrix(countData = countmatrix_G,
+                              colData = treatmentinfo.controlG,
+                              design = ~ treatment)
+
+ddsG <- DESeq(ddsG)
+resultsNames(ddsG) # lists the coefficients
+summary(ddsG)
+
+PCAdata <- plotPCA(vst(ddsG), intgroup = c("treatment"), returnData=TRUE)
+percentVar <- round(100*attr(PCAdata, "percentVar")) #plot PCA of samples with all data
+ggplot(PCAdata, aes(PC1, PC2, color=treatment)) + 
+  geom_point(size=4, alpha = 5/10) +
+  xlab(paste0("PC1: ",percentVar[1],"% variance")) +
+  ylab(paste0("PC2: ",percentVar[2],"% variance")) + 
+  coord_fixed()+
+  stat_ellipse(level=0.8)
+
+```
+
+OA vs true control
+```{r}
+
+# Filter data
+treatmentinfo.GOA <- treatmentinfo.2 %>% filter(tissue == "G" | treatment == "control" | treatment == "OA") %>% filter(!(tissue == "F" | treatment == "OW" | treatment == "DO"))
+                                                                                                      treatmentinfo.GOA <- treatmentinfo.GOA %>%
+  filter(!(treatment == "control" & day == "3")) 
+                                                                                                      
+countmatrix_GOA <- subset(countmatrix_2, select=row.names(treatmentinfo.GOA))
+
+# Calculate DESeq object
+dds8 <- DESeqDataSetFromMatrix(countData = countmatrix_GOA,
+                              colData = treatmentinfo.GOA,
+                              design = ~ treatment)
+
+dds8 <- DESeq(dds8)
+resultsNames(dds8) # lists the coefficients
+
+PCAdata <- plotPCA(vst(dds8), intgroup = c("treatment"), returnData=TRUE)
+percentVar <- round(100*attr(PCAdata, "percentVar")) #plot PCA of samples with all data
+ggplot(PCAdata, aes(PC1, PC2, color=treatment)) + 
+  geom_point(size=4, alpha = 5/10) +
+  xlab(paste0("PC1: ",percentVar[1],"% variance")) +
+  ylab(paste0("PC2: ",percentVar[2],"% variance")) + 
+  coord_fixed()+
+  stat_ellipse()
+
+# Filtering: keep genes that have at least 10 counts across 1/3 of the samples - https://support.bioconductor.org/p/110307/
+keep <- rowSums(DESeq2::counts(dds8) >= 10) >= ncol(countmatrix_GOA)/3
+dds8_filt <- dds8[keep,]
+
+# Generate Contrasts
+contrast_listGOA    <- c("treatment", "OA", "control") # order is important: factor, treatment group, control
+res_tableGOA        <- results(dds8_filt, contrast=contrast_listGOA, alpha = 0.05)
+
+res_tableGOA
+```
+
+OW vs true control
+```{r}
+
+# Filter data
+treatmentinfo.GOW <- treatmentinfo.2 %>% filter(tissue == "G" | treatment == "control" | treatment == "OW") %>% filter(!(tissue == "F" | treatment == "OA" | treatment == "DO"))
+                                                                                                    treatmentinfo.GOW <- treatmentinfo.GOW %>%
+  filter(!(treatment == "control" & day == "3")) 
+                                                                                                      
+countmatrix_GOW <- subset(countmatrix_2, select=row.names(treatmentinfo.GOW))
+
+# Calculate DESeq object
+dds9 <- DESeqDataSetFromMatrix(countData = countmatrix_GOW,
+                              colData = treatmentinfo.GOW,
+                              design = ~ treatment)
+
+dds9 <- DESeq(dds9)
+resultsNames(dds9) # lists the coefficients
+
+PCAdata <- plotPCA(vst(dds9), intgroup = c("treatment"), returnData=TRUE)
+percentVar <- round(100*attr(PCAdata, "percentVar")) #plot PCA of samples with all data
+ggplot(PCAdata, aes(PC1, PC2, color=treatment)) + 
+  geom_point(size=4, alpha = 5/10) +
+  xlab(paste0("PC1: ",percentVar[1],"% variance")) +
+  ylab(paste0("PC2: ",percentVar[2],"% variance")) + 
+  coord_fixed()+
+  stat_ellipse()
+
+# Filtering: keep genes that have at least 10 counts across 1/3 of the samples - https://support.bioconductor.org/p/110307/
+keep <- rowSums(DESeq2::counts(dds9) >= 10) >= ncol(countmatrix_GOW)/3
+dds9_filt <- dds9[keep,]
+
+# Generate Contrasts
+contrast_listOW    <- c("treatment", "OW", "control") # order is important: factor, treatment group, control
+res_tableGOW        <- results(dds9_filt, contrast=contrast_listOW, alpha = 0.05)
+
+res_tableGOW
+```
+## DO vs true control
+```{r}
+
+# Filter data
+treatmentinfo.GDO <- treatmentinfo.2 %>% filter(tissue == "G" | treatment == "control" | treatment == "DO") %>% filter(!(tissue == "F" | treatment == "OA" | treatment == "OW"))
+                                                                                                    treatmentinfo.GDO <- treatmentinfo.GDO %>%
+  filter(!(treatment == "control" & day == "3")) 
+                                                                                                      
+countmatrix_GDO <- subset(countmatrix_2, select=row.names(treatmentinfo.GDO))
+
+# Calculate DESeq object
+dds10 <- DESeqDataSetFromMatrix(countData = countmatrix_GDO,
+                              colData = treatmentinfo.GDO,
+                              design = ~ treatment)
+
+dds10 <- DESeq(dds10)
+resultsNames(dds10) # lists the coefficients
+
+PCAdata <- plotPCA(vst(dds10), intgroup = c("treatment"), returnData=TRUE)
+percentVar <- round(100*attr(PCAdata, "percentVar")) #plot PCA of samples with all data
+ggplot(PCAdata, aes(PC1, PC2, color=treatment)) + 
+  geom_point(size=4, alpha = 5/10) +
+  xlab(paste0("PC1: ",percentVar[1],"% variance")) +
+  ylab(paste0("PC2: ",percentVar[2],"% variance")) + 
+  coord_fixed()+
+  stat_ellipse(level=0.95)
+
+# Filtering: keep genes that have at least 10 counts across 1/3 of the samples - https://support.bioconductor.org/p/110307/
+keep <- rowSums(DESeq2::counts(dds10) >= 10) >= ncol(countmatrix_GDO)/3
+dds10_filt <- dds10[keep,]
+
+# Generate Contrasts
+contrast_listDO    <- c("treatment", "DO", "control") # order is important: factor, treatment group, control
+res_tableGDO        <- results(dds10_filt, contrast=contrast_listDO, alpha = 0.05)
+
+res_tableGDO
+```
+
+## Control day 3 vs true control
+```{r}
+
+# Filter data
+treatmentinfo.Gcon <- treatmentinfo.2 %>% filter(tissue == "G" | treatment == "control") %>% filter(!(tissue == "F" | treatment == "OA" | treatment == "OW" | treatment == "DO"))
+                                                                                                  
+countmatrix_Gcon <- subset(countmatrix_2, select=row.names(treatmentinfo.Gcon))
+
+# Calculate DESeq object
+dds11 <- DESeqDataSetFromMatrix(countData = countmatrix_Gcon,
+                              colData = treatmentinfo.Gcon,
+                              design = ~ day)
+
+dds11 <- DESeq(dds11)
+resultsNames(dds11) # lists the coefficients
+
+PCAdata <- plotPCA(vst(dds11), intgroup = c("day"), returnData=TRUE)
+percentVar <- round(100*attr(PCAdata, "percentVar")) #plot PCA of samples with all data
+ggplot(PCAdata, aes(PC1, PC2, color=day)) + 
+  geom_point(size=4) +
+  xlab(paste0("PC1: ",percentVar[1],"% variance")) +
+  ylab(paste0("PC2: ",percentVar[2],"% variance")) + 
+  coord_fixed()+
+  stat_ellipse(level=0.95)
+
+# Filtering: keep genes that have at least 10 counts across 1/3 of the samples - https://support.bioconductor.org/p/110307/
+keep <-  rowSums(DESeq2::counts(dds11) >= 10) >= ncol(countmatrix_Gcon)/3
+dds11_filt <- dds11[keep,]
+
+# Generate Contrasts
+contrast_listcon    <- c("day", "3", "0") # order is important: factor, treatment group, control
+res_tableGcon        <- results(dds11_filt, contrast=contrast_listcon, alpha = 0.05)
+
+res_tableGcon
+```

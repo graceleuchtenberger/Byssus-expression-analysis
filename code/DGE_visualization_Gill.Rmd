@@ -69,6 +69,7 @@ contrast_listGOA    <- c("treatment", "OA", "control") # order is important: fac
 res_tableGOA        <- results(dds8_filt, contrast=contrast_listGOA, alpha = 0.05)
 
 res_tableGOA
+
 ```
 
 OW vs true control

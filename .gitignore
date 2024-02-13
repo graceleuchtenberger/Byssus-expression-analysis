@@ -1,11 +1,10 @@
 # Ignore Mac system files
 .DS_store
 .Rproj.user
-
-
 # big stuff
 data/raw-data/*
 data/*.fasta
 output/*.index
 output/kallisto-quant/
 data/raw-trimmed/
+MA_plots.pdf

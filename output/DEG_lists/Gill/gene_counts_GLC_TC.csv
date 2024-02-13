@@ -1,0 +1,8 @@
+"count"
+"total transcripts" 411251
+"genes_after_filtering" 30083
+"genes_dropped" 381168
+"DEGs_all-genes-normal" 30083
+"DEGs_all-genes-apeglm" 30083
+"DEGs_all-genes-ashr" 30083
+"DEG_apeglm-p0.05" 2485

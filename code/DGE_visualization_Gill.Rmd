@@ -33,7 +33,7 @@ ggplot(PCAdata, aes(PC1, PC2, color=treatment)) +
 
 ```
 
-OA vs true control
+### OA vs true control
 ```{r}
 
 # Filter data
@@ -72,7 +72,7 @@ res_tableGOA
 
 ```
 
-OW vs true control
+### OW vs true control
 ```{r}
 
 # Filter data
@@ -109,7 +109,7 @@ res_tableGOW        <- results(dds9_filt, contrast=contrast_listOW, alpha = 0.05
 
 res_tableGOW
 ```
-## DO vs true control
+### DO vs true control
 ```{r}
 
 # Filter data
@@ -147,7 +147,7 @@ res_tableGDO        <- results(dds10_filt, contrast=contrast_listDO, alpha = 0.0
 res_tableGDO
 ```
 
-## Control day 3 vs true control
+### Control day 3 vs true control
 ```{r}
 
 # Filter data

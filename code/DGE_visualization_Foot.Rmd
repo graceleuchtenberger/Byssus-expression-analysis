@@ -33,7 +33,7 @@ ggplot(PCAdata, aes(PC1, PC2, color=treatment)) +
 
 ```
 
-OA vs true control
+### OA vs true control
 ```{r}
 # DEG in the foot after exposure to ocean acidification
 
@@ -65,14 +65,14 @@ ggplot(PCAdata, aes(PC1, PC2, color=treatment)) +
 keep <- rowSums(DESeq2::counts(dds4) >= 10) >= ncol(countmatrix_FOA)/3
 dds4_filt <- dds4[keep,]
 
-# Generate Contrasts
+# Generate Contrasts (DON"T KNOW IF WE NEED THIS ANYMORE???? 2/13/24)
 contrast_listOA    <- c("treatment", "OA", "control") # order is important: factor, treatment group, control
 res_tableOA        <- results(dds4_filt, contrast=contrast_listOA, alpha = 0.05)
 
 res_tableOA
 ```
 
-OW vs true control
+### OW vs true control
 ```{r}
 
 # Filter data
@@ -110,7 +110,7 @@ res_tableFOW        <- results(dds5_filt, contrast=contrast_listOW, alpha = 0.05
 res_tableFOW
 ```
 
-## DO vs true control
+### DO vs true control
 ```{r}
 
 # Filter data
@@ -149,7 +149,7 @@ res_tableFDO
 ```
 
 
-## Control day 3 vs true control
+### Control day 3 vs true control
 ```{r}
 # RERUN THE DDS, accidentally overwrote it 
 # Filter data

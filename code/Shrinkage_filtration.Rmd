@@ -1,0 +1,208 @@
+---
+title: "Shrinkage and filtration"
+output: html_document
+date: "2024-02-08"
+---
+### Foot-OA-TC
+```{r}
+#Run shrinkage estimates
+FOA_TC_normal_res_table <- lfcShrink(dds4_filt,
+                              coef=2,
+                              type="normal")
+
+FOA_TC_apeglm_res_table <- lfcShrink(dds4_filt,
+                              coef=2,
+                              type="apeglm") # lfcThreshold = 0.585) 
+
+FOA_TC_ashr_res_table   <- lfcShrink(dds4_filt,
+                              coef=2,
+                              type="ashr")
+
+#put results tables into data frames
+
+FOA_TC_apeglm_df <- FOA_TC_apeglm_res_table %>%
+  data.frame() %>%
+  rownames_to_column(var="gene") %>%
+  as_tibble()
+
+FOA_TC_normal_df <- FOA_TC_normal_res_table  %>%
+  data.frame() %>%
+  rownames_to_column(var="gene") %>%
+  as_tibble()
+
+FOA_TC_ashr_df <- FOA_TC_ashr_res_table %>%
+  data.frame() %>%
+  rownames_to_column(var="gene") %>%
+  as_tibble()
+
+# Write csv's with significant genes 
+#ignore rowname numbers with row.names = FALSE, not included as separate column
+write.table(FOA_TC_apeglm_df, file = "output/DEG_lists/Foot/FOA_TC_apeglm.csv", row.names = FALSE)
+padj.cutoff <- 0.05 # pvalue cut-off
+FOA_TC_siggenes <- FOA_TC_apeglm_df %>%
+  filter(padj < padj.cutoff)
+write.table(FOA_TC_siggenes, file = "output/DEG_lists/Foot/FOA_TC_siggene.csv", row.names = FALSE)
+
+#saving gene counts as a result of each filtration step
+gene_counts_FOA_TC <- as.data.frame(c(nrow(countmatrix_FOA),nrow(dds4_filt),(nrow(countmatrix_FOA)-nrow(dds4_filt)),nrow(FOA_TC_normal_res_table),nrow(FOA_TC_apeglm_res_table),nrow(FOA_TC_ashr_res_table),nrow(FOA_TC_siggenes)))
+
+row.names(gene_counts_FOA_TC) <- c("total transcripts","genes_after_filtering","genes_dropped",
+                            "DEGs_all-genes-normal",
+                            "DEGs_all-genes-apeglm","DEGs_all-genes-ashr",
+                            "DEG_apeglm-p0.05")
+
+#write.csv for the gene count summaries
+
+colnames(gene_counts_FOA_TC) <- "count"
+write.table(gene_counts_FOA_TC, file = "output/DEG_lists/Foot/gene_counts_FOA_TC.csv", row.names = TRUE)
+
+
+# Plot MA
+
+pdf(file= "output/DEG_lists/Foot/FOA_TC_MA_plots.pdf" )
+par(mfrow=c(1,3), mar=c(4,4,2,1))
+xlim <- c(1,1e5); ylim <- c(-3,3)
+DESeq2::plotMA(FOA_TC_normal_res_table, xlim=xlim, ylim=ylim, main="normal", cex=.8)
+abline(h=c(-1.5,1.5), col="dodgerblue", lwd=2)
+DESeq2::plotMA(FOA_TC_apeglm_res_table, xlim=xlim, ylim=ylim, main="apeglm", cex=.8)
+abline(h=c(-1.5,1.5), col="dodgerblue", lwd=2)
+DESeq2::plotMA(FOA_TC_ashr_res_table, xlim=xlim, ylim=ylim, main="ashr", cex=.8)
+abline(h=c(-1.5,1.5), col="dodgerblue", lwd=2)
+dev.off()
+```
+
+
+### Gill-OA-TC
+```{r}
+#Run shrinkage estimates
+res_table_GOA_TC_normal <- lfcShrink(dds8_filt,
+                              coef=2,
+                              type="normal")
+
+res_table_GOA_TC_apeglm <- lfcShrink(dds8_filt,
+                              coef=2,
+                              type="apeglm") # lfcThreshold = 0.585) 
+
+res_table_GOA_TC_ashr   <- lfcShrink(dds8_filt,
+                              coef=2,
+                              type="ashr")
+
+#put results tables into data frames
+
+GOA_TC_apeglm_df <- res_table_GOA_apeglm %>%
+  data.frame() %>%
+  rownames_to_column(var="gene") %>%
+  as_tibble()
+
+GOA_TC_normal_df <- res_table_GOA_normal %>%
+  data.frame() %>%
+  rownames_to_column(var="gene") %>%
+  as_tibble()
+
+GOA_TC_ashr_df <- res_table_GOA_ashr %>%
+  data.frame() %>%
+  rownames_to_column(var="gene") %>%
+  as_tibble()
+
+# Write csv's with significant genes 
+#ignore rowname numbers with row.names = FALSE, not included as separate column
+write.table(GOA_apeglm_df, file = "output/DEG_lists/Gill/OA_G.csv", row.names = FALSE)
+padj.cutoff <- 0.05 # pvalue cut-off
+sig_genes_GOA <- GOA_apeglm_df %>%
+  filter(padj < padj.cutoff)
+write.table(sig_genes_GOA, file = "output/DEG_lists/Gill/siggene_OA_G.csv", row.names = FALSE)
+
+#saving gene counts as a result of each filtration step
+gene_counts_GOA_TC <- as.data.frame(c(nrow(countmatrix_GOA),nrow(dds8_filt),(nrow(countmatrix_GOA)-nrow(dds8_filt)),nrow(res_table_GOA_normal),nrow(res_table_GOA_apeglm),nrow(res_table_GOA_ashr),nrow(sig_genes_GOA)))
+
+row.names(gene_counts_GOA_TC) <- c("total transcripts","genes_after_filtering","genes_dropped",
+                            "DEGs_all-genes-normal",
+                            "DEGs_all-genes-apeglm","DEGs_all-genes-ashr",
+                            "DEG_apeglm-p0.05")
+
+#write.csv for the gene count summaries
+
+colnames(gene_counts_GOA_TC) <- "count"
+write.table(gene_counts_GOA_TC,      file = "output/DEG_lists/Gill/gene_counts_GOA_TC.csv",        row.names = TRUE)
+
+
+# Plot MA
+
+pdf(file= "output/DEG_lists/Gill/GOA_TC_MA_plots.pdf" )
+par(mfrow=c(1,3), mar=c(4,4,2,1))
+xlim <- c(1,1e5); ylim <- c(-3,3)
+DESeq2::plotMA(res_table_GOA_normal, xlim=xlim, ylim=ylim, main="normal", cex=.8)
+abline(h=c(-1.5,1.5), col="dodgerblue", lwd=2)
+DESeq2::plotMA(res_table_GOA_apeglm, xlim=xlim, ylim=ylim, main="apeglm", cex=.8)
+abline(h=c(-1.5,1.5), col="dodgerblue", lwd=2)
+DESeq2::plotMA(res_table_GOA_ashr, xlim=xlim, ylim=ylim, main="ashr", cex=.8)
+abline(h=c(-1.5,1.5), col="dodgerblue", lwd=2)
+dev.off()
+```
+### Foot-OW-TC
+```{r}
+#Run shrinkage estimates
+FOW_TC_normal_res_table <- lfcShrink(dds5_filt,
+                              coef=2,
+                              type="normal")
+
+FOW_TC_apeglm_res_table <- lfcShrink(dds5_filt,
+                              coef=2,
+                              type="apeglm") # lfcThreshold = 0.585) 
+
+FOW_TC_ashr_res_table   <- lfcShrink(dds5_filt,
+                              coef=2,
+                              type="ashr")
+
+#put results tables into data frames
+
+FOW_TC_apeglm_df <- FOW_TC_apeglm_res_table %>%
+  data.frame() %>%
+  rownames_to_column(var="gene") %>%
+  as_tibble()
+
+FOW_TC_normal_df <- FOW_TC_normal_res_table  %>%
+  data.frame() %>%
+  rownames_to_column(var="gene") %>%
+  as_tibble()
+
+FOW_TC_ashr_df <- FOW_TC_ashr_res_table %>%
+  data.frame() %>%
+  rownames_to_column(var="gene") %>%
+  as_tibble()
+
+# Write csv's with significant genes 
+#ignore rowname numbers with row.names = FALSE, not included as separate column
+write.table(FOW_TC_apeglm_df, file = "output/DEG_lists/Foot/FOW_TC_apeglm.csv", row.names = FALSE)
+padj.cutoff <- 0.05 # pvalue cut-off
+FOW_TC_siggenes <- FOW_TC_apeglm_df %>%
+  filter(padj < padj.cutoff)
+write.table(FOA_TC_siggenes, file = "output/DEG_lists/Foot/FOA_TC_siggene.csv", row.names = FALSE)
+
+#saving gene counts as a result of each filtration step
+gene_counts_FOW_TC <- as.data.frame(c(nrow(countmatrix_FOW),nrow(dds5_filt),(nrow(countmatrix_FOW)-nrow(dds5_filt)),nrow(FOW_TC_normal_res_table),nrow(FOW_TC_apeglm_res_table),nrow(FOW_TC_ashr_res_table),nrow(FOW_TC_siggenes)))
+
+row.names(gene_counts_FOW_TC) <- c("total transcripts","genes_after_filtering","genes_dropped",
+                            "DEGs_all-genes-normal",
+                            "DEGs_all-genes-apeglm","DEGs_all-genes-ashr",
+                            "DEG_apeglm-p0.05")
+
+#write.csv for the gene count summaries
+
+colnames(gene_counts_FOW_TC) <- "count"
+write.table(gene_counts_FOW_TC, file = "output/DEG_lists/Foot/gene_counts_FOA_TC.csv", row.names = TRUE)
+
+
+# Plot MA
+
+pdf(file= "output/DEG_lists/Foot/FOA_TC_MA_plots.pdf" )
+par(mfrow=c(1,3), mar=c(4,4,2,1))
+xlim <- c(1,1e5); ylim <- c(-3,3)
+DESeq2::plotMA(FOW_TC_normal_res_table, xlim=xlim, ylim=ylim, main="normal", cex=.8)
+abline(h=c(-1.5,1.5), col="dodgerblue", lwd=2)
+DESeq2::plotMA(FOW_TC_apeglm_res_table, xlim=xlim, ylim=ylim, main="apeglm", cex=.8)
+abline(h=c(-1.5,1.5), col="dodgerblue", lwd=2)
+DESeq2::plotMA(FOW_TC_ashr_res_table, xlim=xlim, ylim=ylim, main="ashr", cex=.8)
+abline(h=c(-1.5,1.5), col="dodgerblue", lwd=2)
+dev.off()
+```

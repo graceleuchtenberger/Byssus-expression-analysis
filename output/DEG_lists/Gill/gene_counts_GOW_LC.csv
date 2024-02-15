@@ -1,0 +1,10 @@
+"c(nrow(GOW_LC_countmatrix), nrow(dds16_filt), (nrow(GOW_LC_countmatrix) - nrow(dds16_filt)), nrow(GOW_LC_normal_res_table), nrow(GOW_LC_apeglm_res_table), nrow(GOW_LC_ashr_res_table), nrow(GOW_LC_siggenes_apeglm), nrow(GOW_LC_sig_genes_ashr), nrow(GOW_LC_sig_genes_normal))"
+"total transcripts" 411251
+"genes_after_filtering" 27492
+"genes_dropped" 383759
+"DEGs_all-genes-normal" 27492
+"DEGs_all-genes-apeglm" 27492
+"DEGs_all-genes-ashr" 27492
+"DEG_apeglm-p0.05" 25
+"DEG_ashr-p0.05" 25
+"DEG_normal-p0.05" 25

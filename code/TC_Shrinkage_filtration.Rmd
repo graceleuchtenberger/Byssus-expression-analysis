@@ -177,7 +177,7 @@ write.table(FOW_TC_apeglm_df, file = "output/DEG_lists/Foot/FOW_TC_apeglm.csv", 
 padj.cutoff <- 0.05 # pvalue cut-off
 FOW_TC_siggenes <- FOW_TC_apeglm_df %>%
   filter(padj < padj.cutoff)
-write.table(FOA_TC_siggenes, file = "output/DEG_lists/Foot/FOA_TC_siggene.csv", row.names = FALSE)
+write.table(FOW_TC_siggenes, file = "output/DEG_lists/Foot/FOW_TC_siggene.csv", row.names = FALSE)
 
 #saving gene counts as a result of each filtration step
 gene_counts_FOW_TC <- as.data.frame(c(nrow(countmatrix_FOW),nrow(dds5_filt),(nrow(countmatrix_FOW)-nrow(dds5_filt)),nrow(FOW_TC_normal_res_table),nrow(FOW_TC_apeglm_res_table),nrow(FOW_TC_ashr_res_table),nrow(FOW_TC_siggenes)))

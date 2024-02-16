@@ -6,3 +6,5 @@
 "DEGs_all-genes-apeglm" 16612
 "DEGs_all-genes-ashr" 16612
 "DEG_apeglm-p0.05" 14
+"DEG_ashr-p0.05" 14
+"DEG_normal-p0.05" 14

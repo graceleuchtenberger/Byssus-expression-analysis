@@ -1,0 +1,53 @@
+---
+title: "Comparing gene tables"
+output: html_document
+date: "2024-02-20"
+---
+
+### Load libraries
+```{r load_libraries, inlcude = TRUE}
+## clear
+rm(list=ls())
+# List of packages we want to install (run every time)
+load.lib<-c("RColorBrewer","readxl","ggpubr","tidyverse","tibble","stringr","beepr","gplots")
+# Select only the packages that aren't currently installed (run every time)
+install.lib <- load.lib[!load.lib %in% installed.packages()]
+# And finally we install the missing packages, including their dependency.
+for(lib in install.lib) install.packages(lib,dependencies=TRUE)
+# After the installation process completes, we load all packages.
+sapply(load.lib,require,character=TRUE)
+
+#invisible(lapply(paste0('package:', names(sessionInfo()$otherPkgs)), detach, character.only=TRUE, unload=TRUE))
+
+library(tidyverse)
+library(dplyr)
+```
+
+```{r}
+getwd()
+FDO_TC_siggene <- read.delim("output/DEG_lists/Foot/FDO_TC_siggene.csv", sep = " ", header = TRUE)
+FDO_LC_siggene <- read.delim("output/DEG_lists/Foot/FDO_LC_siggene_apeglm.csv", sep = " ", header = TRUE)
+
+FDO_sigs_left <- left_join(FDO_TC_siggene, FDO_LC_siggene, by = 'gene')
+
+FDO_sigs_right <- right_join(FDO_TC_siggene, FDO_LC_siggene, by = 'gene')
+
+FDO_sigs <- inner_join(FDO_TC_siggene, FDO_LC_siggene, by = 'gene')
+#basemean x is TC, basemean y is LC
+
+FDO_sigs$log2FoldChange <- FDO_sigs$log2FoldChange.x-FDO_sigs$log2FoldChange.y
+FDO_sigs_inter <- FDO_sigs[,c(1,12)]
+
+# Merge dataframes based on the shared column 'ID' and replace values from df2 into df1
+FDO_sigs_merged <- merge(FDO_TC_siggene, FDO_sigs_inter, by = "gene", all.x = TRUE)
+
+# Merge df1 and df2 by the 'ID' column, replacing values from df1 with values from df2
+merged_df <- merge(FDO_TC_siggene, FDO_sigs, by = "gene", all.x = TRUE, suffixes = c(".x", ".y"))
+# Replace the 'Value.x' column with 'Value.y' where 'Value.y' is not NA
+merged_df$log2FoldChange.x[!is.na(merged_df$log2FoldChange.y)] <- merged_df$log2FoldChange.y[!is.na(merged_df$log2FoldChange.y)]
+# Remove the unnecessary column
+merged_df <- merged_df[, !(names(merged_df) %in% "log2FoldChange.y")]
+print(merged_df)
+
+```
+

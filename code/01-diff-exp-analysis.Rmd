@@ -163,7 +163,7 @@ head ../output/kallisto-quant/abundance-matrices.isoform.counts.matrix
 ```
 ## Make counts matrix
 ```{r, eval = TRUE}
-countmatrix <- read.delim("../output/kallisto-quant/abundance-matrices.isoform.counts.matrix", header = TRUE, sep = '\t')
+countmatrix <- read.delim("output/kallisto-quant/abundance-matrices.isoform.counts.matrix", header = TRUE, sep = '\t')
 rownames(countmatrix) <- countmatrix$X
 countmatrix <- countmatrix[,-1]
 head(countmatrix)
@@ -179,7 +179,7 @@ str(countmatrix)
 ```{r}
 #Load in the metadata
 library(dplyr)
-treatmentinfo <- read.csv("../data/PSMFC-mytilus-byssus-pilot-RNA-tagseq_raw.csv", header = TRUE, sep = ",")
+treatmentinfo <- read.csv("data/PSMFC-mytilus-byssus-pilot-RNA-tagseq_raw.csv", header = TRUE, sep = ",")
 treatmentinfo
 
 ```
@@ -254,7 +254,7 @@ removal <- which(rownames(treatmentinfo.2) %in% "T047F")
 treatmentinfo.2 <- treatmentinfo.2[-removal,]
 
 #Check that columns and row names match
-all(rownames(tissuesub) == colnames(countmatrix_2))
+all(rownames(treatmentinfo.2) == colnames(countmatrix_2))
 ```
 
 ## DEG in the foot after exposure to ocean acidification

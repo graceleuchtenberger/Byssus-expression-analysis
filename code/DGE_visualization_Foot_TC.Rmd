@@ -3,6 +3,37 @@ title: "DGE_viz"
 output: html_document
 date: "2024-02-05"
 ---
+```{r load libraries}
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install(version = "3.16")
+
+BiocManager::install("DESeq2")
+library("DESeq2") # Bioconductor
+library("tidyverse")
+library("dplyr")
+library("pheatmap")
+library("RColorBrewer")
+library("genefilter") # Bioconductor
+library("ggplot2")
+library("gplots")
+library("limma") # Bioconductor
+library("spdep") 
+library("adegenet")
+library("tximport") # Bioconductor
+BiocManager::install("vsn")
+BiocManager::install("tidybulk")
+BiocManager::install("goseq")
+BiocManager::install("affycoretools")
+BiocManager::install("EnhancedVolcano")
+BiocManager::install("pcaExplorer")
+BiocManager::install("apeglm")
+BiocManager::install("PCAtools")
+BiocManager::install("DESeq2PCA")
+library(pcaExplorer)
+library(PCAtools)
+```
+
 
 ## Overall comparison with day zero control
 ```{r}
@@ -29,7 +60,9 @@ ggplot(PCAdata, aes(PC1, PC2, color=treatment)) +
   xlab(paste0("PC1: ",percentVar[1],"% variance")) +
   ylab(paste0("PC2: ",percentVar[2],"% variance")) + 
   coord_fixed()+
-  stat_ellipse()
+  stat_ellipse()+
+  theme_classic()+
+  scale_color_manual(labels = c("Treatment Control", "Laboratory Control", "Hypoxia", "Ocean Acidification", "Ocean Warming"), values = c("blue", "lightblue", "purple","green", "red"))
 
 ```
 

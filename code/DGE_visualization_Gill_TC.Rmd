@@ -29,7 +29,9 @@ ggplot(PCAdata, aes(PC1, PC2, color=treatment)) +
   xlab(paste0("PC1: ",percentVar[1],"% variance")) +
   ylab(paste0("PC2: ",percentVar[2],"% variance")) + 
   coord_fixed()+
-  stat_ellipse()
+  stat_ellipse()+
+  theme_classic()+
+  scale_color_manual(labels = c("Treatment Control", "Laboratory Control", "Hypoxia", "Ocean Acidification", "Ocean Warming"), values = c("blue", "lightblue", "purple","green", "red"))
 
 ```
 

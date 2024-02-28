@@ -23,14 +23,10 @@ library(tidyverse)
 library(dplyr)
 ```
 
+### FDO merge (THIS MIGHT BE WRONG, MIGHT NEED TO MERGE TC INTO LC)
 ```{r}
-getwd()
 FDO_TC_siggene <- read.delim("output/DEG_lists/Foot/FDO_TC_siggene.csv", sep = " ", header = TRUE)
 FDO_LC_siggene <- read.delim("output/DEG_lists/Foot/FDO_LC_siggene_apeglm.csv", sep = " ", header = TRUE)
-
-FDO_sigs_left <- left_join(FDO_TC_siggene, FDO_LC_siggene, by = 'gene')
-
-FDO_sigs_right <- right_join(FDO_TC_siggene, FDO_LC_siggene, by = 'gene')
 
 FDO_sigs <- inner_join(FDO_TC_siggene, FDO_LC_siggene, by = 'gene')
 #basemean x is TC, basemean y is LC
@@ -41,13 +37,33 @@ FDO_sigs_inter <- FDO_sigs[,c(1,12)]
 # Merge dataframes based on the shared column 'ID' and replace values from df2 into df1
 FDO_sigs_merged <- merge(FDO_TC_siggene, FDO_sigs_inter, by = "gene", all.x = TRUE)
 
-# Merge df1 and df2 by the 'ID' column, replacing values from df1 with values from df2
-merged_df <- merge(FDO_TC_siggene, FDO_sigs, by = "gene", all.x = TRUE, suffixes = c(".x", ".y"))
-# Replace the 'Value.x' column with 'Value.y' where 'Value.y' is not NA
-merged_df$log2FoldChange.x[!is.na(merged_df$log2FoldChange.y)] <- merged_df$log2FoldChange.y[!is.na(merged_df$log2FoldChange.y)]
-# Remove the unnecessary column
-merged_df <- merged_df[, !(names(merged_df) %in% "log2FoldChange.y")]
-print(merged_df)
+# Replace values in df_y with values from df_x based on a condition
+FDO_sigs_merged$log2FoldChange.x <- ifelse(!is.na(FDO_sigs_merged$log2FoldChange.y) , FDO_sigs_merged$log2FoldChange.y, FDO_sigs_merged$log2FoldChange.x)
+
+# Drop the extra column "Value_x" if needed
+FDO_sigs_merged <- FDO_sigs_merged[, !(names(FDO_sigs_merged) %in% c("log2FoldChange.y"))]
+
+```
+
+### GDO merge
+```{r}
+GDO_TC_siggene <- read.delim("output/DEG_lists/Gill/GDO_TC_siggene.csv", sep = " ", header = TRUE)
+GDO_LC_siggene <- read.delim("output/DEG_lists/Gill/GDO_LC_siggene_apeglm.csv", sep = " ", header = TRUE)
+
+GDO_sigs <- inner_join(GDO_TC_siggene, GDO_LC_siggene, by = 'gene')
+#basemean x is TC, basemean y is LC
+
+GDO_sigs$log2FoldChange <- GDO_sigs$log2FoldChange.x-GDO_sigs$log2FoldChange.y
+GDO_sigs_inter <- GDO_sigs[,c(1,12)]
+
+# Merge dataframes based on the shared column 'ID' and replace values from df2 into df1
+GDO_sigs_merged <- merge(GDO_TC_siggene, GDO_sigs_inter, by = "gene", all.x = TRUE)
+
+# Replace values in df_y with values from df_x based on a condition
+GDO_sigs_merged$log2FoldChange.x <- ifelse(!is.na(GDO_sigs_merged$log2FoldChange.y) , GDO_sigs_merged$log2FoldChange.y, GDO_sigs_merged$log2FoldChange.x)
+
+# Drop the extra column "Value_x" if needed
+GDO_sigs_merged <- GDO_sigs_merged[, !(names(GDO_sigs_merged) %in% c("log2FoldChange.y"))]
 
 ```
 

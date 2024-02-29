@@ -119,7 +119,7 @@ GOA_TC_sig_genes_ashr<- GOA_TC_ashr_df %>%
   filter(padj < padj.cutoff)
 GOA_TC_sig_genes_normal<- GOA_TC_normal_df %>%
   filter(padj < padj.cutoff)
-write.table(GOA_TC_sig_genes_apeglm, file = "output/DEG_lists/Gill/siggene_OA_G.csv", row.names = FALSE)
+write.table(GOA_TC_sig_genes_apeglm, file = "output/DEG_lists/Gill/GOA_TC_siggene.csv", row.names = FALSE)
 
 #saving gene counts as a result of each filtration step
 gene_counts_GOA_TC <- as.data.frame(c(nrow(GOA_TC_countmatrix),nrow(dds15_filt),(nrow(GOA_TC_countmatrix)-nrow(dds15_filt)),nrow(GOA_TC_normal_res_table),nrow(GOA_TC_apeglm_res_table),nrow(GOA_TC_ashr_res_table),nrow(GOA_TC_sig_genes_apeglm), nrow(GOA_TC_sig_genes_ashr),nrow(GOA_TC_sig_genes_normal)))
@@ -190,7 +190,7 @@ FOW_TC_sig_genes_ashr<- FOW_TC_ashr_df %>%
   filter(padj < padj.cutoff)
 FOW_TC_sig_genes_normal<- FOW_TC_normal_df %>%
   filter(padj < padj.cutoff)
-write.table(FOW_TC_siggenes, file = "output/DEG_lists/Foot/FOW_TC_siggene.csv", row.names = FALSE)
+write.table(FOW_TC_siggenes_apeglm, file = "output/DEG_lists/Foot/FOW_TC_siggene.csv", row.names = FALSE)
 
 #saving gene counts as a result of each filtration step
 gene_counts_FOW_TC <- as.data.frame(c(nrow(FOW_TC_countmatrix),nrow(dds13_filt),(nrow(FOW_TC_countmatrix)-nrow(dds13_filt)),nrow(FOW_TC_normal_res_table),nrow(FOW_TC_apeglm_res_table),nrow(FOW_TC_ashr_res_table),nrow(FOW_TC_siggenes_apeglm),nrow(FOW_TC_sig_genes_ashr),nrow(FOW_TC_sig_genes_normal)))
@@ -262,7 +262,7 @@ GOW_TC_sig_genes_ashr<- GOW_TC_ashr_df %>%
   filter(padj < padj.cutoff)
 GOW_TC_sig_genes_normal<- GOW_TC_normal_df %>%
   filter(padj < padj.cutoff)
-write.table(GOW_TC_siggenes_apeglm, file = "output/DEG_lists/Foot/GOW_TC_siggene_apeglm.csv", row.names = FALSE)
+write.table(GOW_TC_siggenes_apeglm, file = "output/DEG_lists/Gill/GOW_TC_siggene_apeglm.csv", row.names = FALSE)
 
 #saving gene counts as a result of each filtration step
 gene_counts_GOW_TC <- as.data.frame(c(nrow(GOW_TC_countmatrix),nrow(dds16_filt),(nrow(GOW_TC_countmatrix)-nrow(dds16_filt)),nrow(GOW_TC_normal_res_table),nrow(GOW_TC_apeglm_res_table),nrow(GOW_TC_ashr_res_table),nrow(GOW_TC_siggenes_apeglm),nrow(GOW_TC_sig_genes_ashr),nrow(GOW_TC_sig_genes_normal)))
@@ -406,7 +406,7 @@ GDO_TC_sig_genes_normal<- GDO_TC_normal_df %>%
 write.table(GDO_TC_siggenes, file = "output/DEG_lists/Gill/GDO_TC_siggene_apeglm.csv", row.names = FALSE)
 
 #saving gene counts as a result of each filtration step
-gene_counts_GDO_TC <- as.data.frame(c(nrow(countmatrix_GDO),nrow(dds17_filt),(nrow(countmatrix_GDO)-nrow(dds17_filt)),nrow(GDO_TC_normal_res_table),nrow(GDO_TC_apeglm_res_table),nrow(GDO_TC_ashr_res_table),nrow(GDO_TC_siggenes),nrow(GDO_TC_sig_genes_ashr),nrow(GDO_TC_sig_genes_normal)))
+gene_counts_GDO_TC <- as.data.frame(c(nrow(GDO_TC_countmatrix),nrow(dds17_filt),(nrow(GDO_TC_countmatrix)-nrow(dds17_filt)),nrow(GDO_TC_normal_res_table),nrow(GDO_TC_apeglm_res_table),nrow(GDO_TC_ashr_res_table),nrow(GDO_TC_siggenes),nrow(GDO_TC_sig_genes_ashr),nrow(GDO_TC_sig_genes_normal)))
 
 row.names(gene_counts_GDO_TC) <- c("total transcripts","genes_after_filtering","genes_dropped",
                             "DEGs_all-genes-normal",

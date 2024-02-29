@@ -4,7 +4,7 @@ output: html_document
 date: "2024-02-14"
 ---
 
-### OA vs lab control
+### OA vs treatment control
 ```{r}
 
 # Filter data
@@ -37,7 +37,7 @@ dds15_filt <- dds15[keep,]
 
 ```
 
-### OW vs lab control
+### OW vs treatment control
 ```{r}
 
 # Filter data
@@ -70,7 +70,7 @@ dds16_filt <- dds16[keep,]
 
 ```
 
-### DO vs lab control
+### DO vs treatment control
 ```{r}
 
 # Filter data

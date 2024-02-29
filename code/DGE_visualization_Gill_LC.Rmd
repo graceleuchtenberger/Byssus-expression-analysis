@@ -4,7 +4,7 @@ output: html_document
 date: "2024-02-06"
 ---
 
-## Overall comparison with day zero control
+## Overall comparison with lab control
 ```{r}
 treatmentinfo.controlG  <- treatmentinfo.2 %>% filter(tissue == "G") %>%
   filter(!( tissue == "F"))
@@ -35,12 +35,12 @@ ggplot(PCAdata, aes(PC1, PC2, color=treatment)) +
 
 ```
 
-### OA vs true control
+### OA vs lab control
 ```{r}
 
 # Filter data
 treatmentinfo.GOA <- treatmentinfo.2 %>% filter(tissue == "G" | treatment == "control" | treatment == "OA") %>% filter(!(tissue == "F" | treatment == "OW" | treatment == "DO"))
-                                                                                                      treatmentinfo.GOA <- treatmentinfo.GOA %>%
+                                                                                     treatmentinfo.GOA <- treatmentinfo.GOA %>%
   filter(!(treatment == "control" & day == "3")) 
                                                                                                       
 countmatrix_GOA <- subset(countmatrix_2, select=row.names(treatmentinfo.GOA))
@@ -111,7 +111,7 @@ res_tableGOW        <- results(dds9_filt, contrast=contrast_listOW, alpha = 0.05
 
 res_tableGOW
 ```
-### DO vs true control
+### DO vs lab control
 ```{r}
 
 # Filter data
@@ -149,7 +149,7 @@ res_tableGDO        <- results(dds10_filt, contrast=contrast_listDO, alpha = 0.0
 res_tableGDO
 ```
 
-### Control day 3 vs true control
+### treatment control vs lab control
 ```{r}
 
 # Filter data

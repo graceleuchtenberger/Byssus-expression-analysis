@@ -1,5 +1,5 @@
 ---
-title: "Gill_LC_DGE_viz"
+title: "Gill_TC_DGE_viz"
 output: html_document
 date: "2024-02-14"
 ---
@@ -8,15 +8,15 @@ date: "2024-02-14"
 ```{r}
 
 # Filter data
-GOA_LC_treatmentinfo <- treatmentinfo.2 %>% filter(tissue == "G" | treatment == "control" | treatment == "OA") %>% filter(!(tissue == "F" | treatment == "OW" | treatment == "DO"))
-                                                                                                     GOA_LC_treatmentinfo <- GOA_LC_treatmentinfo %>%
+GOA_TC_treatmentinfo <- treatmentinfo.2 %>% filter(tissue == "G" | treatment == "control" | treatment == "OA") %>% filter(!(tissue == "F" | treatment == "OW" | treatment == "DO"))
+                                                                                                     GOA_TC_treatmentinfo <- GOA_TC_treatmentinfo %>%
   filter(!(treatment == "control" & day == "0")) 
                                                                                                       
-GOA_LC_countmatrix <- subset(countmatrix_2, select=row.names(GOA_LC_treatmentinfo))
+GOA_TC_countmatrix <- subset(countmatrix_2, select=row.names(GOA_TC_treatmentinfo))
 
-# Calculate DESeq object
-dds15 <- DESeqDataSetFromMatrix(countData = GOA_LC_countmatrix,
-                              colData = GOA_LC_treatmentinfo,
+# CaTCulate DESeq object
+dds15 <- DESeqDataSetFromMatrix(countData = GOA_TC_countmatrix,
+                              colData = GOA_TC_treatmentinfo,
                               design = ~ treatment)
 
 dds15 <- DESeq(dds15)
@@ -32,7 +32,7 @@ ggplot(PCAdata, aes(PC1, PC2, color=treatment)) +
   stat_ellipse()
 
 # Filtering: keep genes that have at least 10 counts across 1/3 of the samples - https://support.bioconductor.org/p/110307/
-keep <- rowSums(DESeq2::counts(dds15) >= 10) >= ncol(GOA_LC_countmatrix)/3
+keep <- rowSums(DESeq2::counts(dds15) >= 10) >= ncol(GOA_TC_countmatrix)/3
 dds15_filt <- dds15[keep,]
 
 ```
@@ -41,15 +41,15 @@ dds15_filt <- dds15[keep,]
 ```{r}
 
 # Filter data
-GOW_LC_treatmentinfo <- treatmentinfo.2 %>% filter(tissue == "G" | treatment == "control" | treatment == "OW") %>% filter(!(tissue == "F" | treatment == "OA" | treatment == "DO"))
-                                                                                                    GOW_LC_treatmentinfo <- GOW_LC_treatmentinfo %>%
+GOW_TC_treatmentinfo <- treatmentinfo.2 %>% filter(tissue == "G" | treatment == "control" | treatment == "OW") %>% filter(!(tissue == "F" | treatment == "OA" | treatment == "DO"))
+                                                                                                    GOW_TC_treatmentinfo <- GOW_TC_treatmentinfo %>%
   filter(!(treatment == "control" & day == "0")) 
                                                                                                   
-GOW_LC_countmatrix <- subset(countmatrix_2, select=row.names(GOW_LC_treatmentinfo))
+GOW_TC_countmatrix <- subset(countmatrix_2, select=row.names(GOW_TC_treatmentinfo))
 
-# Calculate DESeq object
-dds16 <- DESeqDataSetFromMatrix(countData = GOW_LC_countmatrix,
-                              colData = GOW_LC_treatmentinfo,
+# CaTCulate DESeq object
+dds16 <- DESeqDataSetFromMatrix(countData = GOW_TC_countmatrix,
+                              colData = GOW_TC_treatmentinfo,
                               design = ~ treatment)
 
 dds16 <- DESeq(dds16)
@@ -65,7 +65,7 @@ ggplot(PCAdata, aes(PC1, PC2, color=treatment)) +
   stat_ellipse(level=0.95)
 
 # Filtering: keep genes that have at least 10 counts across 1/3 of the samples - https://support.bioconductor.org/p/110307/
-keep <- rowSums(DESeq2::counts(dds16) >= 10) >= ncol(GOW_LC_countmatrix)/3
+keep <- rowSums(DESeq2::counts(dds16) >= 10) >= ncol(GOW_TC_countmatrix)/3
 dds16_filt <- dds16[keep,]
 
 ```
@@ -74,15 +74,15 @@ dds16_filt <- dds16[keep,]
 ```{r}
 
 # Filter data
-GDO_LC_treatmentinfo <- treatmentinfo.2 %>% filter(tissue == "G" | treatment == "control" | treatment == "DO") %>% filter(!(tissue == "F" | treatment == "OA" | treatment == "OW"))
-                                                                                      GDO_LC_treatmentinfo <- GDO_LC_treatmentinfo %>%
+GDO_TC_treatmentinfo <- treatmentinfo.2 %>% filter(tissue == "G" | treatment == "control" | treatment == "DO") %>% filter(!(tissue == "F" | treatment == "OA" | treatment == "OW"))
+                                                                                      GDO_TC_treatmentinfo <- GDO_TC_treatmentinfo %>%
   filter(!(treatment == "control" & day == "0")) 
                                                                                                       
-GDO_LC_countmatrix <- subset(countmatrix_2, select=row.names(GDO_LC_treatmentinfo))
+GDO_TC_countmatrix <- subset(countmatrix_2, select=row.names(GDO_TC_treatmentinfo))
 
-# Calculate DESeq object
-dds17 <- DESeqDataSetFromMatrix(countData = GDO_LC_countmatrix,
-                              colData = GDO_LC_treatmentinfo,
+# CaTCulate DESeq object
+dds17 <- DESeqDataSetFromMatrix(countData = GDO_TC_countmatrix,
+                              colData = GDO_TC_treatmentinfo,
                               design = ~ treatment)
 
 dds17 <- DESeq(dds17)
@@ -101,7 +101,7 @@ ggplot(PCAdata, aes(PC1, PC2, color=treatment)) +
   stat_ellipse(level=0.95)
 
 # Filtering: keep genes that have at least 10 counts across 1/3 of the samples - https://support.bioconductor.org/p/110307/
-keep <- rowSums(DESeq2::counts(dds17) >= 10) >= ncol(GDO_LC_countmatrix)/3
+keep <- rowSums(DESeq2::counts(dds17) >= 10) >= ncol(GDO_TC_countmatrix)/3
 dds17_filt <- dds17[keep,]
 
 ```

@@ -23,10 +23,10 @@ library(tidyverse)
 library(dplyr)
 ```
 
-### FDO merge (THIS MIGHT BE WRONG, MIGHT NEED TO MERGE TC INTO LC)
+### FDO merge 
 ```{r}
-FDO_TC_siggene <- read.delim("output/DEG_lists/Foot/FDO_TC_siggene.csv", sep = " ", header = TRUE)
-FDO_LC_siggene <- read.delim("output/DEG_lists/Foot/FDO_LC_siggene_apeglm.csv", sep = " ", header = TRUE)
+FDO_LC_siggene <- read.delim("output/DEG_lists/Foot/FDO_LC_siggene.csv", sep = " ", header = TRUE)
+FDO_TC_siggene <- read.delim("output/DEG_lists/Foot/FDO_TC_siggene_apeglm.csv", sep = " ", header = TRUE)
 
 FDO_sigs <- inner_join(FDO_TC_siggene, FDO_LC_siggene, by = 'gene')
 #basemean x is TC, basemean y is LC
@@ -43,12 +43,15 @@ FDO_sigs_merged$log2FoldChange.x <- ifelse(!is.na(FDO_sigs_merged$log2FoldChange
 # Drop the extra column "Value_x" if needed
 FDO_sigs_merged <- FDO_sigs_merged[, !(names(FDO_sigs_merged) %in% c("log2FoldChange.y"))]
 
+#Write file of merged files
+write.table(FDO_sigs_merged, file = "output/DEG_lists/Foot/FDO_sigs_merged.csv", row.names = FALSE)
+
 ```
 
 ### GDO merge
 ```{r}
-GDO_TC_siggene <- read.delim("output/DEG_lists/Gill/GDO_TC_siggene.csv", sep = " ", header = TRUE)
-GDO_LC_siggene <- read.delim("output/DEG_lists/Gill/GDO_LC_siggene_apeglm.csv", sep = " ", header = TRUE)
+GDO_LC_siggene <- read.delim("output/DEG_lists/Gill/GDO_LC_siggene.csv", sep = " ", header = TRUE)
+GDO_TC_siggene <- read.delim("output/DEG_lists/Gill/GDO_TC_siggene_apeglm.csv", sep = " ", header = TRUE)
 
 GDO_sigs <- inner_join(GDO_TC_siggene, GDO_LC_siggene, by = 'gene')
 #basemean x is TC, basemean y is LC
@@ -65,5 +68,110 @@ GDO_sigs_merged$log2FoldChange.x <- ifelse(!is.na(GDO_sigs_merged$log2FoldChange
 # Drop the extra column "Value_x" if needed
 GDO_sigs_merged <- GDO_sigs_merged[, !(names(GDO_sigs_merged) %in% c("log2FoldChange.y"))]
 
+#Write file of merged files
+write.table(GDO_sigs_merged, file = "output/DEG_lists/Gill/GDO_sigs_merged.csv", row.names = FALSE)
+
+
 ```
 
+### FOA merge
+```{r}
+FOA_LC_siggene <- read.delim("output/DEG_lists/Foot/FOA_LC_siggene.csv", sep = " ", header = TRUE)
+FOA_TC_siggene <- read.delim("output/DEG_lists/Foot/FOA_TC_siggene.csv", sep = " ", header = TRUE)
+
+FOA_sigs <- inner_join(FOA_TC_siggene, FOA_LC_siggene, by = 'gene')
+#basemean x is TC, basemean y is LC
+
+FOA_sigs$log2FoldChange <- FOA_sigs$log2FoldChange.x-FOA_sigs$log2FoldChange.y
+FOA_sigs_inter <- FOA_sigs[,c(1,12)]
+
+# Merge dataframes based on the shared column 'ID' and replace values from df2 into df1
+FOA_sigs_merged <- merge(FOA_TC_siggene, FOA_sigs_inter, by = "gene", all.x = TRUE)
+
+# Replace values in df_y with values from df_x based on a condition
+FOA_sigs_merged$log2FoldChange.x <- ifelse(!is.na(FOA_sigs_merged$log2FoldChange.y) , FOA_sigs_merged$log2FoldChange.y, FOA_sigs_merged$log2FoldChange.x)
+
+# Drop the extra column "Value_y" if needed
+FOA_sigs_merged <- FOA_sigs_merged[, !(names(FOA_sigs_merged) %in% c("log2FoldChange.y"))]
+
+#Write file of merged files
+write.table(FOA_sigs_merged, file = "output/DEG_lists/Foot/FOA_sigs_merged.csv", row.names = FALSE)
+
+```
+
+### GOA merge
+
+```{r}
+GOA_LC_siggene <- read.delim("output/DEG_lists/Gill/GOA_LC_siggene.csv", sep = " ", header = TRUE)
+GOA_TC_siggene <- read.delim("output/DEG_lists/Gill/GOA_TC_siggene.csv", sep = " ", header = TRUE)
+
+GOA_sigs <- inner_join(GOA_TC_siggene, GOA_LC_siggene, by = 'gene')
+#basemean x is TC, basemean y is LC
+
+GOA_sigs$log2FoldChange <- GOA_sigs$log2FoldChange.x-GOA_sigs$log2FoldChange.y
+GOA_sigs_inter <- GOA_sigs[,c(1,12)]
+
+# Merge dataframes based on the shared column 'ID' and replace values from df2 into df1
+GOA_sigs_merged <- merge(GOA_TC_siggene, GOA_sigs_inter, by = "gene", all.x = TRUE)
+
+# Replace values in df_y with values from df_x based on a condition
+GOA_sigs_merged$log2FoldChange.x <- ifelse(!is.na(GOA_sigs_merged$log2FoldChange.y) , GOA_sigs_merged$log2FoldChange.y, GOA_sigs_merged$log2FoldChange.x)
+
+# Drop the extra column "Value_y" if needed
+GOA_sigs_merged <- GOA_sigs_merged[, !(names(GOA_sigs_merged) %in% c("log2FoldChange.y"))]
+
+#Write file of merged files
+write.table(GOA_sigs_merged, file = "output/DEG_lists/Gill/GOA_sigs_merged.csv", row.names = FALSE)
+
+```
+
+### FOW merge
+```{r}
+FOW_LC_siggene <- read.delim("output/DEG_lists/Foot/FOW_LC_siggene.csv", sep = " ", header = TRUE)
+FOW_TC_siggene <- read.delim("output/DEG_lists/Foot/FOW_TC_siggene.csv", sep = " ", header = TRUE)
+
+FOW_sigs <- inner_join(FOW_TC_siggene, FOW_LC_siggene, by = 'gene')
+#basemean x is TC, basemean y is LC
+
+FOW_sigs$log2FoldChange <- FOW_sigs$log2FoldChange.x-FOW_sigs$log2FoldChange.y
+FOW_sigs_inter <- FOW_sigs[,c(1,12)]
+
+# Merge dataframes based on the shared column 'ID' and replace values from df2 into df1
+FOW_sigs_merged <- merge(FOW_TC_siggene, FOW_sigs_inter, by = "gene", all.x = TRUE)
+
+# Replace values in df_y with values from df_x based on a condition
+FOW_sigs_merged$log2FoldChange.x <- ifelse(!is.na(FOW_sigs_merged$log2FoldChange.y) , FOW_sigs_merged$log2FoldChange.y, FOW_sigs_merged$log2FoldChange.x)
+
+# Drop the extra column "Value_y" if needed
+FOW_sigs_merged <- FOW_sigs_merged[, !(names(FOW_sigs_merged) %in% c("log2FoldChange.y"))]
+
+#Write file of merged files
+write.table(FOW_sigs_merged, file = "output/DEG_lists/Foot/FOW_sigs_merged.csv", row.names = FALSE)
+
+```
+
+### GOW merge
+
+```{r}
+GOW_LC_siggene <- read.delim("output/DEG_lists/Gill/GOW_LC_siggene.csv", sep = " ", header = TRUE)
+GOW_TC_siggene <- read.delim("output/DEG_lists/Gill/GOW_TC_siggene_apeglm.csv", sep = " ", header = TRUE)
+
+GOW_sigs <- inner_join(GOW_TC_siggene, GOW_LC_siggene, by = 'gene')
+#basemean x is TC, basemean y is LC
+
+GOW_sigs$log2FoldChange <- GOW_sigs$log2FoldChange.x-GOW_sigs$log2FoldChange.y
+GOW_sigs_inter <- GOW_sigs[,c(1,12)]
+
+# Merge dataframes based on the shared column 'ID' and replace values from df2 into df1
+GOW_sigs_merged <- merge(GOW_TC_siggene, GOW_sigs_inter, by = "gene", all.x = TRUE)
+
+# Replace values in df_y with values from df_x based on a condition
+GOW_sigs_merged$log2FoldChange.x <- ifelse(!is.na(GOW_sigs_merged$log2FoldChange.y) , GOW_sigs_merged$log2FoldChange.y, GOW_sigs_merged$log2FoldChange.x)
+
+# Drop the extra column "Value_y" if needed
+GOW_sigs_merged <- GOW_sigs_merged[, !(names(GOW_sigs_merged) %in% c("log2FoldChange.y"))]
+
+#Write file of merged files
+write.table(GOW_sigs_merged, file = "output/DEG_lists/Gill/GOW_sigs_merged.csv", row.names = FALSE)
+
+```

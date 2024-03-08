@@ -118,7 +118,7 @@ GOA_LC_sig_genes_ashr<- GOA_LC_ashr_df %>%
   filter(padj < padj.cutoff)
 GOA_LC_sig_genes_normal<- GOA_LC_normal_df %>%
   filter(padj < padj.cutoff)
-write.table(GOA_LC_sig_genes, file = "output/DEG_lists/Gill/siggene_OA_G.csv", row.names = FALSE)
+write.table(GOA_LC_sig_genes, file = "output/DEG_lists/Gill/GOA_LC_siggene.csv", row.names = FALSE)
 
 #saving gene counts as a result of each filtration step
 gene_counts_GOA_LC <- as.data.frame(c(nrow(GOA_LC_countmatrix),nrow(dds8_filt),(nrow(GOA_LC_countmatrix)-nrow(dds8_filt)),nrow(GOA_LC_normal_res_table),nrow(GOA_LC_apeglm_res_table),nrow(GOA_LC_ashr_res_table),nrow(GOA_LC_sig_genes),nrow(GOA_LC_sig_genes_ashr),nrow(GOA_LC_sig_genes_normal)))

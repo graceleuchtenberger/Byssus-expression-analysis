@@ -159,7 +159,7 @@ perl /home/shared/trinityrnaseq-v2.12.0/util/abundance_estimates_to_matrix.pl \
 ```
 ## View abundance matrix
 ```{bash}
-head ../output/kallisto-quant/abundance-matrices.isoform.counts.matrix
+head output/kallisto-quant/abundance-matrices.isoform.counts.matrix
 ```
 ## Make counts matrix
 ```{r, eval = TRUE}
@@ -206,14 +206,6 @@ treatmentinfo$treatment <- middle_parts
 #Make subset of sample ID, treatment, tissue harvested, day
 treatmentinfo.2 <- treatmentinfo[, c("sample.1","tissue", "treatment", "day")]
 
-#Specify FX samples for removal later
-FXsamples <- treatmentinfo.2 %>% 
-  filter(treatmentinfo.2$tissue == "X") %>% 
-  select(sample.1)
-
-#Convert sample ID to character vector
-fX_ids <- as.vector(as.character(FXsamples$sample.1))
-
 #Change column names in count matrix to adjust to sample name in treatment info
 countmatrix_2 <- countmatrix
 new_column_names <- substr(names(countmatrix_2), 4, nchar(names(countmatrix_2)) - 5)
@@ -240,164 +232,14 @@ names(countmatrix_2) <- new_column_names
 countmatrix_2 <- countmatrix_2[ , order(names(countmatrix_2))]
 treatmentinfo.2 <- treatmentinfo.2[order(treatmentinfo.2),]
 treatmentinfo.2 <- treatmentinfo.2[complete.cases(treatmentinfo.2), ]
-
-# Remove sample IDs that matched the FX samples
-countmatrix_2 <- countmatrix_2 %>% 
-  select(-all_of(fX_ids))
-treatmentinfo.2 <- treatmentinfo.2 %>% 
-  filter(!sample.1 %in% fX_ids)
-
 rownames(treatmentinfo.2) <- treatmentinfo.2$sample.1
 
-#Removing T047 from the treatment info because there isn't data for that, weirdly enough
-removal <- which(rownames(treatmentinfo.2) %in% "T047F")
-treatmentinfo.2 <- treatmentinfo.2[-removal,]
+treatmentinfo.2 <- subset(treatmentinfo.2, select = -sample.1)
 
 #Check that columns and row names match
 all(rownames(treatmentinfo.2) == colnames(countmatrix_2))
+
+write.table(countmatrix_2, file = "output/kallisto-quant/cleanedup_countmatrix", row.names = FALSE)
 ```
 
-## DEG in the foot after exposure to ocean acidification
-```{r}
-# Filter data
-footOA <- treatmentinfo.2 %>%
-  filter(tissue == "F" | treatment == "control" | treatment == "OA" | day == "3") %>%
-  filter(!(treatment=="OW"| treatment=="DO" | day == "0" | tissue == "G"))
-countmatrix_FOA <- subset(countmatrix_2, select=row.names(footOA))
-
-# Calculate DESeq object
-dds <- DESeqDataSetFromMatrix(countData = countmatrix_FOA,
-                              colData = footOA,
-                              design = ~ treatment)
-
-dds <- DESeq(dds)
-resultsNames(dds) # lists the coefficients
-
-# Filtering: keep genes that have at least 10 counts across 1/3 of the samples - https://support.bioconductor.org/p/110307/
-keep <- rowSums(DESeq2::counts(dds) >= 10) >= ncol(countmatrix_FOA)/3
-dds <- dds[keep,]
-
-# Generate Contrasts
-contrast_list    <- c("treatment", "OA", "control") # order is important: factor, treatment group, control
-res_table        <- results(dds, contrast=contrast_list, alpha = 0.05)
-res_table_normal <- lfcShrink(dds,
-                              coef=2, 
-                              type="normal") # lfcThreshold = 0.585)  # a lfc threshold of 1 = 2-fold change, 0.585 = 1.5-fold change
-res_table_apeglm <- lfcShrink(dds,
-                              coef=2, 
-                              type="apeglm") # lfcThreshold = 0.585)  # a lfc threshold of 1 = 2-fold change, 0.585 = 1.5-fold change
-res_table_ashr   <- lfcShrink(dds,
-                              coef=2, 
-                              type="ashr")
-
-```
-
-## Visualize differences between treatment groups
-```{r}
-# Filter data
-treatmentinfo.F <- treatmentinfo.2 %>% filter(tissue == "F" | day == "3") %>%
-  filter(!(day == "0" | tissue == "G"))
-treatmentinfo.F$sample.1 <- factor(treatmentinfo.F$sample.1)
-treatmentinfo.F$tissue <- factor(treatmentinfo.F$tissue)
-treatmentinfo.F$treatment <- factor(treatmentinfo.F$treatment)
-treatmentinfo.F$day <- factor(treatmentinfo.F$day)
-countmatrix_F <- subset(countmatrix_2, select=row.names(treatmentinfo.F))
-
-# Calculate DESeq object
-dds2 <- DESeqDataSetFromMatrix(countData = countmatrix_F,
-                              colData = treatmentinfo.F,
-                              design = ~ treatment)
-
-dds2 <- DESeq(dds2)
-resultsNames(dds2) # lists the coefficients
-summary(dds2)
-
-# Plot PCA
-
-PCAdata <- plotPCA(vst(dds2), intgroup = c("treatment"), returnData=TRUE)
-percentVar <- round(100*attr(PCAdata, "percentVar")) #plot PCA of samples with all data
-ggplot(PCAdata, aes(PC1, PC2, color=treatment)) + 
-  geom_point(size=4, alpha = 5/10) +
-  xlab(paste0("PC1: ",percentVar[1],"% variance")) +
-  ylab(paste0("PC2: ",percentVar[2],"% variance")) + 
-  coord_fixed()+
-  stat_ellipse()+
-  stat_ellipse(level=0.8)
-
-```
-
-
-# CODE THAT I USED FOR TISSUE TO TISSUE COMPARISON
-# Construct DESeq2 dataset
-
-Create a DESeqDataSet design from gene count matrix and labels. Here we set the design to look at the difference in expression between foot and gill tissue
-
-```{r}
-#Set DESeq2 design
-library(DESeq2)
-gdds <- DESeqDataSetFromMatrix(countData = countmatrix_2,
-                              colData = tissuesub,
-                              design = ~tissue)
-```
-
-## Visualize gene count data
-
-We’re looking to see if the samples of the same infection status and temperature treatment cluster.
-
-## Log-transform the count data
-First we are going to log-transform the data using a variance stabilizing transforamtion (vst). This is only for visualization purposes. Essentially, this is roughly similar to putting the data on the log2 scale. It will deal with the sampling variability of low counts by calculating within-group variability (if blind=FALSE).
-
-```{r}
-gvst <- vst(gdds, blind = FALSE)
-
-head (assay(gvst), 3)
-#-- note: fitType='parametric', but the dispersion trend was not well captured by the
-  # function: y = a/x + b, and a local regression fit was automatically substituted.
-  # specify fitType='local' or 'mean' to avoid this message next time.
-```
-
-## Create a heat map
-```{r}
-gsampleDists <- dist(t(assay(gvst))) #calculate distance matix
-gsampleDistMatrix <- as.matrix(gsampleDists) #distance matrix
-rownames(gsampleDistMatrix) <- colnames(gvst) #assign row names
-colnames(gsampleDistMatrix) <- NULL #assign col names
-colors <- colorRampPalette( rev(brewer.pal(9, "Blues")) )(255) #assign colors
-pheatmap(gsampleDistMatrix, #plot matrix
-         clustering_distance_rows=gsampleDists, #cluster rows
-         clustering_distance_cols=gsampleDists, #cluster columns
-         col=colors) #set colors
-```
-
-
-## Principal component plot of samples
-
-```{r}
-gPCAdata <- plotPCA(gvst, intgroup = c("tissue"), returnData=TRUE)
-percentVar <- round(100*attr(gPCAdata, "percentVar")) #plot PCA of samples with all data
-ggplot(gPCAdata, aes(PC1, PC2, color=tissue)) + 
-  geom_point(size=4, alpha = 5/10) +
-  xlab(paste0("PC1: ",percentVar[1],"% variance")) +
-  ylab(paste0("PC2: ",percentVar[2],"% variance")) + 
-  coord_fixed()
-```
-
-## Differential Gene Expression Analysis
-
-NOTE: This will take a few minutes to run.
-```{r}
-DEG.group <- DESeq(gdds, test = "Wald") #run differential expression test by group using Wald (default)
-DEG.group.results <- results(DEG.group) #save DE results
-resultsNames(DEG.group) #view DE results
-```
-
-```{r}
-group.results.ordered <- order(DEG.group.results$pvalue) #Order p-values by smallest value first
-summary(DEG.group.results) #view results summary
-```
-
-```{r}
-sig.num <- sum(DEG.group.results$padj < 0.05, na.rm=TRUE) #How many adjusted p-values were less than 0.05?
-sig.num
-```
 

@@ -22,6 +22,21 @@ sapply(load.lib,require,character=TRUE)
 library(tidyverse)
 library(dplyr)
 ```
+```{r}
+library(tidyr)
+# Load output of blastx, uniprot, and GO into a single masterID table
+masterID <- read.delim("data/Mtros_GO.txt", sep= " ", header = TRUE)
+# Remove the "V11" column, not sure what it is
+masterID <- masterID[, -which(names(masterID) == "V11")]
+# Rename remaining columns
+colnames(masterID)  <- c("transcript", "V2", "protein.names","GOterm.BP","GO.IDs")
+# Seperate the V2 into its constitutant parts: sp, the uniprot #, geneID, and species
+masterID <- separate(masterID, V2, into = c("sp", "uniprot_accession", "geneID", "species"), sep = "[\\|_]")
+# remove columns we don't need (V2), reorder the columns to look pretty
+masterID <- masterID[, c("transcript", "species", "geneID","uniprot_accession","protein.names","GO.IDs","GOterm.BP")]
+```
+
+
 
 ### FDO merge 
 ```{r}
@@ -42,9 +57,20 @@ FDO_sigs_merged$log2FoldChange.x <- ifelse(!is.na(FDO_sigs_merged$log2FoldChange
 
 # Drop the extra column "Value_x" if needed
 FDO_sigs_merged <- FDO_sigs_merged[, !(names(FDO_sigs_merged) %in% c("log2FoldChange.y"))]
+# change gene column to be called transcript
+colnames(FDO_sigs_merged)  <- c("transcript", "baseMean", "log2FoldChange","lfcSE","pvalue", "padj")
+
+FDO_sigs_merged <- left_join(FDO_sigs_merged, masterID, by = "transcript")
+#record transcripts lost in this step
+
+FDO_sigs_unID <- FDO_sigs_merged[is.na(FDO_sigs_merged$geneID), ]
+FDO_sigs_ID <- FDO_sigs_merged[!is.na(FDO_sigs_merged$geneID), ]
 
 #Write file of merged files
 write.table(FDO_sigs_merged, file = "output/DEG_lists/Foot/FDO_sigs_merged.csv", row.names = FALSE)
+# save files for unidentified and identified
+#record nrow for each ID and unID, put in notebook post
+#save count matrices for dds's as files
 
 ```
 

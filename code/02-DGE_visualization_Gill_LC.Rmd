@@ -6,13 +6,16 @@ date: "2024-02-06"
 
 ## Overall comparison with lab control
 ```{r}
-treatmentinfo.controlG  <- treatmentinfo.2 %>% filter(tissue == "G") %>%
+G_treatmentinfo  <- treatmentinfo.2 %>% filter(tissue == "G") %>%
   filter(!( tissue == "F"))
 
-treatmentinfo.controlG <- treatmentinfo.controlG %>%
+G_treatmentinfo <- G_treatmentinfo %>%
   mutate(treatment = ifelse(day == "3" & treatment == "control", paste0(treatment, "_3"), treatment))
+write.table(G_treatmentinfo, file = "output/DEG_lists/Gill/G_treatmentinfo.csv", row.names = FALSE)
 
-countmatrix_G <- subset(countmatrix_2, select=row.names(treatmentinfo.controlG))
+
+G_countmatrix <- subset(countmatrix_2, select=row.names(G_treatmentinfo))
+write.table(G_countmatrix, file = "output/DEG_lists/Gill/G_countmatrix.csv", row.names = FALSE)
 
 ddsG <- DESeqDataSetFromMatrix(countData = countmatrix_G,
                               colData = treatmentinfo.controlG,
@@ -42,8 +45,9 @@ ggplot(PCAdata, aes(PC1, PC2, color=treatment)) +
 GOA_LC_treatmentinfo <- treatmentinfo.2 %>% filter(tissue == "G" | treatment == "control" | treatment == "OA") %>% filter(!(tissue == "F" | treatment == "OW" | treatment == "DO"))
                                                                                      GOA_LC_treatmentinfo <- GOA_LC_treatmentinfo %>%
   filter(!(treatment == "control" & day == "3")) 
-                                                                                                      
+write.table(GOA_LC_treatmentinfo, file = "output/DEG_lists/Gill/GOA_LC_treatmentinfo.csv", row.names = FALSE)                                                                                                      
 GOA_LC_countmatrix <- subset(countmatrix_2, select=row.names(GOA_LC_treatmentinfo))
+write.table(GOA_LC_countmatrix, file = "output/DEG_lists/Gill/GOA_LC_countmatrix.csv", row.names = FALSE)         
 
 # Calculate DESeq object
 dds8 <- DESeqDataSetFromMatrix(countData = GOA_LC_countmatrix,
@@ -81,8 +85,9 @@ res_tableGOA
 GOW_LC_treatmentinfo <- treatmentinfo.2 %>% filter(tissue == "G" | treatment == "control" | treatment == "OW") %>% filter(!(tissue == "F" | treatment == "OA" | treatment == "DO"))
                                                                                                     GOW_LC_treatmentinfo <- GOW_LC_treatmentinfo %>%
   filter(!(treatment == "control" & day == "3")) 
-                                                                                                      
+write.table(GOW_LC_treatmentinfo, file = "output/DEG_lists/Gill/GOW_LC_treatmentinfo.csv", row.names = FALSE)                                                                                                              
 GOW_LC_countmatrix <- subset(countmatrix_2, select=row.names(GOW_LC_treatmentinfo))
+write.table(GOW_LC_countmatrix, file = "output/DEG_lists/Gill/GOW_LC_countmatrix.csv", row.names = FALSE)           
 
 # Calculate DESeq object
 dds9 <- DESeqDataSetFromMatrix(countData = GOW_LC_countmatrix,
@@ -113,8 +118,9 @@ dds9_filt <- dds9[keep,]
 GDO_LC_treatmentinfo <- treatmentinfo.2 %>% filter(tissue == "G" | treatment == "control" | treatment == "DO") %>% filter(!(tissue == "F" | treatment == "OA" | treatment == "OW"))
                                                                                                     GDO_LC_treatmentinfo <- GDO_LC_treatmentinfo %>%
   filter(!(treatment == "control" & day == "3")) 
-                                                                                                      
+write.table(GDO_LC_treatmentinfo, file = "output/DEG_lists/Gill/GDO_LC_treatmentinfo.csv", row.names = FALSE)                                                                                                         
 GDO_LC_countmatrix <- subset(countmatrix_2, select=row.names(GDO_LC_treatmentinfo))
+write.table(GDO_LC_countmatrix, file = "output/DEG_lists/Gill/GDO_LC_countmatrix.csv", row.names = FALSE)         
 
 # Calculate DESeq object
 dds10 <- DESeqDataSetFromMatrix(countData = GDO_LC_countmatrix,
@@ -144,8 +150,9 @@ dds10_filt <- dds10[keep,]
 
 # Filter data
 GTC_LC_treatmentinfo <- treatmentinfo.2 %>% filter(tissue == "G" | treatment == "control") %>% filter(!(tissue == "F" | treatment == "OA" | treatment == "OW" | treatment == "DO"))
-                                                                                                  
+write.table(GTC_LC_treatmentinfo, file = "output/DEG_lists/Gill/GTC_LC_treatmentinfo.csv", row.names = FALSE)                                                                                                    
 GTC_LC_countmatrix <- subset(countmatrix_2, select=row.names(GTC_LC_treatmentinfo))
+write.table(GTC_LC_countmatrix, file = "output/DEG_lists/Gill/GTC_LC_countmatrix.csv", row.names = FALSE)   
 
 # Calculate DESeq object
 dds11 <- DESeqDataSetFromMatrix(countData = GTC_LC_countmatrix,

@@ -11,8 +11,9 @@ date: "2024-02-14"
 GOA_TC_treatmentinfo <- treatmentinfo.2 %>% filter(tissue == "G" | treatment == "control" | treatment == "OA") %>% filter(!(tissue == "F" | treatment == "OW" | treatment == "DO"))
                                                                                                      GOA_TC_treatmentinfo <- GOA_TC_treatmentinfo %>%
   filter(!(treatment == "control" & day == "0")) 
-                                                                                                      
+write.table(GOA_TC_treatmentinfo, file = "output/DEG_lists/Gill/GOA_TC_treatmentinfo.csv", row.names = FALSE)                                                                                                      
 GOA_TC_countmatrix <- subset(countmatrix_2, select=row.names(GOA_TC_treatmentinfo))
+write.table(GOA_TC_countmatrix, file = "output/DEG_lists/Gill/GOA_TC_countmatrix.csv", row.names = FALSE)
 
 # CaTCulate DESeq object
 dds15 <- DESeqDataSetFromMatrix(countData = GOA_TC_countmatrix,
@@ -44,8 +45,9 @@ dds15_filt <- dds15[keep,]
 GOW_TC_treatmentinfo <- treatmentinfo.2 %>% filter(tissue == "G" | treatment == "control" | treatment == "OW") %>% filter(!(tissue == "F" | treatment == "OA" | treatment == "DO"))
                                                                                                     GOW_TC_treatmentinfo <- GOW_TC_treatmentinfo %>%
   filter(!(treatment == "control" & day == "0")) 
-                                                                                                  
+write.table(GOW_TC_treatmentinfo, file = "output/DEG_lists/Gill/GOW_TC_treatmentinfo.csv", row.names = FALSE)                                                                                                  
 GOW_TC_countmatrix <- subset(countmatrix_2, select=row.names(GOW_TC_treatmentinfo))
+write.table(GOW_TC_countmatrix, file = "output/DEG_lists/Gill/GOW_TC_countmatrix.csv", row.names = FALSE)
 
 # CaTCulate DESeq object
 dds16 <- DESeqDataSetFromMatrix(countData = GOW_TC_countmatrix,
@@ -77,9 +79,9 @@ dds16_filt <- dds16[keep,]
 GDO_TC_treatmentinfo <- treatmentinfo.2 %>% filter(tissue == "G" | treatment == "control" | treatment == "DO") %>% filter(!(tissue == "F" | treatment == "OA" | treatment == "OW"))
                                                                                       GDO_TC_treatmentinfo <- GDO_TC_treatmentinfo %>%
   filter(!(treatment == "control" & day == "0")) 
-                                                                                                      
+write.table(GDO_TC_treatmentinfo, file = "output/DEG_lists/Gill/GDO_TC_treatmentinfo.csv", row.names = FALSE)                                                                                                      
 GDO_TC_countmatrix <- subset(countmatrix_2, select=row.names(GDO_TC_treatmentinfo))
-
+write.table(GDO_TC_countmatrix, file = "output/DEG_lists/Gill/GDO_TC_countmatrix.csv", row.names = FALSE)  
 # CaTCulate DESeq object
 dds17 <- DESeqDataSetFromMatrix(countData = GDO_TC_countmatrix,
                               colData = GDO_TC_treatmentinfo,

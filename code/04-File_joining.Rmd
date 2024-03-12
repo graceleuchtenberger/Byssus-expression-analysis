@@ -61,16 +61,18 @@ FDO_sigs_merged <- FDO_sigs_merged[, !(names(FDO_sigs_merged) %in% c("log2FoldCh
 colnames(FDO_sigs_merged)  <- c("transcript", "baseMean", "log2FoldChange","lfcSE","pvalue", "padj")
 
 FDO_sigs_merged <- left_join(FDO_sigs_merged, masterID, by = "transcript")
-#record transcripts lost in this step
 
 FDO_sigs_unID <- FDO_sigs_merged[is.na(FDO_sigs_merged$geneID), ]
 FDO_sigs_ID <- FDO_sigs_merged[!is.na(FDO_sigs_merged$geneID), ]
+nrow(FDO_sigs_ID) # 7 id'ed genes
+nrow(FDO_sigs_unID) # 8 unID'd genes
+# 15 genes total diff expressed between FDO and FTC
 
 #Write file of merged files
 write.table(FDO_sigs_merged, file = "output/DEG_lists/Foot/FDO_sigs_merged.csv", row.names = FALSE)
-# save files for unidentified and identified
-#record nrow for each ID and unID, put in notebook post
-#save count matrices for dds's as files
+write.table(FDO_sigs_unID, file = "output/DEG_lists/Foot/FDO_sigs_unID.csv", row.names = FALSE)
+write.table(FDO_sigs_ID, file = "output/DEG_lists/Foot/FDO_sigs_ID.csv", row.names = FALSE)
+
 
 ```
 
@@ -94,9 +96,21 @@ GDO_sigs_merged$log2FoldChange.x <- ifelse(!is.na(GDO_sigs_merged$log2FoldChange
 # Drop the extra column "Value_x" if needed
 GDO_sigs_merged <- GDO_sigs_merged[, !(names(GDO_sigs_merged) %in% c("log2FoldChange.y"))]
 
+# change gene column to be called transcript
+colnames(GDO_sigs_merged)  <- c("transcript", "baseMean", "log2FoldChange","lfcSE","pvalue", "padj")
+
+GDO_sigs_merged <- left_join(GDO_sigs_merged, masterID, by = "transcript")
+
+GDO_sigs_unID <- GDO_sigs_merged[is.na(GDO_sigs_merged$geneID), ]
+GDO_sigs_ID <- GDO_sigs_merged[!is.na(GDO_sigs_merged$geneID), ]
+nrow(GDO_sigs_ID) # 7 id'ed genes
+nrow(GDO_sigs_unID) # 43 unID'd genes
+# 50 genes total diff expressed between GDO and GTC
+
 #Write file of merged files
 write.table(GDO_sigs_merged, file = "output/DEG_lists/Gill/GDO_sigs_merged.csv", row.names = FALSE)
-
+write.table(GDO_sigs_unID, file = "output/DEG_lists/Gill/GDO_sigs_unID.csv", row.names = FALSE)
+write.table(GDO_sigs_ID, file = "output/DEG_lists/Gill/GDO_sigs_ID.csv", row.names = FALSE)
 
 ```
 
@@ -120,8 +134,22 @@ FOA_sigs_merged$log2FoldChange.x <- ifelse(!is.na(FOA_sigs_merged$log2FoldChange
 # Drop the extra column "Value_y" if needed
 FOA_sigs_merged <- FOA_sigs_merged[, !(names(FOA_sigs_merged) %in% c("log2FoldChange.y"))]
 
+# change gene column to be called transcript
+colnames(FOA_sigs_merged)  <- c("transcript", "baseMean", "log2FoldChange","lfcSE","pvalue", "padj")
+
+FOA_sigs_merged <- left_join(FOA_sigs_merged, masterID, by = "transcript")
+
+FOA_sigs_unID <- FOA_sigs_merged[is.na(FOA_sigs_merged$geneID), ]
+FOA_sigs_ID <- FOA_sigs_merged[!is.na(FOA_sigs_merged$geneID), ]
+nrow(FOA_sigs_ID) # 3 id'ed genes
+nrow(FOA_sigs_unID) # 11 unID'd genes
+# 14 genes total diff expressed between FOA and FTC
+
 #Write file of merged files
 write.table(FOA_sigs_merged, file = "output/DEG_lists/Foot/FOA_sigs_merged.csv", row.names = FALSE)
+write.table(FOA_sigs_unID, file = "output/DEG_lists/Foot/FOA_sigs_unID.csv", row.names = FALSE)
+write.table(FOA_sigs_ID, file = "output/DEG_lists/Foot/FOA_sigs_ID.csv", row.names = FALSE)
+
 
 ```
 
@@ -146,8 +174,21 @@ GOA_sigs_merged$log2FoldChange.x <- ifelse(!is.na(GOA_sigs_merged$log2FoldChange
 # Drop the extra column "Value_y" if needed
 GOA_sigs_merged <- GOA_sigs_merged[, !(names(GOA_sigs_merged) %in% c("log2FoldChange.y"))]
 
+# change gene column to be called transcript
+colnames(GOA_sigs_merged)  <- c("transcript", "baseMean", "log2FoldChange","lfcSE","pvalue", "padj")
+
+GOA_sigs_merged <- left_join(GOA_sigs_merged, masterID, by = "transcript")
+
+GOA_sigs_unID <- GOA_sigs_merged[is.na(GOA_sigs_merged$geneID), ]
+GOA_sigs_ID <- GOA_sigs_merged[!is.na(GOA_sigs_merged$geneID), ]
+nrow(GOA_sigs_ID) # 23 id'ed genes
+nrow(GOA_sigs_unID) # 76 unID'd genes
+# 99 genes total diff expressed between GOA and GTC
+
 #Write file of merged files
 write.table(GOA_sigs_merged, file = "output/DEG_lists/Gill/GOA_sigs_merged.csv", row.names = FALSE)
+write.table(GOA_sigs_unID, file = "output/DEG_lists/Gill/GOA_sigs_unID.csv", row.names = FALSE)
+write.table(GOA_sigs_ID, file = "output/DEG_lists/Gill/GOA_sigs_ID.csv", row.names = FALSE)
 
 ```
 
@@ -171,8 +212,21 @@ FOW_sigs_merged$log2FoldChange.x <- ifelse(!is.na(FOW_sigs_merged$log2FoldChange
 # Drop the extra column "Value_y" if needed
 FOW_sigs_merged <- FOW_sigs_merged[, !(names(FOW_sigs_merged) %in% c("log2FoldChange.y"))]
 
+# change gene column to be called transcript
+colnames(FOW_sigs_merged)  <- c("transcript", "baseMean", "log2FoldChange","lfcSE","pvalue", "padj")
+
+FOW_sigs_merged <- left_join(FOW_sigs_merged, masterID, by = "transcript")
+
+FOW_sigs_unID <- FOW_sigs_merged[is.na(FOW_sigs_merged$geneID), ]
+FOW_sigs_ID <- FOW_sigs_merged[!is.na(FOW_sigs_merged$geneID), ]
+nrow(FOW_sigs_ID) # 9 id'ed genes
+nrow(FOW_sigs_unID) # 23 unID'd genes
+# 32 genes total diff expressed between FOW and FTC
+
 #Write file of merged files
 write.table(FOW_sigs_merged, file = "output/DEG_lists/Foot/FOW_sigs_merged.csv", row.names = FALSE)
+write.table(FOW_sigs_unID, file = "output/DEG_lists/Foot/FOW_sigs_unID.csv", row.names = FALSE)
+write.table(FOW_sigs_ID, file = "output/DEG_lists/Foot/FOW_sigs_ID.csv", row.names = FALSE)
 
 ```
 
@@ -197,7 +251,20 @@ GOW_sigs_merged$log2FoldChange.x <- ifelse(!is.na(GOW_sigs_merged$log2FoldChange
 # Drop the extra column "Value_y" if needed
 GOW_sigs_merged <- GOW_sigs_merged[, !(names(GOW_sigs_merged) %in% c("log2FoldChange.y"))]
 
+# change gene column to be called transcript
+colnames(GOW_sigs_merged)  <- c("transcript", "baseMean", "log2FoldChange","lfcSE","pvalue", "padj")
+
+GOW_sigs_merged <- left_join(GOW_sigs_merged, masterID, by = "transcript")
+
+GOW_sigs_unID <- GOW_sigs_merged[is.na(GOW_sigs_merged$geneID), ]
+GOW_sigs_ID <- GOW_sigs_merged[!is.na(GOW_sigs_merged$geneID), ]
+nrow(GOW_sigs_ID) # 7 id'ed genes
+nrow(GOW_sigs_unID) # 18 unID'd genes
+# 25 genes total diff expressed between GOW and GTC
+
 #Write file of merged files
 write.table(GOW_sigs_merged, file = "output/DEG_lists/Gill/GOW_sigs_merged.csv", row.names = FALSE)
+write.table(GOW_sigs_unID, file = "output/DEG_lists/Gill/GOW_sigs_unID.csv", row.names = FALSE)
+write.table(GOW_sigs_ID, file = "output/DEG_lists/Gill/GOW_sigs_ID.csv", row.names = FALSE)
 
 ```

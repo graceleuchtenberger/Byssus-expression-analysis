@@ -17,8 +17,8 @@ write.table(G_treatmentinfo, file = "output/DEG_lists/Gill/G_treatmentinfo.csv",
 G_countmatrix <- subset(countmatrix_2, select=row.names(G_treatmentinfo))
 write.table(G_countmatrix, file = "output/DEG_lists/Gill/G_countmatrix.csv", row.names = FALSE)
 
-ddsG <- DESeqDataSetFromMatrix(countData = countmatrix_G,
-                              colData = treatmentinfo.controlG,
+ddsG <- DESeqDataSetFromMatrix(countData = G_countmatrix,
+                              colData = G_treatmentinfo,
                               design = ~ treatment)
 
 ddsG <- DESeq(ddsG)
@@ -32,10 +32,10 @@ ggplot(PCAdata, aes(PC1, PC2, color=treatment)) +
   xlab(paste0("PC1: ",percentVar[1],"% variance")) +
   ylab(paste0("PC2: ",percentVar[2],"% variance")) + 
   coord_fixed()+
-  stat_ellipse()+
+  stat_ellipse(level=0.95)+
   theme_classic()+
+  labs(color='Treatment')+ 
   scale_color_manual(labels = c("Treatment Control", "Laboratory Control", "Hypoxia", "Ocean Acidification", "Ocean Warming"), values = c("blue", "lightblue", "purple","green", "red"))
-
 ```
 
 ### OA vs lab control

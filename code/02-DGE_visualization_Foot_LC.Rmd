@@ -37,7 +37,7 @@ library(PCAtools)
 
 ## Overall comparison with day zero control
 ```{r}
-treatmentinfo.control2  <- treatmentinfo.2 %>% filter(tissue == "F") %>%
+F_treatmentinfo  <- treatmentinfo.2 %>% filter(tissue == "F") %>%
   filter(!( tissue == "G"))
 
 F_treatmentinfo <- treatmentinfo.control2 %>%
@@ -47,8 +47,8 @@ write.table(F_treatmentinfo, file = "output/DEG_lists/Foot/F_treatmentinfo.csv",
 F_countmatrix <- subset(countmatrix_2, select=row.names(treatmentinfo.control2))
 write.table(F_countmatrix, file = "output/DEG_lists/Foot/F_countmatrix.csv", row.names = FALSE)
 
-dds3 <- DESeqDataSetFromMatrix(countData = countmatrix_truecon,
-                              colData = treatmentinfo.control2,
+dds3 <- DESeqDataSetFromMatrix(countData = F_countmatrix,
+                              colData = F_treatmentinfo,
                               design = ~ treatment)
 
 dds3 <- DESeq(dds3)
@@ -62,8 +62,9 @@ ggplot(PCAdata, aes(PC1, PC2, color=treatment)) +
   xlab(paste0("PC1: ",percentVar[1],"% variance")) +
   ylab(paste0("PC2: ",percentVar[2],"% variance")) + 
   coord_fixed()+
-  stat_ellipse()+
+  stat_ellipse(level=0.95)+
   theme_classic()+
+  labs(color='Treatment')+ 
   scale_color_manual(labels = c("Treatment Control", "Laboratory Control", "Hypoxia", "Ocean Acidification", "Ocean Warming"), values = c("blue", "lightblue", "purple","green", "red"))
 
 ```

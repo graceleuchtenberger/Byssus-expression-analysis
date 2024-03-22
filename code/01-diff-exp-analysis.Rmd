@@ -37,6 +37,7 @@ BiocManager::install("PCAtools")
 BiocManager::install("DESeq2PCA")
 library(pcaExplorer)
 library(PCAtools)
+package.version("DESeq2")
 ```
 
 ## Bring tag-seq data in from gannet

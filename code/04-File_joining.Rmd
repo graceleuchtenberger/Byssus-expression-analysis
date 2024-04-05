@@ -71,7 +71,7 @@ nrow(FDO_sigs_unID) # 8 unID'd genes
 #Write file of merged files
 write.table(FDO_sigs_merged, file = "output/DEG_lists/Foot/FDO_sigs_merged.csv", row.names = FALSE)
 write.table(FDO_sigs_unID, file = "output/DEG_lists/Foot/FDO_sigs_unID.csv", row.names = FALSE)
-write.table(FDO_sigs_ID, file = "output/DEG_lists/Foot/FDO_sigs_ID.csv", row.names = FALSE)
+write.table(FDO_sigs_ID, file = "output/DEG_lists/with_GO_terms/FDO_sigs_ID.csv", row.names = FALSE)
 
 
 ```

@@ -8,3 +8,4 @@ output/*.index
 output/kallisto-quant/
 data/raw-trimmed/
 MA_plots.pdf
+.RData

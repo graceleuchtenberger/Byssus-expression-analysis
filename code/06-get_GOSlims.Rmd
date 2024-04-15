@@ -64,8 +64,11 @@ mappedIds <- function(df, collection, OFFSPRING, goannotGSC) {
 }
 ```
 
+
 ```{r}
+
 FDO_sigs_ID_cleaned_separated <- separate_rows(FDO_sigs_ID, GO.IDs, sep = ";")
+FDO_sigs_ID_cleaned_separated$GO.IDs <- trimws(FDO_sigs_ID_cleaned_separated$GO.IDs)
 
 # Vector of GO IDs
 FDO_go_ids <- FDO_sigs_ID_cleaned_separated$GO.IDs

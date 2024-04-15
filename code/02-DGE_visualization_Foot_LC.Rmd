@@ -57,8 +57,8 @@ summary(dds3)
 
 PCAdataF <- plotPCA(vst(dds3), intgroup = c("treatment"), returnData=TRUE)
 percentVarF <- round(100*attr(PCAdataF, "percentVar")) #plot PCA of samples with all data
-Foot <- ggplot(PCAdataF, aes(PC1, PC2, color=treatment)) + 
-  geom_point(size=4, alpha = 5/10, show.legend = FALSE) +
+Foot <- ggplot(PCAdataF, aes(PC1, PC2, color=treatment, show.legend = FALSE)) + 
+  geom_point(size=4, alpha = 5/10) +
   xlab(paste0("PC1: ",percentVarF[1],"% variance")) +
   ylab(paste0("PC2: ",percentVarF[2],"% variance")) + 
   coord_fixed()+
@@ -66,7 +66,7 @@ Foot <- ggplot(PCAdataF, aes(PC1, PC2, color=treatment)) +
   theme_classic()+
   labs(color='Treatment')+ 
   xlim(-90, 100)+
-  scale_color_manual(labels = c("Treatment Control", "Laboratory Control", "Hypoxia", "Ocean Acidification", "Ocean Warming"), values = c("blue", "lightblue", "purple","green", "red"))
+  scale_color_manual(labels = c("Laboratory Control", "Treatment Control", "Hypoxia", "Ocean Acidification", "Ocean Warming"), values = c("blue", "lightblue", "purple","green", "red"))
 Foot
 ```
 ### Grid arrange of two overall PCA's

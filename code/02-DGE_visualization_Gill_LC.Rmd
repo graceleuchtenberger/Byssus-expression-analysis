@@ -39,7 +39,7 @@ Gill <- ggplot(PCAdataG, aes(PC1, PC2, color=treatment)) +
   scale_y_continuous(breaks=c(-80, -40 ,0, 40, 80), limits= c(-80, 80))+
   labs(color='Treatment')+ 
   theme(axis.line = element_line(colour = 'black', size = 0.5))+
-  scale_color_manual(labels = c("Labortory Control", "Treatment Control", "Hypoxia", "Ocean Acidification", "Ocean Warming"), values = c("blue", "lightblue", "purple","green", "red"))
+  scale_color_manual(labels = c("Laboratory Control", "Treatment Control", "Hypoxia", "Ocean Acidification", "Ocean Warming"), values = c("blue", "lightblue", "purple","green", "red"))
 
 Gill
 ```

@@ -1,214 +1,70 @@
-se---
+---
 title: "Getting_GOSlims"
 output: html_document
 date: "2024-04-03"
 ---
-## Set GSEAbase location and download `goslim_generic.obo`
-```{r download-goslim-obo}
-library(GSEABase)
+```{r}
 library(tidyverse)
-goslims <- "goslim_generic.obo"
-goslims_url <- "http://current.geneontology.org/ontology/subsets/goslim_generic.obo"
-gseabase_location <- find.package("GSEABase")
-goslim_obo_dest <- file.path(gseabase_location, "extdata", goslims, fsep = "/")
-download.file(url = goslims_url,
-              destfile = goslim_obo_dest)
 
-fl <- system.file("extdata", goslims, package="GSEABase")
+GOSlims <- read.csv("https://gannet.fish.washington.edu/spartina/project-oyster-oa/Haws/GO-annotation/GO-GOslim.sorted", sep="\t", header = F)
+
+colnames(GOSlims) <- c("GO.IDs", "Pathway", "Process", "Letter")
 ```
 
-# Create functions
-```{r create-functions}
-
-# Function for mapping GOIDs to GOslims
-
-mappedIds <- function(df, collection, OFFSPRING, goannotGSC) {
-  # Split semi-colon delimited strings in df$ids
-  df$ids_split <- strsplit(as.character(df$ids), ";")
-  
-  # Determine the maximum number of elements per row
-  max_elements <- max(lengths(df$ids_split))
-  
-  # Fill in shorter rows with NA values
-  df$ids_split <- lapply(df$ids_split, function(x) {
-    length(x) <- max_elements
-    x
-  })
-  
-  # Combine the split strings into a matrix
-  ids_mat <- do.call(rbind, df$ids_split)
-  
-  # Convert the matrix to a data frame
-  ids_df <- as.data.frame(ids_mat, stringsAsFactors = FALSE)
-  
-  # Rename the columns of the data frame
-  colnames(ids_df) <- paste0("ids_", 1:max_elements)
-  
-  # Combine the original data frame and the new data frame
-  df <- cbind(df, ids_df)
-  
-  # Perform the matching operation
-  mt <- match(toupper(trimws(df$ids_1)), toupper(trimws(names(goannotGSC))))
-  
-  # Add a new column to the data frame for the "Genes" result
-  df$Genes <- NA_character_
-  
-  # Fill in the "Genes" column for rows that have a match
-  df$Genes[!is.na(mt)] <- vapply(geneIds(goannotGSC)[mt[!is.na(mt)]], 
-                                  paste, collapse = ";", character(1L))
-  
-   df <- df %>% dplyr::select(Count, Percent, Term, ids, Genes)
-   
-  # Return the modified data frame
-  return(df)
-}
-```
-
-
+#FDO
 ```{r}
 
 FDO_sigs_ID_cleaned_separated <- separate_rows(FDO_sigs_ID, GO.IDs, sep = ";")
 FDO_sigs_ID_cleaned_separated$GO.IDs <- trimws(FDO_sigs_ID_cleaned_separated$GO.IDs)
 
-# Vector of GO IDs
-FDO_go_ids <- FDO_sigs_ID_cleaned_separated$GO.IDs
+FDO_sigs_ID_slim <- left_join(FDO_sigs_ID_cleaned_separated, GOSlims, by = "GO.IDs")
 
-# Create custom collection with our GO IDs
-FDOmyCollection <- GOCollection(FDO_go_ids)
-
-# Pull out GOslims from GOslim obo file
-slim <- getOBOCollection(fl)
-
-# Get Biological Process (BP) GOslims for our GO IDs
-slimdf <- goSlim(FDOmyCollection, slim, "BP", verbose)
-
-# Convert to list
-FDOgomap <- as.list(GOBPOFFSPRING[rownames(slimdf)])
-
-# Map our GOIDs to GOslims
-mapped <- lapply(FDOgomap, intersect, ids(FDOmyCollection))
-
-# sapply needed to apply paste() to create semi-colon delimited values
-slimdf$ids <- sapply(lapply(FDOgomap, intersect, ids(FDOmyCollection)), paste, collapse=";")
-
-# Add self-matching GOIDs to "ids" column, if not present
-updated_slimdf$ids <- rownames(slimdf)
-
-for (go_id in go_ids) {
-  # Check if the go_id is present in the row names
-  if (go_id %in% rownames(updated_slimdf)) {
-    # Check if the go_id is not present in the ids column
-    # Also removes white space "trimws()" and converts all to upper case to handle
-    # any weird, "invisible" formatting issues.
-    if (!go_id %in% trimws(toupper(strsplit(updated_slimdf[go_id, "ids"], ";")[[1]]))) {
-      # Append the go_id to the ids column with a semi-colon separator
-      if (length(updated_slimdf$ids) > 0 && nchar(updated_slimdf$ids[nrow(updated_slimdf)]) > 0) {
-        updated_slimdf[go_id, "ids"] <- paste0(updated_slimdf[go_id, "ids"], "; ", go_id)
-      } else {
-        updated_slimdf[go_id, "ids"] <- go_id
-      }
-    }
-  }
-}
-
-str(updated_slimdf)
 ```
 
-### Create GSEAbase GeneSetCollection
+#FOA
+```{r}
+FOA_sigs_ID_cleaned_separated <- separate_rows(FOA_sigs_ID, GO.IDs, sep = ";")
+FOA_sigs_ID_cleaned_separated$GO.IDs <- trimws(FOA_sigs_ID_cleaned_separated$GO.IDs)
 
-```{r gene-set-collection}
-
-# Group by unique GO ID
-grouped_df <- FDO_sigs_ID_cleaned_separated %>% group_by(GO.IDs) %>% summarise(geneID = paste(geneID, collapse = ","))
-
-# convert the data frame to a named list
-my_list <- as.list(grouped_df$geneID)
-names(my_list) <- grouped_df$GO.IDs
-
-gsc <- GeneSetCollection(mapply(function(geneIds, GOID) {
-         GeneSet(geneIds, collectionType=GOCollection(GOID), setName=GOID)
-       }, my_list, names(my_list)))
-
-gsc
+FOA_sigs_ID_slim <- left_join(FOA_sigs_ID_cleaned_separated, GOSlims, by = "GO.IDs")
 ```
 
-### Map genes to GOslims
-```{r map-genes-to-GOslims}
-mapped_df <- mappedIds(updated_slimdf, FDOmyCollection, GOBPOFFSPRING, gsc)
+#FOW
+```{r}
+FOW_sigs_ID_cleaned_separated <- separate_rows(FOW_sigs_ID, GO.IDs, sep = ";")
+FOW_sigs_ID_cleaned_separated$GO.IDs <- trimws(FOW_sigs_ID_cleaned_separated$GO.IDs)
 
-# Provide column name for first column
-mapped_df <- cbind(GOslim.BP = rownames(mapped_df), mapped_df)
-rownames(mapped_df) <- NULL
+FOW_sigs_ID_slim <- left_join(FOW_sigs_ID_cleaned_separated, GOSlims, by = "GO.IDs")
 
-# Rename "ids" column
-mapped_df <- mapped_df %>% 
-  dplyr::rename(GO.IDs = ids)
-
-mapped_df
-
-str(mapped_df)
+#Warning: Detected an unexpected many-to-many relationship between `x` and `y`.
 ```
 
-### Flatten GOslims to have one row per gene
+#GDO
+```{r}
 
-Will make future joins to other data sets easier.
+GDO_sigs_ID_cleaned_separated <- separate_rows(GDO_sigs_ID, GO.IDs, sep = ";")
+GDO_sigs_ID_cleaned_separated$GO.IDs <- trimws(GDO_sigs_ID_cleaned_separated$GO.IDs)
 
-Done in two steps for easier readability:
+GDO_sigs_ID_slim <- left_join(GDO_sigs_ID_cleaned_separated, GOSlims, by = "GO.IDs")
+# Warning: Detected an unexpected many-to-many relationship between `x` and `y`.
+```
+#GOA
+```{r}
+GOA_sigs_ID_cleaned_separated <- separate_rows(GOA_sigs_ID, GO.IDs, sep = ";")
+GOA_sigs_ID_cleaned_separated$GO.IDs <- trimws(GOA_sigs_ID_cleaned_separated$GO.IDs)
 
-1. Flattened just by gene and retains all info.
+GOA_sigs_ID_slim <- left_join(GOA_sigs_ID_cleaned_separated, GOSlims, by = "GO.IDs")
+#Warning: Detected an unexpected many-to-many relationship between `x` and `y`.
+```
+#GOW
+```{r}
+GOW_sigs_ID_cleaned_separated <- separate_rows(GOW_sigs_ID, GO.IDs, sep = ";")
+GOW_sigs_ID_cleaned_separated$GO.IDs <- trimws(GOW_sigs_ID_cleaned_separated$GO.IDs)
 
-2. Flattened by gene with GOslims combined per gene. Drops GO IDs.
-
-
-For the second version:
-
-We use n() to count the number of rows within each group.
-
-We select the first Term value within each group using Term[1].
-
-.groups = 'drop' is used to remove the grouping information.
-
-This code should create a dataframe with one row per gene, including the corresponding GOslim.BP entries in a single, semi-colon-delimited field, the first Term value within each group, and the count of rows in each group.
-
-```{r flatten-GOslims-by-gene}
-flattened_mapped_df <- mapped_df %>%
-  dplyr::select(Genes, GOslim.BP, Term, GO.IDs) %>%
-  separate_rows(Genes, sep = ",")
-  
-
-goslims_per_gene_df <- flattened_mapped_df %>%
-  distinct(Genes, GOslim.BP, Term) %>%
-  group_by(Genes) %>%
-  summarise(GOslim.BP = paste(unique(GOslim.BP), collapse = ";"), 
-            Term = paste(unique(Term), collapse = ";"),  # Concatenate Terms with semi-colon
-            .groups = 'drop')
-  
-
-str(goslims_per_gene_df)
+GOW_sigs_ID_slim <- left_join(GOW_sigs_ID_cleaned_separated, GOSlims, by = "GO.IDs")
+#Warning: Detected an unexpected many-to-many relationship between `x` and `y`.
 ```
 
-## Write mapped GOslims to file
-```{r write-mapped-GOslims-to-file}
-mapped_df %>%
-  dplyr::select(GOslim.BP, Term, GO.IDs, Genes) %>% 
-  write.table(file ="../output/17.1-GO-and-GOslim-CDS-Annotation/Cvir-CDS-GOslim.BP_term_GOIDs_genes.tab",
-          row.names = FALSE,
-          col.names = TRUE,
-          quote = FALSE,
-          sep = "\t"
-          )
-```
 
-## Write flattened genes to file
-```{r write-flattened-genes-to-file}
-goslims_per_gene_df %>%
-  write.table(file ="../output/17.1-GO-and-GOslim-CDS-Annotation/Cvir-CDS-GOslim.BP_per_gene.tab",
-              row.names = FALSE,
-              col.names = TRUE,
-              quote = FALSE,
-              sep = "\t"
-              )
-  
-```
 
 

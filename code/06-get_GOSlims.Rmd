@@ -1,4 +1,4 @@
-se---
+---
 title: "Getting_GOSlims"
 output: html_document
 date: "2024-04-03"
@@ -21,9 +21,9 @@ FDO_sigs_ID_cleaned_separated$GO.IDs <- trimws(FDO_sigs_ID_cleaned_separated$GO.
 ```
 
 ### Map Biological Process GOslims to GO IDs
-```{r BP-GOslims-to-GOIDs}
+```{r}
 # Vector of GO IDs
-go_ids <- FDO_sigs_ID_cleaned_separated$V1
+go_ids <- FDO_sigs_ID_cleaned_separated$GO.IDs
 
 # Create custom collection with our GO IDs
 myCollection <- GOCollection(go_ids)

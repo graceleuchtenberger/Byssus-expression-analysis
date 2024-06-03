@@ -49,60 +49,29 @@ knitr::opts_chunk$set(
 # Reads
 
 ```{r, engine='bash', eval=TRUE}
-ls /home/shared/8TB_HDD_02/graceac9/data/pycno2021/*
+ls /home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/data/raw-trimmed/
 ```
-
-```{r, engine='bash'}
-/home/shared/FastQC-0.12.1/fastqc \
-/home/shared/8TB_HDD_02/graceac9/data/pycno2021/*fq.gz \
--t 36 \
--o ../analyses/13-hisat-deseq2/
-```
-
-
-
-```{r, engine='bash'}
-eval "$(/opt/anaconda/anaconda3/bin/conda shell.bash hook)"
-conda activate
-which multiqc
-
-
-multiqc ../analyses/13-hisat-deseq2/ \
--o ../analyses/13-hisat-deseq2/
-```
-
-
-
 
 
 # Genome
-https://www.ncbi.nlm.nih.gov/datasets/genome/GCA_032158295.1/
 
-![](http://gannet.fish.washington.edu/seashell/snaps/Monosnap_Pycnopodia_helianthoides_genome_assembly_ASM3215829v1_-_NCBI_-_NLM_2024-05-25_15-32-13.png)
 
 ```{r, engine='bash'}
 cd ../data
 
-/home/shared/datasets download genome accession GCA_032158295.1 --include gff3,rna,cds,protein,genome,seq-report
+/home/shared/datasets download genome accession GCF_036588685.1 --include gff3,gtf,rna,cds,protein,genome,seq-report
 ```
 
-```{r, engine='bash'}
+```{bash}
 cd ../data 
 unzip ncbi_dataset.zip
 ```
 
 ```{r, engine='bash', eval=TRUE}
-ls ../data/ncbi_dataset/data/GCA_032158295.1
+ls ../data/ncbi_dataset/data/GCF_036588685.1
 
 ```
 
-## Annotation files
-
-
-```{r, engine='bash', eval=TRUE}
-head ../analyses/12-fix-gff/mod_augustus.gtf
-head ../data/ncbi_dataset/data/GCA_032158295.1/GCA_032158295.1_ASM3215829v1_genomic.fna
-```
 
 
 

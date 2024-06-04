@@ -11,4 +11,5 @@ data/raw-trimmed/
 MA_plots.pdf
 data/ncbi_dataset/
 data/ncbi_dataset.zip
+tmp/
 .RData

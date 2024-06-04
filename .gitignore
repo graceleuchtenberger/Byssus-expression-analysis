@@ -7,7 +7,11 @@ data/*.fasta
 output/*.index
 output/*.index*
 output/kallisto-quant/
+output/kallisto-quant-cds/
+output/kallisto-quant-rna/
 data/raw-trimmed/
 MA_plots.pdf
 data/ncbi_dataset/
+data/ncbi_dataset.zip
+tmp/
 .RData

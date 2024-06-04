@@ -5,8 +5,10 @@
 data/raw-data/*
 data/*.fasta
 output/*.index
+output/*.index*
 output/kallisto-quant/
 data/raw-trimmed/
 MA_plots.pdf
 data/ncbi_dataset/
+data/ncbi_dataset.zip
 .RData

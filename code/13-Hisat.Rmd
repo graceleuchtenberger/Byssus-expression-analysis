@@ -123,8 +123,7 @@ find /home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/data
 
 keeping unmapped reads 
 ```{r, engine='bash'}
-find /home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/data/raw-trimmed/*_L099_R1_cmb.trim.fastq.gz | xargs basename -s _L099_R1_cmb.trim.fastq.gz \
-| xargs -I{} sh -c '/home/shared/hisat2-2.2.1/hisat2 \
+/home/shared/hisat2-2.2.1/hisat2 \
 -x ../output/13-Hisat/PNRI_Mtr1.1.1.index \
 --dta \
 -p 32 \
@@ -190,6 +189,35 @@ sh -c '/home/shared/stringtie-2.2.1.Linux_x86_64/stringtie \
 
 
 
+Compare genome with gff...
+
+
+
+
+
+
+
+
+```{bash}
+head ../output/13-Hisat/*119.gtf
+
+```
+
+
+
+
+
+
+
+```{r, engine='bash'}
+eval "$(/opt/anaconda/anaconda3/bin/conda shell.bash hook)"
+conda activate
+which multiqc
+
+
+multiqc ../output/13-Hisat/ \
+-o ../output/13-Hisat/
+```
 
 
 

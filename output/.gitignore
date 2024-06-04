@@ -1,0 +1,5 @@
+13-Hisat/GCF*
+13-Hisat/GCF**fastq
+13-Hisat/*sam
+13-Hisat/*bam
+13-Hisat/*bam*

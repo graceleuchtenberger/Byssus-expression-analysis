@@ -206,14 +206,14 @@ treatmentinfo$treatment <- middle_parts
 
 #Make subset of sample ID, treatment, tissue harvested, day
 treatmentinfo.2 <- treatmentinfo[, c("sample.1","tissue", "treatment", "day")]
-
-#specify FX samples for removal later
-FXsamples <- treatmentinfo.2 %>%
-  filter(treatmentinfo.2$tissue == "X") %>%
-  select(sample.1)
-
-#Convert sample ID to character vector
-fX_ids <- as.vector(as.character(FXsamples$sample.1))
+# 
+# #specify FX samples for removal later
+# FXsamples <- treatmentinfo.2 %>%
+#   filter(treatmentinfo.2$tissue == "X") %>%
+#   select(sample.1)
+# 
+# #Convert sample ID to character vector
+# fX_ids <- as.vector(as.character(FXsamples$sample.1))
 
 #Change column names in count matrix to adjust to sample name in treatment info
 countmatrix_2 <- countmatrix
@@ -243,10 +243,10 @@ treatmentinfo.2 <- treatmentinfo.2[order(treatmentinfo.2),]
 treatmentinfo.2 <- treatmentinfo.2[complete.cases(treatmentinfo.2), ]
 
 #Remove sample IDS that match the FX samples
-countmatrix_2 <- countmatrix_2 %>%
-  select(-all_of(fX_ids))
-treatmentinfo.2 <- treatmentinfo.2 %>%
-  filter(!sample.1 %in% fX_ids)
+# countmatrix_2 <- countmatrix_2 %>%
+#   select(-all_of(fX_ids))
+# treatmentinfo.2 <- treatmentinfo.2 %>%
+#   filter(!sample.1 %in% fX_ids)
 
 rownames(treatmentinfo.2) <- treatmentinfo.2$sample.1
 

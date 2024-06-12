@@ -74,6 +74,7 @@ abline(h=c(-1.5,1.5), col="dodgerblue", lwd=2)
 DESeq2::plotMA(FOA_TC_ashr_res_table, xlim=xlim, ylim=ylim, main="ashr", cex=.8)
 abline(h=c(-1.5,1.5), col="dodgerblue", lwd=2)
 dev.off()
+
 ```
 
 
@@ -214,6 +215,20 @@ abline(h=c(-1.5,1.5), col="dodgerblue", lwd=2)
 DESeq2::plotMA(FOW_TC_ashr_res_table, xlim=xlim, ylim=ylim, main="ashr", cex=.8)
 abline(h=c(-1.5,1.5), col="dodgerblue", lwd=2)
 dev.off()
+
+
+#Volcano Plots
+library(ggplot2)
+FOW_TC_apeglm_df$significant <- FOW_TC_apeglm_df$padj < 0.05
+
+ggplot(FOW_TC_apeglm_df, aes(x=log2FoldChange, y=-log10(padj))) +
+    geom_point(aes(color=significant)) +
+    scale_color_manual(values=c("gray", "red")) +
+    theme_minimal() +
+    labs(title="Volcano Plot",
+         x="Log2 Fold Change",
+         y="-log10 p-value") +
+    theme(plot.title = element_text(hjust = 0.5))
 ```
 
 ### Gill-OW-TC
@@ -353,6 +368,18 @@ abline(h=c(-1.5,1.5), col="dodgerblue", lwd=2)
 DESeq2::plotMA(FDO_TC_ashr_res_table, xlim=xlim, ylim=ylim, main="ashr", cex=.8)
 abline(h=c(-1.5,1.5), col="dodgerblue", lwd=2)
 dev.off()
+
+#volcano plots
+FDO_TC_apeglm_df$significant <- FDO_TC_apeglm_df$padj < 0.05
+
+ggplot(FDO_TC_apeglm_df, aes(x=log2FoldChange, y=-log10(padj))) +
+    geom_point(aes(color=significant)) +
+    scale_color_manual(values=c("gray", "red")) +
+    theme_minimal() +
+    labs(title="Volcano Plot",
+         x="Log2 Fold Change",
+         y="-log10 p-value") +
+    theme(plot.title = element_text(hjust = 0.5))
 ```
 
 #Gill-DO-TC

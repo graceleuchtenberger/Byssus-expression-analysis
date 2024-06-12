@@ -13,8 +13,6 @@ data/raw-trimmed/
 MA_plots.pdf
 data/ncbi_dataset/
 data/ncbi_dataset.zip
-output/13-Hisat/*.gtf
-output/13-Hisat/tmp*
-output/13-Hisat/*.ctab
+output/13-Hisat/
 tmp/
 .RData

@@ -16,5 +16,8 @@ data/ncbi_dataset.zip
 output/13-Hisat/
 output/*.ctab
 output/*.tab
+output/output.txt
+output/gene_count_matrix.csv
+output/hisat2-build_stats.txt
 tmp/
 .RData

@@ -6,6 +6,7 @@ date: "2024-06-05"
 ## Make genome counts matrix
 ```{r, eval = TRUE}
 gene_count_matrix <- read_csv("output/13-Hisat/gene_count_matrix.csv")
+gene_count_matrix <- data.frame(gene_count_matrix)
 
 ```
 
@@ -37,6 +38,22 @@ new_column_names <- sapply(names(gene_count_matrix), remove_dash)
 # Assign the modified column names to the data frame
 names(gene_count_matrix) <- new_column_names
 
+remove_periods <- function(col_name) {
+  if (grepl("^\\.", col_name)) {
+    # Remove period from the beginning of the column name
+    return(sub("^\\.", "", col_name))
+  } else {
+    # Keep the column name unchanged
+    return(col_name)
+  }
+}
+
+# Apply the function to all column names
+new_column_names <- sapply(names(gene_count_matrix), remove_periods)
+
+# Assign the modified column names to the data frame
+names(gene_count_matrix) <- new_column_names
+
 #clean up data, get rid of NA's and blank cells, and put samples in order 
 gene_count_matrix <- gene_count_matrix[, order(names(gene_count_matrix))]
 treatmentinfo.2 <- treatmentinfo.2[order(treatmentinfo.2),]
@@ -56,7 +73,7 @@ treatmentinfo.2 <- treatmentinfo.2[-removal,]
 #Check that columns and row names match
 all(rownames(treatmentinfo.2) == colnames(gene_count_matrix))
 
-write.table(gene_count_matrix, file = "../output/13-Hisat/", row.names = FALSE)
+write.table(gene_count_matrix, file = "/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/13-Hisat/", row.names = FALSE)
 ```
 
 

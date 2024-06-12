@@ -40,27 +40,27 @@ masterID <- masterID[, c("transcript", "species", "geneID","uniprot_accession","
 
 ### FDO merge 
 ```{r}
-FDO_LC_siggene <- read.delim("output/DEG_lists/Foot/FDO_LC_siggene.csv", sep = " ", header = TRUE)
-FDO_TC_siggene <- read.delim("output/DEG_lists/Foot/FDO_TC_siggene_apeglm.csv", sep = " ", header = TRUE)
+#FDO_LC_siggene <- read.delim("output/DEG_lists/Foot/FDO_LC_siggene.csv", sep = " ", header = TRUE)
+FDO_TC_siggenes_apeglm <- read.delim("output/DEG_lists/Foot/FDO_TC_siggene_apeglm.csv", sep = " ", header = TRUE)
 
-FDO_sigs <- inner_join(FDO_TC_siggene, FDO_LC_siggene, by = 'gene')
-#basemean x is TC, basemean y is LC
+# FDO_sigs <- inner_join(FDO_TC_siggene, FDO_LC_siggene, by = 'gene')
+# #basemean x is TC, basemean y is LC
+# 
+# FDO_sigs$log2FoldChange <- FDO_sigs$log2FoldChange.x-FDO_sigs$log2FoldChange.y
+# FDO_sigs_inter <- FDO_sigs[,c(1,12)]
+# 
+# # Merge dataframes based on the shared column 'ID' and replace values from df2 into df1
+# FDO_sigs_merged <- merge(FDO_TC_siggene, FDO_sigs_inter, by = "gene", all.x = TRUE)
+# 
+# # Replace values in df_y with values from df_x based on a condition
+# FDO_sigs_merged$log2FoldChange.x <- ifelse(!is.na(FDO_sigs_merged$log2FoldChange.y) , FDO_sigs_merged$log2FoldChange.y, FDO_sigs_merged$log2FoldChange.x)
+# 
+# # Drop the extra column "Value_x" if needed
+# FDO_sigs_merged <- FDO_sigs_merged[, !(names(FDO_sigs_merged) %in% c("log2FoldChange.y"))]
+# # change gene column to be called transcript
+# colnames(FDO_sigs_merged)  <- c("transcript", "baseMean", "log2FoldChange","lfcSE","pvalue", "padj")
 
-FDO_sigs$log2FoldChange <- FDO_sigs$log2FoldChange.x-FDO_sigs$log2FoldChange.y
-FDO_sigs_inter <- FDO_sigs[,c(1,12)]
-
-# Merge dataframes based on the shared column 'ID' and replace values from df2 into df1
-FDO_sigs_merged <- merge(FDO_TC_siggene, FDO_sigs_inter, by = "gene", all.x = TRUE)
-
-# Replace values in df_y with values from df_x based on a condition
-FDO_sigs_merged$log2FoldChange.x <- ifelse(!is.na(FDO_sigs_merged$log2FoldChange.y) , FDO_sigs_merged$log2FoldChange.y, FDO_sigs_merged$log2FoldChange.x)
-
-# Drop the extra column "Value_x" if needed
-FDO_sigs_merged <- FDO_sigs_merged[, !(names(FDO_sigs_merged) %in% c("log2FoldChange.y"))]
-# change gene column to be called transcript
-colnames(FDO_sigs_merged)  <- c("transcript", "baseMean", "log2FoldChange","lfcSE","pvalue", "padj")
-
-FDO_sigs_merged <- left_join(FDO_sigs_merged, masterID, by = "transcript")
+FDO_TC_siggene <- left_join(FDO_TC_siggenes_apeglm, masterID, by = "transcript")
 
 FDO_sigs_unID <- FDO_sigs_merged[is.na(FDO_sigs_merged$geneID), ]
 FDO_sigs_ID <- FDO_sigs_merged[!is.na(FDO_sigs_merged$geneID), ]

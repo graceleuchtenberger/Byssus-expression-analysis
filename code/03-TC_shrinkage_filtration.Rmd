@@ -167,18 +167,15 @@ FOW_TC_ashr_res_table   <- lfcShrink(dds13_filt,
 
 FOW_TC_apeglm_df <- FOW_TC_apeglm_res_table %>%
   data.frame() %>%
-  rownames_to_column(var="gene") %>%
-  as_tibble()
+  rownames_to_column(var="gene") 
 
 FOW_TC_normal_df <- FOW_TC_normal_res_table  %>%
   data.frame() %>%
-  rownames_to_column(var="gene") %>%
-  as_tibble()
+  rownames_to_column(var="gene") 
 
 FOW_TC_ashr_df <- FOW_TC_ashr_res_table %>%
   data.frame() %>%
-  rownames_to_column(var="gene") %>%
-  as_tibble()
+  rownames_to_column(var="gene") 
 
 # Write csv's with significant genes 
 #ignore rowname numbers with row.names = FALSE, not included as separate column
@@ -311,18 +308,15 @@ FDO_TC_ashr_res_table   <- lfcShrink(dds14_filt,
 
 FDO_TC_apeglm_df <- FDO_TC_apeglm_res_table %>%
   data.frame() %>%
-  rownames_to_column(var="gene") %>%
-  as_tibble()
+  rownames_to_column(var="gene")
 
 FDO_TC_normal_df <- FDO_TC_normal_res_table  %>%
   data.frame() %>%
-  rownames_to_column(var="gene") %>%
-  as_tibble()
+  rownames_to_column(var="gene")
 
 FDO_TC_ashr_df <- FDO_TC_ashr_res_table %>%
   data.frame() %>%
-  rownames_to_column(var="gene") %>%
-  as_tibble()
+  rownames_to_column(var="gene") 
 
 # Write csv's with significant genes 
 #ignore rowname numbers with row.names = FALSE, not included as separate column

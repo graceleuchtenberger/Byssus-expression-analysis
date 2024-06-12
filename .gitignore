@@ -14,5 +14,7 @@ MA_plots.pdf
 data/ncbi_dataset/
 data/ncbi_dataset.zip
 output/13-Hisat/
+output/*.ctab
+output/*.tab
 tmp/
 .RData

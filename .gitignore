@@ -13,11 +13,12 @@ data/raw-trimmed/
 MA_plots.pdf
 data/ncbi_dataset/
 data/ncbi_dataset.zip
-output/13-Hisat/
+output/13-Hisat/*.stderr
 output/*.ctab
 output/*.tab
 output/output.txt
 output/gene_count_matrix.csv
 output/hisat2-build_stats.txt
+
 tmp/
 .RData

@@ -19,6 +19,7 @@ output/*.tab
 output/output.txt
 output/gene_count_matrix.csv
 output/hisat2-build_stats.txt
+*db.*
 
 tmp/
 .RData

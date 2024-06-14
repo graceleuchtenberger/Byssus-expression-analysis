@@ -1,0 +1,71 @@
+---
+title: "Genome_vs_transcriptome"
+output: html_document
+date: "2024-06-13"
+---
+
+```{bash}
+#make databases for isoseq transcriptome and the genome assembly
+makeblastdb -in /home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/data/Mtros-hq_transcripts.fasta -dbtype nucl -out isoseq_db
+makeblastdb -in /home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/data/ncbi_dataset/data/GCF_036588685.1/cds_from_genomic.fasta -dbtype nucl -out genome_db
+
+#blast foot protein fasta against isoseq database
+blastn -query /home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/data/foot_proteins.fasta -db isoseq_db -out results_isoseq.txt -outfmt 6
+#Adding sequences from FASTA; added 411251 sequences in 11.0021 seconds.
+
+#blast foot protein fasta against genome database
+blastn -query /home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/data/foot_proteins.fasta -db genome_db -out results_genome.txt -outfmt 6
+#Adding sequences from FASTA; added 53269 sequences in 1.55116 seconds.
+```
+```{r}
+library(dplyr)
+library(readr)
+
+# Function to parse BLAST results
+parse_blast_results <- function(blast_output) {
+  columns <- c("qseqid", "sseqid", "pident", "length", "mismatch", "gapopen",
+               "qstart", "qend", "sstart", "send", "evalue", "bitscore")
+  df <- read_delim(blast_output, delim = "\t", col_names = columns)
+  return(df)
+}
+
+# Function to summarize BLAST results and find the best hits by e-value
+summarize_blast_results <- function(df) {
+  best_hits <- df %>% group_by(qseqid) %>% filter(evalue == min(evalue)) %>% ungroup()
+  return(best_hits)
+}
+
+# Parse BLAST results
+isoseq_df <- parse_blast_results("results_isoseq.txt")
+genome_df <- parse_blast_results("results_genome.txt")
+
+# Get best hits for each transcript by e-value
+best_hits_isoseq <- summarize_blast_results(isoseq_df)
+best_hits_genome <- summarize_blast_results(genome_df)
+
+# Compare the best hits
+better_represented_by_isoseq <- sum(best_hits_isoseq$evalue < best_hits_genome$evalue)
+better_represented_by_genome <- sum(best_hits_genome$evalue < best_hits_isoseq$evalue)
+
+cat("Number of transcripts better represented by IsoSeq:", better_represented_by_isoseq, "\n")
+#Number of transcripts better represented by IsoSeq: 735
+cat("Number of transcripts better represented by Genome:", better_represented_by_genome, "\n")
+#Number of transcripts better represented by Genome: 170 
+
+# Additional analysis: count total hits for better representation
+total_hits_isoseq <- nrow(best_hits_isoseq)
+total_hits_genome <- nrow(best_hits_genome)
+
+cat("Total number of hits for IsoSeq:", total_hits_isoseq, "\n")
+#Number of transcripts better represented by IsoSeq: 735 
+cat("Total number of hits for Genome:", total_hits_genome, "\n")
+#Number of transcripts better represented by Genome: 170 
+
+# Optional: Save summarized results
+write_csv(best_hits_isoseq, "best_hits_isoseq.csv")
+write_csv(best_hits_genome, "best_hits_genome.csv")
+
+```
+
+
+

@@ -5,7 +5,7 @@ date: "2024-06-05"
 ---
 ## Make genome counts matrix
 ```{r, eval = TRUE}
-gene_count_matrix <- read_csv("output/13-Hisat/gene_count_matrix.csv")
+gene_count_matrix <- read_csv("/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/gene_count_matrix.csv")
 gene_count_matrix <- data.frame(gene_count_matrix)
 
 ```

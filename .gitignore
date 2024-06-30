@@ -20,6 +20,8 @@ output/output.txt
 output/gene_count_matrix.csv
 output/hisat2-build_stats.txt
 *db.*
+*.fasta.gz
+*.fasta
 
 tmp/
 .RData

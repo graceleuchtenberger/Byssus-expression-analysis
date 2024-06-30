@@ -108,6 +108,7 @@ multiqc .
 ```{r, engine='bash'}
 cd ../data
 curl -O https://owl.fish.washington.edu/halfshell/genomic-databank/Mtros-hq_transcripts.fasta
+
 ```
 
 

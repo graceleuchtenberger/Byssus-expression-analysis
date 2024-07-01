@@ -79,15 +79,15 @@ dev.off()
 ### Gill-OA-LC
 ```{r}
 #Run shrinkage estimates
-GOA_LC_normal_res_table <- lfcShrink(dds8_filt,
+GOA_LC_normal_res_table <- lfcShrink(dds1_filt,
                               coef=2,
                               type="normal")
 
-GOA_LC_apeglm_res_table <- lfcShrink(dds8_filt,
+GOA_LC_apeglm_res_table <- lfcShrink(dds1_filt,
                               coef=2,
                               type="apeglm") # lfcThreshold = 0.585) 
 
-GOA_LC_ashr_res_table   <- lfcShrink(dds8_filt,
+GOA_LC_ashr_res_table   <- lfcShrink(dds1_filt,
                               coef=2,
                               type="ashr")
 
@@ -121,7 +121,7 @@ GOA_LC_sig_genes_normal<- GOA_LC_normal_df %>%
 write.table(GOA_LC_sig_genes, file = "output/DEG_lists/Gill/GOA_LC_siggene.csv", row.names = FALSE)
 
 #saving gene counts as a result of each filtration step
-gene_counts_GOA_LC <- as.data.frame(c(nrow(GOA_LC_countmatrix),nrow(dds8_filt),(nrow(GOA_LC_countmatrix)-nrow(dds8_filt)),nrow(GOA_LC_normal_res_table),nrow(GOA_LC_apeglm_res_table),nrow(GOA_LC_ashr_res_table),nrow(GOA_LC_sig_genes),nrow(GOA_LC_sig_genes_ashr),nrow(GOA_LC_sig_genes_normal)))
+gene_counts_GOA_LC <- as.data.frame(c(nrow(GOA_LC_countmatrix),nrow(dds1_filt),(nrow(GOA_LC_countmatrix)-nrow(dds1_filt)),nrow(GOA_LC_normal_res_table),nrow(GOA_LC_apeglm_res_table),nrow(GOA_LC_ashr_res_table),nrow(GOA_LC_sig_genes),nrow(GOA_LC_sig_genes_ashr),nrow(GOA_LC_sig_genes_normal)))
 
 row.names(gene_counts_GOA_LC) <- c("total transcripts","genes_after_filtering","genes_dropped",
                             "DEGs_all-genes-normal",
@@ -223,15 +223,15 @@ dev.off()
 
 ```{r}
 #Run shrinkage estimates
-GOW_LC_normal_res_table <- lfcShrink(dds9_filt,
+GOW_LC_normal_res_table <- lfcShrink(dds2_filt,
                               coef=2,
                               type="normal")
 
-GOW_LC_apeglm_res_table <- lfcShrink(dds9_filt,
+GOW_LC_apeglm_res_table <- lfcShrink(dds2_filt,
                               coef=2,
                               type="apeglm") # lfcThreshold = 0.585) 
 
-GOW_LC_ashr_res_table   <- lfcShrink(dds9_filt,
+GOW_LC_ashr_res_table   <- lfcShrink(dds2_filt,
                               coef=2,
                               type="ashr")
 
@@ -265,7 +265,7 @@ GOW_LC_sig_genes_normal<- GOW_LC_normal_df %>%
 write.table(GOW_LC_siggenes, file = "output/DEG_lists/Gill/GOW_LC_siggene.csv", row.names = FALSE)
 
 #saving gene counts as a result of each filtration step
-gene_counts_GOW_LC <- as.data.frame(c(nrow(GOW_LC_countmatrix),nrow(dds9_filt),(nrow(GOW_LC_countmatrix)-nrow(dds9_filt)),nrow(GOW_LC_normal_res_table),nrow(GOW_LC_apeglm_res_table),nrow(GOW_LC_ashr_res_table),nrow(GOW_LC_siggenes),nrow(GOW_LC_sig_genes_ashr),nrow(GOW_LC_sig_genes_normal)))
+gene_counts_GOW_LC <- as.data.frame(c(nrow(GOW_LC_countmatrix),nrow(dds2_filt),(nrow(GOW_LC_countmatrix)-nrow(dds2_filt)),nrow(GOW_LC_normal_res_table),nrow(GOW_LC_apeglm_res_table),nrow(GOW_LC_ashr_res_table),nrow(GOW_LC_siggenes),nrow(GOW_LC_sig_genes_ashr),nrow(GOW_LC_sig_genes_normal)))
 
 row.names(gene_counts_GOW_LC) <- c("total transcripts","genes_after_filtering","genes_dropped",
                             "DEGs_all-genes-normal",
@@ -364,15 +364,15 @@ dev.off()
 #Gill-DO-LC
 ```{r}
 #Run shrinkage estimates
-GDO_LC_normal_res_table <- lfcShrink(dds10_filt,
+GDO_LC_normal_res_table <- lfcShrink(dds3_filt,
                               coef=2,
                               type="normal")
 
-GDO_LC_apeglm_res_table <- lfcShrink(dds10_filt,
+GDO_LC_apeglm_res_table <- lfcShrink(dds3_filt,
                               coef=2,
                               type="apeglm") # lfcThreshold = 0.585) 
 
-GDO_LC_ashr_res_table   <- lfcShrink(dds10_filt,
+GDO_LC_ashr_res_table   <- lfcShrink(dds3_filt,
                               coef=2,
                               type="ashr")
 
@@ -406,7 +406,7 @@ GDO_LC_sig_genes_normal<- GDO_LC_normal_df %>%
 write.table(GDO_LC_siggenes, file = "output/DEG_lists/Gill/GDO_LC_siggene.csv", row.names = FALSE)
 
 #saving gene counts as a result of each filtration step
-gene_counts_GDO_LC <- as.data.frame(c(nrow(GDO_LC_countmatrix),nrow(dds10_filt),(nrow(GDO_LC_countmatrix)-nrow(dds10_filt)),nrow(GDO_LC_normal_res_table),nrow(GDO_LC_apeglm_res_table),nrow(GDO_LC_ashr_res_table),nrow(GDO_LC_siggenes),nrow(GDO_LC_sig_genes_ashr),nrow(GDO_LC_sig_genes_normal)))
+gene_counts_GDO_LC <- as.data.frame(c(nrow(GDO_LC_countmatrix),nrow(dds3_filt),(nrow(GDO_LC_countmatrix)-nrow(dds3_filt)),nrow(GDO_LC_normal_res_table),nrow(GDO_LC_apeglm_res_table),nrow(GDO_LC_ashr_res_table),nrow(GDO_LC_siggenes),nrow(GDO_LC_sig_genes_ashr),nrow(GDO_LC_sig_genes_normal)))
 
 row.names(gene_counts_GDO_LC) <- c("total transcripts","genes_after_filtering","genes_dropped",
                             "DEGs_all-genes-normal",
@@ -509,15 +509,15 @@ dev.off()
 
 ```{r}
 #Run shrinkage estimates
-GTC_LC_normal_res_table <- lfcShrink(dds11_filt,
+GTC_LC_normal_res_table <- lfcShrink(dds8_filt,
                               coef=2,
                               type="normal")
 
-GTC_LC_apeglm_res_table <- lfcShrink(dds11_filt,
+GTC_LC_apeglm_res_table <- lfcShrink(dds8_filt,
                               coef=2,
                               type="apeglm") # lfcThreshold = 0.585) 
 
-GTC_LC_ashr_res_table   <- lfcShrink(dds11_filt,
+GTC_LC_ashr_res_table   <- lfcShrink(dds8_filt,
                               coef=2,
                               type="ashr")
 
@@ -551,7 +551,7 @@ GTC_LC_sig_genes_normal<- GTC_LC_normal_df %>%
 write.table(GTC_LC_siggenes, file = "output/DEG_lists/Gill/GTC_LC_siggene.csv", row.names = FALSE)
 
 #saving gene counts as a result of each filtration step
-gene_counts_GTC_LC <- as.data.frame(c(nrow(GTC_LC_countmatrix),nrow(dds11_filt),(nrow(GTC_LC_countmatrix)-nrow(dds11_filt)),nrow(GTC_LC_normal_res_table),nrow(GTC_LC_apeglm_res_table),nrow(GTC_LC_ashr_res_table),nrow(GTC_LC_siggenes),nrow(GTC_LC_sig_genes_ashr),nrow(GTC_LC_sig_genes_normal)))
+gene_counts_GTC_LC <- as.data.frame(c(nrow(GTC_LC_countmatrix),nrow(dds8_filt),(nrow(GTC_LC_countmatrix)-nrow(dds8_filt)),nrow(GTC_LC_normal_res_table),nrow(GTC_LC_apeglm_res_table),nrow(GTC_LC_ashr_res_table),nrow(GTC_LC_siggenes),nrow(GTC_LC_sig_genes_ashr),nrow(GTC_LC_sig_genes_normal)))
 
 row.names(gene_counts_GTC_LC) <- c("total transcripts","genes_after_filtering","genes_dropped",
                             "DEGs_all-genes-normal",

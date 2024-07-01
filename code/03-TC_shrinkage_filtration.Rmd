@@ -7,15 +7,15 @@ date: "2024-02-15"
 ### Foot-OA-TC
 ```{r}
 #Run shrinkage estimates
-FOA_TC_normal_res_table <- lfcShrink(dds12_filt,
+FOA_TC_normal_res_table <- lfcShrink(dds9_filt,
                               coef=2,
                               type="normal")
 
-FOA_TC_apeglm_res_table <- lfcShrink(dds12_filt,
+FOA_TC_apeglm_res_table <- lfcShrink(dds9_filt,
                               coef=2,
                               type="apeglm") # lfcThreshold = 0.585) 
 
-FOA_TC_ashr_res_table   <- lfcShrink(dds12_filt,
+FOA_TC_ashr_res_table   <- lfcShrink(dds9_filt,
                               coef=2,
                               type="ashr")
 
@@ -49,7 +49,7 @@ FOA_TC_sig_genes_normal<- FOA_TC_normal_df %>%
 write.table(FOA_TC_siggenes, file = "output/DEG_lists/Foot/FOA_TC_siggene.csv", row.names = FALSE)
 
 #saving gene counts as a result of each filtration step
-gene_counts_FOA_TC <- as.data.frame(c(nrow(FOA_TC_countmatrix),nrow(dds12_filt),(nrow(FOA_TC_countmatrix)-nrow(dds12_filt)),nrow(FOA_TC_normal_res_table),nrow(FOA_TC_apeglm_res_table),nrow(FOA_TC_ashr_res_table),nrow(FOA_TC_siggenes),nrow(FOA_TC_sig_genes_ashr),nrow(FOA_TC_sig_genes_normal)))
+gene_counts_FOA_TC <- as.data.frame(c(nrow(FOA_TC_countmatrix),nrow(dds9_filt),(nrow(FOA_TC_countmatrix)-nrow(dds9_filt)),nrow(FOA_TC_normal_res_table),nrow(FOA_TC_apeglm_res_table),nrow(FOA_TC_ashr_res_table),nrow(FOA_TC_siggenes),nrow(FOA_TC_sig_genes_ashr),nrow(FOA_TC_sig_genes_normal)))
 
 row.names(gene_counts_FOA_TC) <- c("total transcripts","genes_after_filtering","genes_dropped",
                             "DEGs_all-genes-normal",
@@ -81,15 +81,15 @@ dev.off()
 ### Gill-OA-TC
 ```{r}
 #Run shrinkage estimates
-GOA_TC_normal_res_table <- lfcShrink(dds15_filt,
+GOA_TC_normal_res_table <- lfcShrink(dds12_filt,
                               coef=2,
                               type="normal")
 
-GOA_TC_apeglm_res_table <- lfcShrink(dds15_filt,
+GOA_TC_apeglm_res_table <- lfcShrink(dds12_filt,
                               coef=2,
                               type="apeglm") # lfcThreshold = 0.585) 
 
-GOA_TC_ashr_res_table   <- lfcShrink(dds15_filt,
+GOA_TC_ashr_res_table   <- lfcShrink(dds12_filt,
                               coef=2,
                               type="ashr")
 
@@ -123,7 +123,7 @@ GOA_TC_sig_genes_normal<- GOA_TC_normal_df %>%
 write.table(GOA_TC_sig_genes_apeglm, file = "output/DEG_lists/Gill/GOA_TC_siggene.csv", row.names = FALSE)
 
 #saving gene counts as a result of each filtration step
-gene_counts_GOA_TC <- as.data.frame(c(nrow(GOA_TC_countmatrix),nrow(dds15_filt),(nrow(GOA_TC_countmatrix)-nrow(dds15_filt)),nrow(GOA_TC_normal_res_table),nrow(GOA_TC_apeglm_res_table),nrow(GOA_TC_ashr_res_table),nrow(GOA_TC_sig_genes_apeglm), nrow(GOA_TC_sig_genes_ashr),nrow(GOA_TC_sig_genes_normal)))
+gene_counts_GOA_TC <- as.data.frame(c(nrow(GOA_TC_countmatrix),nrow(dds12_filt),(nrow(GOA_TC_countmatrix)-nrow(dds12_filt)),nrow(GOA_TC_normal_res_table),nrow(GOA_TC_apeglm_res_table),nrow(GOA_TC_ashr_res_table),nrow(GOA_TC_sig_genes_apeglm), nrow(GOA_TC_sig_genes_ashr),nrow(GOA_TC_sig_genes_normal)))
 
 row.names(gene_counts_GOA_TC) <- c("total transcripts","genes_after_filtering","genes_dropped",
                             "DEGs_all-genes-normal",
@@ -152,15 +152,15 @@ dev.off()
 ### Foot-OW-TC
 ```{r}
 #Run shrinkage estimates
-FOW_TC_normal_res_table <- lfcShrink(dds13_filt,
+FOW_TC_normal_res_table <- lfcShrink(dds10_filt,
                               coef=2,
                               type="normal")
 
-FOW_TC_apeglm_res_table <- lfcShrink(dds13_filt,
+FOW_TC_apeglm_res_table <- lfcShrink(dds10_filt,
                               coef=2,
                               type="apeglm") # lfcThreshold = 0.585) 
 
-FOW_TC_ashr_res_table   <- lfcShrink(dds13_filt,
+FOW_TC_ashr_res_table   <- lfcShrink(dds10_filt,
                               coef=2,
                               type="ashr")
 
@@ -191,7 +191,7 @@ FOW_TC_sig_genes_normal<- FOW_TC_normal_df %>%
 write.table(FOW_TC_siggenes_apeglm, file = "output/DEG_lists/Foot/FOW_TC_siggene.csv", row.names = FALSE)
 
 #saving gene counts as a result of each filtration step
-gene_counts_FOW_TC <- as.data.frame(c(nrow(FOW_TC_countmatrix),nrow(dds13_filt),(nrow(FOW_TC_countmatrix)-nrow(dds13_filt)),nrow(FOW_TC_normal_res_table),nrow(FOW_TC_apeglm_res_table),nrow(FOW_TC_ashr_res_table),nrow(FOW_TC_siggenes_apeglm),nrow(FOW_TC_sig_genes_ashr),nrow(FOW_TC_sig_genes_normal)))
+gene_counts_FOW_TC <- as.data.frame(c(nrow(FOW_TC_countmatrix),nrow(dds10_filt),(nrow(FOW_TC_countmatrix)-nrow(dds10_filt)),nrow(FOW_TC_normal_res_table),nrow(FOW_TC_apeglm_res_table),nrow(FOW_TC_ashr_res_table),nrow(FOW_TC_siggenes_apeglm),nrow(FOW_TC_sig_genes_ashr),nrow(FOW_TC_sig_genes_normal)))
 
 row.names(gene_counts_FOW_TC) <- c("total transcripts","genes_after_filtering","genes_dropped",
                             "DEGs_all-genes-normal",
@@ -218,32 +218,32 @@ dev.off()
 
 
 #Volcano Plots
-library(ggplot2)
-FOW_TC_apeglm_df$significant <- FOW_TC_apeglm_df$padj < 0.05
-
-ggplot(FOW_TC_apeglm_df, aes(x=log2FoldChange, y=-log10(padj))) +
-    geom_point(aes(color=significant)) +
-    scale_color_manual(values=c("gray", "red")) +
-    theme_minimal() +
-    labs(title="Volcano Plot",
-         x="Log2 Fold Change",
-         y="-log10 p-value") +
-    theme(plot.title = element_text(hjust = 0.5))
+# library(ggplot2)
+# FOW_TC_apeglm_df$significant <- FOW_TC_apeglm_df$padj < 0.05
+# 
+# ggplot(FOW_TC_apeglm_df, aes(x=log2FoldChange, y=-log10(padj))) +
+#     geom_point(aes(color=significant)) +
+#     scale_color_manual(values=c("gray", "red")) +
+#     theme_minimal() +
+#     labs(title="Volcano Plot",
+#          x="Log2 Fold Change",
+#          y="-log10 p-value") +
+#     theme(plot.title = element_text(hjust = 0.5))
 ```
 
 ### Gill-OW-TC
 
 ```{r}
 #Run shrinkage estimates
-GOW_TC_normal_res_table <- lfcShrink(dds16_filt,
+GOW_TC_normal_res_table <- lfcShrink(dds13_filt,
                               coef=2,
                               type="normal")
 
-GOW_TC_apeglm_res_table <- lfcShrink(dds16_filt,
+GOW_TC_apeglm_res_table <- lfcShrink(dds13_filt,
                               coef=2,
                               type="apeglm") # lfcThreshold = 0.585) 
 
-GOW_TC_ashr_res_table   <- lfcShrink(dds16_filt,
+GOW_TC_ashr_res_table   <- lfcShrink(dds13_filt,
                               coef=2,
                               type="ashr")
 
@@ -277,7 +277,7 @@ GOW_TC_sig_genes_normal<- GOW_TC_normal_df %>%
 write.table(GOW_TC_siggenes_apeglm, file = "output/DEG_lists/Gill/GOW_TC_siggene_apeglm.csv", row.names = FALSE)
 
 #saving gene counts as a result of each filtration step
-gene_counts_GOW_TC <- as.data.frame(c(nrow(GOW_TC_countmatrix),nrow(dds16_filt),(nrow(GOW_TC_countmatrix)-nrow(dds16_filt)),nrow(GOW_TC_normal_res_table),nrow(GOW_TC_apeglm_res_table),nrow(GOW_TC_ashr_res_table),nrow(GOW_TC_siggenes_apeglm),nrow(GOW_TC_sig_genes_ashr),nrow(GOW_TC_sig_genes_normal)))
+gene_counts_GOW_TC <- as.data.frame(c(nrow(GOW_TC_countmatrix),nrow(dds13_filt),(nrow(GOW_TC_countmatrix)-nrow(dds13_filt)),nrow(GOW_TC_normal_res_table),nrow(GOW_TC_apeglm_res_table),nrow(GOW_TC_ashr_res_table),nrow(GOW_TC_siggenes_apeglm),nrow(GOW_TC_sig_genes_ashr),nrow(GOW_TC_sig_genes_normal)))
 
 row.names(gene_counts_GOW_TC) <- c("total transcripts","genes_after_filtering","genes_dropped",
                             "DEGs_all-genes-normal",
@@ -307,15 +307,15 @@ dev.off()
 ### Foot-DO-TC
 ```{r}
 #Run shrinkage estimates
-FDO_TC_normal_res_table <- lfcShrink(dds14_filt,
+FDO_TC_normal_res_table <- lfcShrink(dds11_filt,
                               coef=2,
                               type="normal")
 
-FDO_TC_apeglm_res_table <- lfcShrink(dds14_filt,
+FDO_TC_apeglm_res_table <- lfcShrink(dds11_filt,
                               coef=2,
                               type="apeglm") 
 
-FDO_TC_ashr_res_table   <- lfcShrink(dds14_filt,
+FDO_TC_ashr_res_table   <- lfcShrink(dds11_filt,
                               coef=2,
                               type="ashr")
 
@@ -346,7 +346,7 @@ FDO_TC_sig_genes_normal<- FDO_TC_normal_df %>%
 write.table(FDO_TC_siggenes_apeglm, file = "output/DEG_lists/Foot/FDO_TC_siggene_apeglm.csv", row.names = FALSE)
 
 #saving gene counts as a result of each filtration step
-gene_counts_FDO_TC <- as.data.frame(c(nrow(FDO_TC_countmatrix),nrow(dds14_filt),(nrow(FDO_TC_countmatrix)-nrow(dds14_filt)),nrow(FDO_TC_normal_res_table),nrow(FDO_TC_apeglm_res_table),nrow(FDO_TC_ashr_res_table),nrow(FDO_TC_siggenes_apeglm),nrow(FDO_TC_sig_genes_ashr),nrow(FDO_TC_sig_genes_normal)))
+gene_counts_FDO_TC <- as.data.frame(c(nrow(FDO_TC_countmatrix),nrow(dds11_filt),(nrow(FDO_TC_countmatrix)-nrow(dds11_filt)),nrow(FDO_TC_normal_res_table),nrow(FDO_TC_apeglm_res_table),nrow(FDO_TC_ashr_res_table),nrow(FDO_TC_siggenes_apeglm),nrow(FDO_TC_sig_genes_ashr),nrow(FDO_TC_sig_genes_normal)))
 
 row.names(gene_counts_FDO_TC) <- c("total transcripts","genes_after_filtering","genes_dropped",
                             "DEGs_all-genes-normal",
@@ -370,30 +370,30 @@ abline(h=c(-1.5,1.5), col="dodgerblue", lwd=2)
 dev.off()
 
 #volcano plots
-FDO_TC_apeglm_df$significant <- FDO_TC_apeglm_df$padj < 0.05
-
-ggplot(FDO_TC_apeglm_df, aes(x=log2FoldChange, y=-log10(padj))) +
-    geom_point(aes(color=significant)) +
-    scale_color_manual(values=c("gray", "red")) +
-    theme_minimal() +
-    labs(title="Volcano Plot",
-         x="Log2 Fold Change",
-         y="-log10 p-value") +
-    theme(plot.title = element_text(hjust = 0.5))
+# FDO_TC_apeglm_df$significant <- FDO_TC_apeglm_df$padj < 0.05
+# 
+# ggplot(FDO_TC_apeglm_df, aes(x=log2FoldChange, y=-log10(padj))) +
+#     geom_point(aes(color=significant)) +
+#     scale_color_manual(values=c("gray", "red")) +
+#     theme_minimal() +
+#     labs(title="Volcano Plot",
+#          x="Log2 Fold Change",
+#          y="-log10 p-value") +
+#     theme(plot.title = element_text(hjust = 0.5))
 ```
 
 #Gill-DO-TC
 ```{r}
 #Run shrinkage estimates
-GDO_TC_normal_res_table <- lfcShrink(dds17_filt,
+GDO_TC_normal_res_table <- lfcShrink(dds14_filt,
                               coef=2,
                               type="normal")
 
-GDO_TC_apeglm_res_table <- lfcShrink(dds17_filt,
+GDO_TC_apeglm_res_table <- lfcShrink(dds14_filt,
                               coef=2,
                               type="apeglm") # lfcThreshold = 0.585) 
 
-GDO_TC_ashr_res_table   <- lfcShrink(dds17_filt,
+GDO_TC_ashr_res_table   <- lfcShrink(dds14_filt,
                               coef=2,
                               type="ashr")
 
@@ -427,7 +427,7 @@ GDO_TC_sig_genes_normal<- GDO_TC_normal_df %>%
 write.table(GDO_TC_siggenes, file = "output/DEG_lists/Gill/GDO_TC_siggene_apeglm.csv", row.names = FALSE)
 
 #saving gene counts as a result of each filtration step
-gene_counts_GDO_TC <- as.data.frame(c(nrow(GDO_TC_countmatrix),nrow(dds17_filt),(nrow(GDO_TC_countmatrix)-nrow(dds17_filt)),nrow(GDO_TC_normal_res_table),nrow(GDO_TC_apeglm_res_table),nrow(GDO_TC_ashr_res_table),nrow(GDO_TC_siggenes),nrow(GDO_TC_sig_genes_ashr),nrow(GDO_TC_sig_genes_normal)))
+gene_counts_GDO_TC <- as.data.frame(c(nrow(GDO_TC_countmatrix),nrow(dds14_filt),(nrow(GDO_TC_countmatrix)-nrow(dds14_filt)),nrow(GDO_TC_normal_res_table),nrow(GDO_TC_apeglm_res_table),nrow(GDO_TC_ashr_res_table),nrow(GDO_TC_siggenes),nrow(GDO_TC_sig_genes_ashr),nrow(GDO_TC_sig_genes_normal)))
 
 row.names(gene_counts_GDO_TC) <- c("total transcripts","genes_after_filtering","genes_dropped",
                             "DEGs_all-genes-normal",

@@ -1,0 +1,50 @@
+---
+title: "genome_blast"
+output: html_document
+date: "2024-06-30"
+---
+
+### Load up uniprot database
+```{bash}
+
+cd /home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/data/
+curl -O https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_sprot.fasta.gz
+mv uniprot_sprot.fasta.gz uniprot_sprot_r2024_01.fasta.gz
+gunzip -k uniprot_sprot_r2024_01.fasta.gz
+ls ../data
+
+```
+
+### Make into database
+```{bash}
+/home/shared/ncbi-blast-2.15.0+/bin/makeblastdb \
+-in /home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/data/uniprot_sprot_r2024_01.fasta \
+-dbtype prot \
+-out /home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/uniprot_sprot_r2024_01
+
+# Building a new DB, current time: 06/30/2024 13:10:43 -->
+# New DB name:   /home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/uniprot_sprot_r2024_01 -->
+# New DB title:  /home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/data/uniprot_sprot_r2024_01.fasta -->
+# Sequence type: Protein -->
+# Keep MBits: T -->
+# Maximum file size: 3000000000B -->
+# Adding sequences from FASTA; added 571609 sequences in 8.75332 seconds. -->
+```
+```{bash}
+head /home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/data/ncbi_dataset/data/GCF_036588685.1/cds_from_genomic.fasta
+echo "How many sequences are there?"
+grep -c ">" /home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/data/ncbi_dataset/data/GCF_036588685.1/cds_from_genomic.fasta
+#53269
+```
+
+```{bash}
+/home/shared/ncbi-blast-2.15.0+/bin/blastx \
+-query /home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/data/ncbi_dataset/data/GCF_036588685.1/cds_from_genomic.fasta \
+-db /home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/uniprot_sprot_r2024_01 \
+-out /home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/Mtros-genome-uniprot_blastx.tab \
+-evalue 1E-20 \
+-num_threads 20 \
+-max_target_seqs 1 \
+-outfmt 6
+```
+

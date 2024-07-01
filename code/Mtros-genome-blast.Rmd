@@ -46,5 +46,8 @@ grep -c ">" /home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analys
 -num_threads 20 \
 -max_target_seqs 1 \
 -outfmt 6
+
+#Warning: [Query 1-4] Examining 5 or more matches is recommended
+#Got this warning for what looks like every query
 ```
 

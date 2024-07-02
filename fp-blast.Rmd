@@ -1,0 +1,18 @@
+---
+title: "footprotein_blast"
+output: html_document
+date: "2024-07-02"
+---
+
+```{bash}
+/home/shared/ncbi-blast-2.15.0+/bin/blastx \
+-query /home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/data/foot_proteins.fasta \
+-db /home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/uniprot_sprot_r2024_01 \
+-out /home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/fp-uniprot_blastx.tab \
+-evalue 1E-20 \
+-num_threads 20 \
+-max_target_seqs 1 \
+-outfmt 6
+
+```
+

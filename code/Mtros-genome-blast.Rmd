@@ -14,6 +14,17 @@ gunzip -k uniprot_sprot_r2024_01.fasta.gz
 ls ../data
 
 ```
+### Get trembl fasta
+```{bash}
+cd /home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/data/ 
+curl -O https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_trembl.fasta.gz 
+mv uniprot_trembl.fasta.gz uniprot_trembl_r2024_01.fasta.gz
+gunzip -k uniprot_trembl_r2024_01.fasta.gz
+ls ../data
+
+```
+
+
 
 ### Make into database
 ```{bash}

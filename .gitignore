@@ -23,6 +23,8 @@ output/hisat2-build_stats.txt
 *.fasta.gz
 *.fasta
 uniprot_sprot_r2024_01.*
+*.tsv
+uniprot_proteins_compressed
 
 tmp/
 .RData

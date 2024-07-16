@@ -6,123 +6,72 @@ date: "2024-06-30"
 
 ### Split the files
 ```{bash}
-
 #!/bin/bash
 
-# Directory to store the split FASTA files
-SPLIT_DIR="/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/data/splits/"
+# Input and output directories
+input_file="/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/data/ncbi_dataset/data/GCF_036588685.1/cds_from_genomic.fasta"
+output_dir="/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/data/splits"
 
-# Ensure the directory exists
-mkdir -p ${SPLIT_DIR}
+# Make sure the output directory exists
+mkdir -p $output_dir
 
-# Path to the original FASTA file
-FASTA_FILE="/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/data/ncbi_dataset/data/GCF_036588685.1/cds_from_genomic.fasta"
-
-# Number of sequences per split file
-SEQ_PER_FILE=1000
-
-# Initialize variables
-file_count=1
-seq_count=0
-output_file="${SPLIT_DIR}split_${file_count}.fasta"
-
-# Read the original FASTA file line by line
-while IFS= read -r line
-do
-    # If the line starts with ">", it's a header line for a new sequence
-    if [[ $line == ">"* ]]; then
-        ((seq_count++))
-        # If the sequence count exceeds the limit, start a new file
-        if (( seq_count > SEQ_PER_FILE )); then
-            ((file_count++))
-            seq_count=1
-            output_file="${SPLIT_DIR}split_${file_count}.fasta"
-        fi
-    fi
-    # Append the line to the current output file
-    echo "$line" >> "$output_file"
-done < "$FASTA_FILE"
-
-# Check if the splitting was successful
-if [ $? -eq 0 ]; then
-    echo "FASTA file split successfully. Split files are located in ${SPLIT_DIR}"
-else
-    echo "Error splitting the FASTA file."
-    exit 1
-fi
-
-
+# Split the input file
+awk -v max_seqs=5 -v out_dir="$output_dir/split_" '
+  BEGIN {seq_count=0; file_count=1}
+  /^>/ {if(seq_count % max_seqs == 0) {close(out_file); out_file=sprintf("%s%d.fasta", out_dir, file_count++);} seq_count++}
+  {print >> out_file}
+' $input_file
 
 ```
 
-### EBI request
+### Uniprot request
 ```{bash}
-#!/bin/bash
+# Step 2: Submit Jobs and Collect Job IDs
+for split_file in "$split_dir"/*.fasta; do
+  response=$(curl -s -X POST "https://www.uniprot.org/blast/" \
+       -F "file=@${split_file}" \
+       -F "program=blastp" \
+       -F "database=uniprotkb_trembl" \
+       -F "email=${email}")
 
-# Define the EBI BLAST API endpoint for submission
-URL="https://www.ebi.ac.uk/Tools/services/rest/ncbiblast/run/"
+  job_id=$(echo $response | grep -oP '(?<=RID = )\w+')
+  echo "Submitted $split_file, job ID: $job_id"
 
-# Directory containing split FASTA files
-SPLIT_DIR="/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/data/splits/"
-
-# Output directory
-OUTPUT_DIR="/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/"
-
-# Ensure the output directory exists
-mkdir -p ${OUTPUT_DIR}
-
-# Function to submit each file
-submit_blast() {
-    local fasta_file=$1
-    local output_file=$2
-
-    # Read the sequence from the FASTA file
-    SEQUENCE=$(cat ${fasta_file})
-
-    # Submit the BLAST search using curl with the sequence directly
-    JOB_ID=$(curl -s -F "email=sgleuch@uw.edu" \
-        -F "sequence=<-" \
-        -F "program=blastx" \
-        -F "database=uniprotkb" \
-        -F "stype=dna" \
-        ${URL} <<< "${SEQUENCE}" | grep -oP '(?<=<jobId>)[^<]+')
-
-    # Check if JOB_ID is returned
-    if [ -z "$JOB_ID" ]; then
-        echo "Failed to obtain a job ID from EBI BLAST service for ${fasta_file}."
-        return 1
-    fi
-
-    # Inform the user about the job ID
-    echo "BLAST job submitted for ${fasta_file}. Job ID: ${JOB_ID}"
-
-    # Define a function to check the job status
-    check_status() {
-        STATUS=$(curl -s "https://www.ebi.ac.uk/Tools/services/rest/ncbiblast/status/${JOB_ID}")
-        echo "${STATUS}"
-    }
-
-    # Wait for the job to complete
-    STATUS=$(check_status)
-    while [ "${STATUS}" != "FINISHED" ]; do
-        echo "Job status for ${fasta_file}: ${STATUS}. Waiting for 30 seconds before checking again..."
-        sleep 30
-        STATUS=$(check_status)
-    done
-
-    # Retrieve the results
-    curl -s "https://www.ebi.ac.uk/Tools/services/rest/ncbiblast/result/${JOB_ID}/out" > "${output_file}"
-
-    # Inform the user where the results are saved
-    echo "BLAST search results saved to ${output_file}"
-}
-
-# Iterate over each split FASTA file and submit it to EBI
-for fasta_file in ${SPLIT_DIR}*.fasta; do
-    output_file="${OUTPUT_DIR}$(basename ${fasta_file}).blast_results.txt"
-    submit_blast "${fasta_file}" "${output_file}"
+  # Save job ID to a file for later retrieval
+  echo $job_id >> job_ids.txt
+  sleep 1 # Add a delay to avoid overwhelming the server
 done
 
+# Step 3: Check Job Status and Download Results
+while read -r job_id; do
+  echo "Checking status for job ID: $job_id"
+
+  # Poll the job status until it is completed
+  while true; do
+    status=$(curl -s "https://www.uniprot.org/blast/results/${job_id}.json" | jq -r '.status')
+    echo "Status: $status"
+
+    if [ "$status" == "DONE" ]; then
+      # Download the results
+      curl -o "${output_results_dir}/${job_id}.xml" "https://www.uniprot.org/blast/results/${job_id}.xml"
+      echo "Results for job ID: $job_id downloaded."
+      break
+    elif [ "$status" == "FAILURE" ]; then
+      echo "Job $job_id failed."
+      break
+    else
+      # Wait for a while before checking again
+      sleep 60
+    fi
+  done
+done < job_ids.txt
+
+
+
 ```
+
+
+
+
 
 

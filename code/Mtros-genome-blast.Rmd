@@ -26,13 +26,17 @@ awk -v max_seqs=5 -v out_dir="$output_dir/split_" '
 
 ### Uniprot request
 ```{bash}
+split_dir="/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/data/splits"
+output_results_dir="/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/mtros_trembl_blast"
+email="sgleuch@uw.edu"
+
 # Step 2: Submit Jobs and Collect Job IDs
 for split_file in "$split_dir"/*.fasta; do
   response=$(curl -s -X POST "https://www.uniprot.org/blast/" \
        -F "file=@${split_file}" \
        -F "program=blastp" \
        -F "database=uniprotkb_trembl" \
-       -F "email=${email}")
+       -F "email=${email}") 
 
   job_id=$(echo $response | grep -oP '(?<=RID = )\w+')
   echo "Submitted $split_file, job ID: $job_id"
@@ -41,7 +45,9 @@ for split_file in "$split_dir"/*.fasta; do
   echo $job_id >> job_ids.txt
   sleep 1 # Add a delay to avoid overwhelming the server
 done
+```
 
+```{r}
 # Step 3: Check Job Status and Download Results
 while read -r job_id; do
   echo "Checking status for job ID: $job_id"
@@ -61,7 +67,7 @@ while read -r job_id; do
       break
     else
       # Wait for a while before checking again
-      sleep 60
+      sleep 5
     fi
   done
 done < job_ids.txt

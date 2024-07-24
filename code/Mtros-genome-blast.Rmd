@@ -10,7 +10,7 @@ date: "2024-06-30"
 cd ../data
 curl -O https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_trembl.fasta.gz
 mv uniprot_trembl.fasta.gz uniprot_trembl_r2024_01.fasta.gz
-gunzip -c uniprot_trembl_r2024_01.fasta.gz
+zcat uniprot_trembl_r2024_01.fasta.gz | wc -c
 ls ../data
 
 ```

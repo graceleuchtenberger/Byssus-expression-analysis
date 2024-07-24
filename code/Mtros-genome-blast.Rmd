@@ -4,6 +4,24 @@ output: html_document
 date: "2024-06-30"
 ---
 
+
+```{bash}
+
+cd ../data
+curl -O https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_trembl.fasta.gz
+mv uniprot_trembl.fasta.gz uniprot_trembl_r2024_01.fasta.gz
+gunzip -c uniprot_trembl_r2024_01.fasta.gz
+ls ../data
+
+```
+
+
+
+
+
+
+
+
 ### Split the files
 ```{bash}
 #!/bin/bash
@@ -24,21 +42,29 @@ awk -v max_seqs=5 -v out_dir="$output_dir/split_" '
 
 ```
 
+```{bash}
+cpan install Bio::Perl
+cpan install Bio::Tools::Run::RemoteBlast
+```
+
+
 ### Uniprot request
 ```{bash}
 split_dir="/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/data/splits"
 output_results_dir="/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/mtros_trembl_blast"
 email="sgleuch@uw.edu"
 
-# Step 2: Submit Jobs and Collect Job IDs
 for split_file in "$split_dir"/*.fasta; do
-  response=$(curl -s -X POST "https://www.uniprot.org/blast/" \
+  response=$(curl -s -L -X POST "https://www.uniprot.org/blast/" \
        -F "file=@${split_file}" \
        -F "program=blastp" \
        -F "database=uniprotkb_trembl" \
-       -F "email=${email}") 
+       -F "email=${email}")
 
-  job_id=$(echo $response | grep -oP '(?<=RID = )\w+')
+  echo "Response from server: $response"  # Debug statement to print the response
+
+  # Extract job ID from the response (assuming response format)
+  job_id=$(echo "$response" | grep -oP '(?<=RID = )\w+')
   echo "Submitted $split_file, job ID: $job_id"
 
   # Save job ID to a file for later retrieval
@@ -47,7 +73,9 @@ for split_file in "$split_dir"/*.fasta; do
 done
 ```
 
-```{r}
+
+
+```{bash}
 # Step 3: Check Job Status and Download Results
 while read -r job_id; do
   echo "Checking status for job ID: $job_id"

@@ -4,108 +4,53 @@ output: html_document
 date: "2024-06-30"
 ---
 
-
+### Download trembl database
 ```{bash}
 
 cd ../data
 curl -O https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_trembl.fasta.gz
 mv uniprot_trembl.fasta.gz uniprot_trembl_r2024_01.fasta.gz
-zcat uniprot_trembl_r2024_01.fasta.gz | wc -c
+gunzip uniprot_trembl_r2024_01.fasta.gz
 ls ../data
 
 ```
 
+### Download swissprot database
 
-
-
-
-
-
-
-### Split the files
 ```{bash}
-#!/bin/bash
 
-# Input and output directories
-input_file="/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/data/ncbi_dataset/data/GCF_036588685.1/cds_from_genomic.fasta"
-output_dir="/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/data/splits"
-
-# Make sure the output directory exists
-mkdir -p $output_dir
-
-# Split the input file
-awk -v max_seqs=5 -v out_dir="$output_dir/split_" '
-  BEGIN {seq_count=0; file_count=1}
-  /^>/ {if(seq_count % max_seqs == 0) {close(out_file); out_file=sprintf("%s%d.fasta", out_dir, file_count++);} seq_count++}
-  {print >> out_file}
-' $input_file
+cd ../data
+curl -O https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_sprot.fasta.gz
+mv uniprot_sprot.fasta.gz uniprot_sprot_r2024_01.fasta.gz
+gunzip uniprot_sprot_r2024_01.fasta.gz
 
 ```
 
+### Combine fasta's
 ```{bash}
-cpan install Bio::Perl
-cpan install Bio::Tools::Run::RemoteBlast
-```
-
-
-### Uniprot request
-```{bash}
-split_dir="/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/data/splits"
-output_results_dir="/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/mtros_trembl_blast"
-email="sgleuch@uw.edu"
-
-for split_file in "$split_dir"/*.fasta; do
-  response=$(curl -s -L -X POST "https://www.uniprot.org/blast/" \
-       -F "file=@${split_file}" \
-       -F "program=blastp" \
-       -F "database=uniprotkb_trembl" \
-       -F "email=${email}")
-
-  echo "Response from server: $response"  # Debug statement to print the response
-
-  # Extract job ID from the response (assuming response format)
-  job_id=$(echo "$response" | grep -oP '(?<=RID = )\w+')
-  echo "Submitted $split_file, job ID: $job_id"
-
-  # Save job ID to a file for later retrieval
-  echo $job_id >> job_ids.txt
-  sleep 1 # Add a delay to avoid overwhelming the server
-done
-```
-
-
-
-```{bash}
-# Step 3: Check Job Status and Download Results
-while read -r job_id; do
-  echo "Checking status for job ID: $job_id"
-
-  # Poll the job status until it is completed
-  while true; do
-    status=$(curl -s "https://www.uniprot.org/blast/results/${job_id}.json" | jq -r '.status')
-    echo "Status: $status"
-
-    if [ "$status" == "DONE" ]; then
-      # Download the results
-      curl -o "${output_results_dir}/${job_id}.xml" "https://www.uniprot.org/blast/results/${job_id}.xml"
-      echo "Results for job ID: $job_id downloaded."
-      break
-    elif [ "$status" == "FAILURE" ]; then
-      echo "Job $job_id failed."
-      break
-    else
-      # Wait for a while before checking again
-      sleep 5
-    fi
-  done
-done < job_ids.txt
-
-
+cat uniprot_sprot_r2024_01.fasta uniprot_trembl_r2024_01.fasta > uniprotkb.fasta
 
 ```
 
+### Make blastdb
+```{bash}
+/home/shared/ncbi-blast-2.15.0+/bin/makeblastdb \
+-in /home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/data/uniprotkb.fasta \
+-dbtype prot \
+-out /home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/data/uniprotkb_db
 
 
+```
+```{bash}
+/home/shared/ncbi-blast-2.15.0+/bin/blastx \
+-query /home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/data/ncbi_dataset/data/GCF_036588685.1/cds_from_genomic.fasta \
+-db /home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/data/uniprotkb_db \
+-out /home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/genome_trembl_blastx.tab \
+-evalue 1E-20 \
+-num_threads 20 \
+-max_target_seqs 1 \
+-outfmt 6
+```
 
 
 

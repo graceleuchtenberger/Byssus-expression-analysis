@@ -29,7 +29,8 @@ gunzip uniprot_sprot_r2024_01.fasta.gz
 ### Combine fasta's
 ```{bash}
 cat uniprot_sprot_r2024_01.fasta uniprot_trembl_r2024_01.fasta > uniprotkb.fasta
-
+echo "How many sequences are there?"
+grep -c ">" /home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/uniprotkb.fasta
 ```
 
 ### Make blastdb

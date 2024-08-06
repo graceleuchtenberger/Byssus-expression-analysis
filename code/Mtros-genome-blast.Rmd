@@ -4,20 +4,12 @@ output: html_document
 date: "2024-06-30"
 ---
 
-### Download trembl database
+### Download swissprot database
+
 ```{bash}
-
-### https://www.nature.com/articles/s41592-021-01101-x
-
-cd ../data
-curl -O https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_trembl.fasta.gz
-mv uniprot_trembl.fasta.gz uniprot_trembl_r2024_01.fasta.gz
-gunzip uniprot_trembl_r2024_01.fasta.gz
-ls ../data
-
+curl -o uniprotkb_mytilus_foot.fasta "https://rest.uniprot.org/uniprotkb/stream?format=fasta&query=%28mytilus+foot%29"
 ```
 
-### Download swissprot database
 
 ```{bash}
 
@@ -30,31 +22,26 @@ gunzip uniprot_sprot_r2024_01.fasta.gz
 
 ### Combine fasta's
 ```{bash}
-cat uniprot_sprot_r2024_01.fasta uniprot_trembl_r2024_01.fasta > uniprotkb.fasta
+cat /home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/data/uniprot_sprot_r2024_01.fasta /home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/data/uniprotkb_mytilus_foot.fasta > swissprot_n_mytilusfoot.fasta
 
 ```
 
-```{bash}
-grep -c ">" /home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/uniprotkb.fasta
-
-# 245896766, correct number of seq's in all of uniprot (check site https://www.uniprot.org/uniprotkb?query=*)
-```
 
 
 ### Make blastdb
 ```{bash}
 /home/shared/ncbi-blast-2.15.0+/bin/makeblastdb \
--in /home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/uniprotkb.fasta \
+-in /home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/data/swissprot_n_mytilusfoot.fasta \
 -dbtype prot \
--out /home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/data/uniprotkb_db
+-out /home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/data/swissprot_n_mytilusfoot_db
 
 
 ```
 ```{bash}
 /home/shared/ncbi-blast-2.15.0+/bin/blastx \
 -query /home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/data/ncbi_dataset/data/GCF_036588685.1/cds_from_genomic.fasta \
--db /home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/data/uniprotkb_db \
--out /home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/genome_trembl_blastx.tab \
+-db /home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/data/swissprot_n_mytilusfoot_db \
+-out /home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/genome_n_foot_blastx.tab \
 -evalue 1E-20 \
 -num_threads 20 \
 -max_target_seqs 1 \

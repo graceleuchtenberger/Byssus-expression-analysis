@@ -7,6 +7,8 @@ date: "2024-06-30"
 ### Download trembl database
 ```{bash}
 
+### https://www.nature.com/articles/s41592-021-01101-x
+
 cd ../data
 curl -O https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_trembl.fasta.gz
 mv uniprot_trembl.fasta.gz uniprot_trembl_r2024_01.fasta.gz
@@ -29,14 +31,20 @@ gunzip uniprot_sprot_r2024_01.fasta.gz
 ### Combine fasta's
 ```{bash}
 cat uniprot_sprot_r2024_01.fasta uniprot_trembl_r2024_01.fasta > uniprotkb.fasta
-echo "How many sequences are there?"
-grep -c ">" /home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/uniprotkb.fasta
+
 ```
+
+```{bash}
+grep -c ">" /home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/uniprotkb.fasta
+
+# 245896766, correct number of seq's in all of uniprot (check site https://www.uniprot.org/uniprotkb?query=*)
+```
+
 
 ### Make blastdb
 ```{bash}
 /home/shared/ncbi-blast-2.15.0+/bin/makeblastdb \
--in /home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/data/uniprotkb.fasta \
+-in /home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/uniprotkb.fasta \
 -dbtype prot \
 -out /home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/data/uniprotkb_db
 

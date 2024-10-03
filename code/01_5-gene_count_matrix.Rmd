@@ -8,6 +8,7 @@ date: "2024-06-05"
 gene_count_matrix <- read_csv("/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/gene_count_matrix.csv")
 gene_count_matrix <- data.frame(gene_count_matrix)
 
+
 ```
 
 ## Clean up genome countmatrix
@@ -73,7 +74,9 @@ treatmentinfo.2 <- treatmentinfo.2[-removal,]
 #Check that columns and row names match
 all(rownames(treatmentinfo.2) == colnames(gene_count_matrix))
 
-write.table(gene_count_matrix, file = "/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/13-Hisat/", row.names = FALSE)
+#rename Loc identifier column
+
+write.table(gene_count_matrix, file = "/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/gene_count_matrix_clean", row.names = FALSE)
 ```
 
 

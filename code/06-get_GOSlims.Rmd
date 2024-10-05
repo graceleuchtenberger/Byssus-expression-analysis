@@ -5,25 +5,120 @@ date: "2024-04-03"
 ---
 ```{r}
 library(tidyverse)
+BiocManager::install(c("GSEABase", "GO.db"))
 
-GOSlims <- read.csv("https://gannet.fish.washington.edu/spartina/project-oyster-oa/Haws/GO-annotation/GO-GOslim.sorted", sep="\t", header = F)
 
-colnames(GOSlims) <- c("GO.IDs", "Pathway", "Process", "Letter")
 ```
 
 #FDO
 ```{r}
 
-FDO_sigs_ID_cleaned_separated <- separate_rows(FDO_sigs_ID, GO.IDs, sep = ";")
-FDO_sigs_ID_cleaned_separated$GO.IDs <- trimws(FDO_sigs_ID_cleaned_separated$GO.IDs)
+FDO_sigs_ID_cleaned_separated <- separate_rows(FDO_sigs_ID, GO_ID, sep = ";")
+FDO_sigs_ID_cleaned_separated$GO.IDs <- trimws(FDO_sigs_ID_cleaned_separated$GO_ID)
 
 
 ```
 
+```{bash rm-spaces-from-GOs}
+# Remove "hidden" spaces in GOs, but preserve tabs, using sed
+awk -F"\t" '{print $2, "\t", $1}' \
+/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/DEG_lists/GOterms_genome/FDO_sigs_ID.csv \
+| sed 's/ \+//g' \
+> /home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/DEG_lists/GOterms_genome/FDO_sigs_ID.csv
+
+head /home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/DEG_lists/GOterms_genome/FDO_sigs_ID.csv
+```
+
+# Set variables
+```{r set-variables}
+goslims <- "goslim_generic.obo"
+goslims_url <- "http://current.geneontology.org/ontology/subsets/goslim_generic.obo"
+```
+
+# Create functions
+```{r create-functions}
+
+# Function for mapping GOIDs to GOslims
+
+mappedIds <- function(df, collection, OFFSPRING, goannotGSC) {
+  # Split semi-colon delimited strings in df$ids
+  df$ids_split <- strsplit(as.character(df$ids), ";")
+  
+  # Determine the maximum number of elements per row
+  max_elements <- max(lengths(df$ids_split))
+  
+  # Fill in shorter rows with NA values
+  df$ids_split <- lapply(df$ids_split, function(x) {
+    length(x) <- max_elements
+    x
+  })
+  
+  # Combine the split strings into a matrix
+  ids_mat <- do.call(rbind, df$ids_split)
+  
+  # Convert the matrix to a data frame
+  ids_df <- as.data.frame(ids_mat, stringsAsFactors = FALSE)
+  
+  # Rename the columns of the data frame
+  colnames(ids_df) <- paste0("ids_", 1:max_elements)
+  
+  # Combine the original data frame and the new data frame
+  df <- cbind(df, ids_df)
+  
+  # Perform the matching operation
+  mt <- match(toupper(trimws(df$ids_1)), toupper(trimws(names(goannotGSC))))
+  
+  # Add a new column to the data frame for the "Genes" result
+  df$Genes <- NA_character_
+  
+  # Fill in the "Genes" column for rows that have a match
+  df$Genes[!is.na(mt)] <- vapply(geneIds(goannotGSC)[mt[!is.na(mt)]], 
+                                  paste, collapse = ";", character(1L))
+  
+   df <- df %>% dplyr::select(Count, Percent, Term, ids, Genes)
+   
+  # Return the modified data frame
+  return(df)
+}
+```
+
+# Download `goslim_generic.obo` from Gene Ontology Consortium
+
+## Set GSEAbase location and download `goslim_generic.obo`
+```{r download-goslim-obo}
+gseabase_location <- find.package("GSEABase")
+goslim_obo_dest <- file.path(gseabase_location, "extdata", goslims, fsep = "/")
+download.file(url = goslims_url,
+              destfile = goslim_obo_dest)
+
+fl <- system.file("extdata", goslims, package="GSEABase")
+```
+
+## Create named list and GSEAbase GeneSet
+
+### Flatten gene list
+
+Creates one row per GO ID
+```{r flatten-gene-GO-listt}
+# Read in tab-delimited file
+FDO_sigs_ID <- read.csv("/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/DEG_lists/GOterms_genome/FDO_sigs_ID.csv",
+                      sep = " "
+                      )
+
+# Remove rows with no GO ID
+FDO_sigs_ID_cleaned <- FDO_sigs_ID[!(FDO_sigs_ID$GO_ID == ""), ]
+
+# "Flatten" file so each row is single GO ID with corresponding gene
+FDO_sigs_ID_cleaned_separated <- separate_rows(FDO_sigs_ID_cleaned, GO_ID, sep = ";")
+
+str(FDO_sigs_ID_cleaned_separated)
+```
+
+
 ### Map Biological Process GOslims to GO IDs
-```{r}
+```{r BP-GOslims-to-GOIDs}
 # Vector of GO IDs
-go_ids <- FDO_sigs_ID_cleaned_separated$GO.IDs
+go_ids <- FDO_sigs_ID_cleaned_separated$GO_ID
 
 # Create custom collection with our GO IDs
 myCollection <- GOCollection(go_ids)
@@ -74,7 +169,7 @@ str(updated_slimdf)
 ```{r gene-set-collection}
 
 # Group by unique GO ID
-grouped_df <- my_data_cleaned_separated %>% group_by(V1)%>% summarise(V2 = paste(V2, collapse = ","))
+grouped_df <- FDO_sigs_ID_cleaned_separated %>% group_by(GO_ID)%>% summarise(V2 = paste(V2, collapse = ","))
 
 # convert the data frame to a named list
 my_list <- as.list(grouped_df$V2)

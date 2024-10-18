@@ -97,6 +97,8 @@ colnames(g.spid)[4] <- "transcript"
 LOC_GO_blast <- left_join(full_blast, g.spid, by = "transcript")
 
 write.table(LOC_GO_blast, file = "/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/LOC_GO_list.txt",sep = "\t", row.names = FALSE, quote = TRUE)
+
+write.table(g.spid, file = "/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/g.spid.txt",sep = "\t", row.names = FALSE, quote = TRUE)
 ```
 
 

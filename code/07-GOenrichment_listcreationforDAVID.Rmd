@@ -74,6 +74,8 @@ writeLines(unlist(FOA_sigs_uniprot_unique), "/home/shared/8TB_HDD_02/graceleucht
 
 ### GOA list
 ```{r}
+
+
 GOA_sigs_ID <- read.csv("/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/DEG_lists/GOterms_genome/GOA_sigs_ID.csv",
                       sep = " "
                       )

@@ -31,7 +31,7 @@ masterID <- masterID[, -((ncol(masterID)-2):ncol(masterID))]
 
 # Rename remaining columns
 
-colnames(masterID)  <- c("transcript", "database","uniprot_accession","geneID","species", "pident", "length", "mismatch", "gapopen", "qstart", "qend", "sstart", "send", "evalue", "bitscore", "reviewed", "entryname", "protein_name", "gene_name", "organism", "prot_length", "GO_ID", "GO_BP", "GO_MF", "GO_CC", "Genename_orderedlocus", "Induction", "Pathwaycommons", "Reactome", "Unipathway", "Interacts_with", "LOC_column")
+colnames(masterID)  <- c("transcript", "database","uniprot_accession","geneID","species", "pident", "length", "mismatch", "gapopen", "qstart", "qend", "sstart", "send", "evalue", "bitscore", "reviewed", "entryname", "protein_name", "gene_name", "organism", "prot_length", "GO_ID", "GO_BP", "GO_MF", "GO_CC", "Genename_orderedlocus", "Induction", "Pathwaycommons", "Reactome", "Unipathway", "Interacts_with", "LOC_ID")
 
 ```
 

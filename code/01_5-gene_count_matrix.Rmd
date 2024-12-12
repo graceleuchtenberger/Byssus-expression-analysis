@@ -5,9 +5,8 @@ date: "2024-06-05"
 ---
 ## Make genome counts matrix
 ```{r, eval = TRUE}
-gene_count_matrix <- read_csv("/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/gene_count_matrix.csv")
-gene_count_matrix <- data.frame(gene_count_matrix)
-
+gene_count_matrix1 <- read_csv("/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/gene_count_matrix.csv")
+gene_count_matrix1 <- data.frame(gene_count_matrix)
 
 ```
 
@@ -68,7 +67,7 @@ treatmentinfo.2 <- treatmentinfo.2[complete.cases(treatmentinfo.2), ]
 rownames(treatmentinfo.2) <- treatmentinfo.2$sample.1
 
 #Removing T047 from treatment info because there isn't data for that
-removal <- which(rownames(treatmentinfo.2)%in% "T047F")
+removal <- which(rownames(treatmentinfo.2) %in% "T047F")
 treatmentinfo.2 <- treatmentinfo.2[-removal,]
 
 #Check that columns and row names match
@@ -76,7 +75,7 @@ all(rownames(treatmentinfo.2) == colnames(gene_count_matrix))
 
 #rename Loc identifier column
 
-# write.table(gene_count_matrix, file = "/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/gene_count_matrix_clean", row.names = TRUE)
+write.csv(gene_count_matrix, file = "/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/gene_count_matrix_clean.csv", row.names = TRUE)
 ```
 
 

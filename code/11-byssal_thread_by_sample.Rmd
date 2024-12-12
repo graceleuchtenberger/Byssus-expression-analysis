@@ -1,0 +1,57 @@
+---
+title: "11-byssal_thread_by_sample"
+output: html_document
+date: "2024-12-12"
+---
+### Load libraries
+```{r}
+library(dplyr)
+```
+
+### Load in gene count matrix and gene loc/gene ID key
+```{r}
+gene_count_matrix <- read_csv("/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/gene_count_matrix_clean.csv")
+
+loc_go_blast <- read_delim("/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/LOC_GO_list.txt",delim = "\t")
+
+colnames(loc_go_blast)[colnames(loc_go_blast) == "gene"] ="loc_id"
+```
+
+```{r}
+gene_count_matrix <- gene_count_matrix %>%
+  tibble::rownames_to_column("row_name") %>% # Convert row names to a column
+  mutate(loc_id = sub(".*\\|", "", row_name)) %>% # Extract part after the pipe
+  select(loc_id, everything()) %>% # Reorder columns
+  column_to_rownames("row_name") # Convert back to row names if needed
+
+
+# View the updated data frame
+print(df)
+```
+
+```{r}
+annot_GCM <- left_join(gene_count_matrix, loc_go_blast[,c("loc_id", "Protein.names", "uniprot_accession.y", "Gene.Names", "Organism")], by= "loc_id")
+
+annot_GCM <- annot_GCM %>%
+  select(loc_id, Protein.names, uniprot_accession.y, Gene.Names, Organism, everything())
+```
+
+```{r}
+foot_GCM <- annot_GCM %>%
+  filter(grepl("foot", Protein.names, ignore.case = TRUE))
+
+byss_GCM <- annot_GCM %>%
+  filter(grepl("byss", Protein.names, ignore.case = TRUE))
+
+foot_GCM <- foot_GCM %>%
+  distinct(uniprot_accession.y, .keep_all = TRUE)
+
+byss_GCM <- byss_GCM %>%
+  distinct(uniprot_accession.y, .keep_all = TRUE)
+
+foot_byss_GCM <- rbind(foot_GCM, byss_GCM)
+
+
+write.csv(foot_byss_GCM , file = "/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/foot_byss_GCM.csv")
+```
+

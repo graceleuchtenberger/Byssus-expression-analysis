@@ -6,6 +6,7 @@ date: "2024-12-12"
 ### Load libraries
 ```{r}
 library(dplyr)
+library(ggplot2)
 ```
 
 ### Load in gene count matrix and gene loc/gene ID key
@@ -54,4 +55,41 @@ foot_byss_GCM <- rbind(foot_GCM, byss_GCM)
 
 write.csv(foot_byss_GCM , file = "/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/foot_byss_GCM.csv")
 ```
+```{r}
+foot_GCM_1 <- foot_byss_GCM %>%
+  pivot_longer(!1:5, names_to = "sample", values_to = "count")
+
+colnames(treatmentinfo.2)[colnames(treatmentinfo.2) == "sample.1"] ="sample"
+
+foot_byss_GCM_2 <- left_join(foot_GCM_1, treatmentinfo.2, by = "sample")
+
+write.csv(foot_byss_GCM_2, file = "/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/foot_byss_GCM.csv")
+```
+
+
+```{r}
+foot_byss_GCM_2 %>%
+  filter(tissue == "F") %>%
+  ggplot(aes(x=Protein.names, y=log(count), fill=treatment))+
+  geom_boxplot()+
+  theme_classic()+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  theme(plot.margin = unit(c(0.5, 0.5, 0.5, 1), 
+                                "inches"))
+
+```
+```{r}
+foot_byss_GCM_2 %>%
+  filter(tissue == "G") %>%
+  ggplot(aes(x=Protein.names, y=log(count), fill=treatment))+
+  geom_boxplot()+
+  theme_classic()+
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  theme(plot.margin = unit(c(0.5, 0.5, 0.5, 1), 
+                                "inches"))+
+  ylim(1,10)
+
+
+```
+
 

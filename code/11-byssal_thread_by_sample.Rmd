@@ -68,7 +68,7 @@ write.csv(foot_byss_GCM_2, file = "/home/shared/8TB_HDD_02/graceleuchtenberger/G
 
 
 ```{r}
-foot_byss_GCM_2 %>%
+foot_byss_gene_plot <- foot_byss_GCM_2 %>%
   filter(tissue == "F") %>%
   ggplot(aes(x=Protein.names, y=log(count), fill=treatment))+
   geom_boxplot()+
@@ -76,10 +76,15 @@ foot_byss_GCM_2 %>%
   theme(axis.text.x = element_text(angle = 45, hjust = 1))+
   theme(plot.margin = unit(c(0.5, 0.5, 0.5, 1), 
                                 "inches"))
+foot_byss_gene_plot
+  
+ggsave(foot_byss_gene_plot, file = "output/foot_byss_gene_plot.pdf")
 
 ```
+
+
 ```{r}
-foot_byss_GCM_2 %>%
+gill_byss_gene_plot<- foot_byss_GCM_2 %>%
   filter(tissue == "G") %>%
   ggplot(aes(x=Protein.names, y=log(count), fill=treatment))+
   geom_boxplot()+
@@ -90,6 +95,7 @@ foot_byss_GCM_2 %>%
   ylim(1,10)
 
 
+ggsave(gill_byss_gene_plot, file = "output/gill_byss_gene_plot.pdf")
 ```
 
 

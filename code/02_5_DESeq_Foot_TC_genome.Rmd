@@ -68,7 +68,9 @@ ggplot(PCAdata, aes(PC1, PC2, color=treatment)) +
   theme(axis.text = element_text(size =18, color = "black"))+
   theme(axis.title = element_text(size =20, color = "black"))+
   theme(legend.text = element_text(size =18, color = "black"))+
-  theme(legend.title = element_text(size =20, color = "black"))
+  theme(legend.title = element_text(size =20, color = "black"))+
+  theme(aspect.ratio = 1)+
+  geom_text(aes(label=name))
 
 
 ```
@@ -108,7 +110,8 @@ ggplot(PCAdata, aes(PC1, PC2, color=treatment, shape = tissue)) +
   theme(axis.text = element_text(size =18, color = "black"))+
   theme(axis.title = element_text(size =20, color = "black"))+
   theme(legend.text = element_text(size =18, color = "black"))+
-  theme(legend.title = element_text(size =20, color = "black"))
+  theme(legend.title = element_text(size =20, color = "black"))+
+  theme(aspect.ratio = 1)
 
 ```
 

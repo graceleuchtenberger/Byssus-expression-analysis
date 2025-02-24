@@ -9,6 +9,15 @@ gene_count_matrix1 <- read_csv("/home/shared/8TB_HDD_02/graceleuchtenberger/Gith
 gene_count_matrix1 <- data.frame(gene_count_matrix)
 
 ```
+## Load in treatment info for DESeq
+```{r}
+#Load in the metadata
+library(dplyr)
+treatmentinfo.2 <- read.csv("data/PSMFC-mytilus-byssus-pilot-RNA-tagseq_raw.csv", header = TRUE, sep = ",")
+treatmentinfo.2
+
+### NEED TO ADD IN CODE FROM OTHER CODE FILE TO CLEAN UP THIS FILE
+```
 
 ## Clean up genome countmatrix
 ```{r}
@@ -76,6 +85,7 @@ all(rownames(treatmentinfo.2) == colnames(gene_count_matrix))
 #rename Loc identifier column
 
 write.csv(gene_count_matrix, file = "/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/gene_count_matrix_clean.csv", row.names = TRUE)
+write.csv(treatmentinfo.2, file = "/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/treatmentinfo_clean.csv", row.names = TRUE)
 ```
 
 

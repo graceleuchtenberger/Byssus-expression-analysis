@@ -259,6 +259,7 @@ treatmentinfo.2 <- treatmentinfo.2[-removal,]
 all(rownames(treatmentinfo.2) == colnames(countmatrix_2))
 
 write.table(countmatrix_2, file = "output/kallisto-quant/cleanedup_countmatrix", row.names = FALSE)
+write.table()
 ```
 
 

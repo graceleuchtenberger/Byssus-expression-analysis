@@ -40,10 +40,10 @@ library(PCAtools)
 
 ### All treatments
 ```{r}
-G_TC_treatmentinfo <- read_delim("output/DEG_lists/Gill/G_treatmentinfo.csv", delim = " ")
+treatmentinfo <- read_delim("output/treatmentinfo_clean.csv", delim = " ")
 gene_count_matrix_clean <- read_delim("output/gene_count_matrix_clean.csv", delim = ",")
 
-G_TC_treatmentinfo <- G_TC_treatmentinfo %>%
+G_TC_treatmentinfo <- treatmentinfo %>% filter(tissue == "G") %>%
   filter(!(day == "0")) 
 write.table(G_TC_treatmentinfo, file = "output/DEG_lists/Gill/G_TC_treatmentinfo.csv", row.names = FALSE)
 
@@ -73,8 +73,7 @@ ggplot(PCAdata, aes(PC1, PC2, color=treatment)) +
   theme(axis.title = element_text(size =20, color = "black"))+
   theme(legend.text = element_text(size =18, color = "black"))+
   theme(legend.title = element_text(size =20, color = "black"))+
-  theme(aspect.ratio = 1)+
-  geom_text(aes(label=name))
+  theme(aspect.ratio = 1)
 
 ```
 

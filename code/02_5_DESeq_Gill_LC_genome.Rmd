@@ -42,11 +42,11 @@ library(PCAtools)
 ```
 
 ```{r}
-G_treatmentinfo <- read_delim("output/DEG_lists/Gill/G_treatmentinfo.csv", delim = " ")
+treatmentinfo <- read_delim("output/treatmentinfo_clean.csv", delim = " ")
 gene_count_matrix_clean <- read_delim("output/gene_count_matrix_clean.csv", delim = ",")
 
-G_LC_treatmentinfo <- G_treatmentinfo %>%
-  filter(!(treatment == "control_3")) 
+G_LC_treatmentinfo <- treatmentinfo %>% filter(tissue == "G") %>%
+  filter(!(treatment == "control" & day == 3)) 
 write.table(G_LC_treatmentinfo, file = "output/DEG_lists/Gill/G_LC_treatmentinfo.csv", row.names = FALSE)
 
 G_LC_countmatrix <- subset(gene_count_matrix_clean, select=(G_LC_treatmentinfo$sample.1))

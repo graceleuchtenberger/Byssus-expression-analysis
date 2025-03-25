@@ -36,10 +36,19 @@ library(pcaExplorer)
 library(PCAtools)
 ```
 
-### All foot tissue
+
+
+### All foot tissue, TC
 ```{r}
-F_TC_treatmentinfo <- read_delim("output/DEG_lists/Foot/F_treatmentinfo.csv", delim = " ")
+treatmentinfo3 <- read_delim("output/treatmentinfo_clean.csv", delim = ",")
 gene_count_matrix_clean <- read_delim("output/gene_count_matrix_clean.csv", delim = ",")
+
+F_TC_treatmentinfo  <- treatmentinfo3  %>% filter(tissue == "F") %>%
+  filter(!( tissue == "G"))
+F_TC_treatmentinfo  <- F_TC_treatmentinfo  %>% 
+  filter(!(  treatment== "control" & day == 0))
+
+write.table(F_TC_treatmentinfo, file = "output/DEG_lists/Foot/F_TC_treatmentinfo.csv", row.names = FALSE)
 
 F_TC_countmatrix <- subset(gene_count_matrix_clean, select=(F_TC_treatmentinfo$sample.1))
 F_TC_countmatrix <- data.frame(F_TC_countmatrix)
@@ -69,11 +78,11 @@ ggplot(PCAdata, aes(PC1, PC2, color=treatment)) +
   theme(axis.title = element_text(size =20, color = "black"))+
   theme(legend.text = element_text(size =18, color = "black"))+
   theme(legend.title = element_text(size =20, color = "black"))+
-  theme(aspect.ratio = 1)+
-  geom_text(aes(label=name))
+  theme(aspect.ratio = 1)
 
 
 ```
+
 ### All tissue all treatments
 ```{r}
 treatmentinfo <- read_csv("output/treatmentinfo_clean.csv")
@@ -117,7 +126,7 @@ ggplot(PCAdata, aes(PC1, PC2, color=treatment, shape = tissue)) +
 
 
 
-### OA vs lab control
+### OA vs treatment control
 ```{r}
 # DEG in the foot after exposure to ocean acidification
 FOA_TC_treatmentinfo <- read_delim("output/DEG_lists/Foot/FOA_TC_treatmentinfo.csv", delim = " ")
@@ -158,7 +167,7 @@ dds9_filt <- dds9[keep,]
 
 ```
 
-### OW vs lab control
+### OW vs treatment control
 ```{r}
 
 FOW_TC_treatmentinfo <- read_delim("output/DEG_lists/Foot/FOW_TC_treatmentinfo.csv", delim = " ")
@@ -199,10 +208,10 @@ dds10_filt <- dds10[keep,]
 
 ```
 
-### DO vs lab control
+### DO vs treatment control
 ```{r}
 FDO_TC_treatmentinfo <- read_delim("output/DEG_lists/Foot/FDO_TC_treatmentinfo.csv", delim = " ")
-                                                                                                       
+                                                                                              
 FDO_TC_countmatrix <- subset(gene_count_matrix_clean, select=(FDO_TC_treatmentinfo$sample.1))
 write.table(FDO_TC_countmatrix, file = "output/DEG_lists/Foot/FDO_TC_countmatrix.csv")
 #still comes out wrong

@@ -43,7 +43,7 @@ colnames(masterID)  <- c("transcript", "database","uniprot_accession","geneID","
 FDO_TC_siggenes_apeglm <- read.delim("output/DEG_lists/Foot/FDO_TC_siggene_apeglm.csv", sep = " ", header = TRUE)
 
 FDO_TC_siggenes_apeglm <- FDO_TC_siggenes_apeglm %>%
-  mutate(LOC_column = str_extract(gene, "LOC\\d+"))
+  mutate(LOC_ID = str_extract(gene, "LOC\\d+"))
 
 # FDO_sigs <- inner_join(FDO_TC_siggene, FDO_LC_siggene, by = 'gene')
 # #basemean x is TC, basemean y is LC
@@ -62,16 +62,17 @@ FDO_TC_siggenes_apeglm <- FDO_TC_siggenes_apeglm %>%
 # # change gene column to be called transcript
 # colnames(FDO_sigs_merged)  <- c("transcript", "baseMean", "log2FoldChange","lfcSE","pvalue", "padj")
 
-FDO_TC_siggene <- left_join(FDO_TC_siggenes_apeglm, masterID, by = "LOC_column")
+FDO_TC_siggene <- left_join(FDO_TC_siggenes_apeglm, masterID, by = "LOC_ID")
 
 FDO_sigs_unID <- FDO_TC_siggene[is.na(FDO_TC_siggene$geneID), ]
 FDO_sigs_ID <- FDO_TC_siggene[!is.na(FDO_TC_siggene$geneID), ]
-nrow(FDO_sigs_ID) # 291 id'ed genes
-nrow(FDO_sigs_unID) # 86 unID'd genes
-# 377 total expressed 
+nrow(FDO_sigs_ID) # 361 id'ed genes
+nrow(FDO_sigs_unID) # 99 unID'd genes
+# 460 total expressed 
 
 #Write file of merged files
 write.table(FDO_TC_siggene, file = "output/DEG_lists/GOterms_genome/FDO_sigs_merged.csv", row.names = FALSE)
+
 write.table(FDO_sigs_unID, file = "output/DEG_lists/GOterms_genome/FDO_sigs_unID.csv", row.names = FALSE)
 write.table(FDO_sigs_ID, file = "output/DEG_lists/GOterms_genome/FDO_sigs_ID.csv", row.names = FALSE)
 
@@ -83,7 +84,7 @@ write.table(FDO_sigs_ID, file = "output/DEG_lists/GOterms_genome/FDO_sigs_ID.csv
 #GDO_LC_siggene <- read.delim("output/DEG_lists/Gill/GDO_LC_siggene.csv", sep = " ", header = TRUE)
 GDO_TC_siggene <- read.delim("output/DEG_lists/Gill/GDO_TC_siggene_apeglm.csv", sep = " ", header = TRUE)
 GDO_TC_siggene <- GDO_TC_siggene %>%
-  mutate(LOC_column = str_extract(gene, "LOC\\d+"))
+  mutate(LOC_ID = str_extract(gene, "LOC\\d+"))
 
 # GDO_sigs <- inner_join(GDO_TC_siggene, GDO_LC_siggene, by = 'gene')
 # #basemean x is TC, basemean y is LC
@@ -103,13 +104,13 @@ GDO_TC_siggene <- GDO_TC_siggene %>%
 # # change gene column to be called transcript
 # colnames(GDO_sigs_merged)  <- c("transcript", "baseMean", "log2FoldChange","lfcSE","pvalue", "padj")
 
-GDO_sigs_merged <- left_join(GDO_TC_siggene, masterID, by = "LOC_column")
+GDO_sigs_merged <- left_join(GDO_TC_siggene, masterID, by = "LOC_ID")
 
 GDO_sigs_unID <- GDO_sigs_merged[is.na(GDO_sigs_merged$geneID), ]
 GDO_sigs_ID <- GDO_sigs_merged[!is.na(GDO_sigs_merged$geneID), ]
-nrow(GDO_sigs_ID) # 155 id'ed genes
-nrow(GDO_sigs_unID) # 84 unID'd genes
-# 239 genes total diff expressed between GDO and GTC
+nrow(GDO_sigs_ID) # 301 id'ed genes
+nrow(GDO_sigs_unID) # 108 unID'd genes
+# 409 genes total diff expressed between GDO and GTC
 
 #Write file of merged files
 write.table(GDO_sigs_merged, file = "output/DEG_lists/GOterms_genome/GDO_sigs_merged.csv", row.names = FALSE)

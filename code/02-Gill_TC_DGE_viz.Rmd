@@ -4,11 +4,13 @@ output: html_document
 date: "2024-02-14"
 ---
 
+
+
 ### OA vs treatment control
 ```{r}
 
 # Filter data
-GOA_TC_treatmentinfo <- treatmentinfo.2 %>% filter(tissue == "G" | treatment == "control" | treatment == "OA") %>% filter(!(tissue == "F" | treatment == "OW" | treatment == "DO"))
+GOA_TC_treatmentinfo <- treatmentinfo %>% filter(tissue == "G" | treatment == "control" | treatment == "OA") %>% filter(!(tissue == "F" | treatment == "OW" | treatment == "DO"))
                                                                                                      GOA_TC_treatmentinfo <- GOA_TC_treatmentinfo %>%
   filter(!(treatment == "control" & day == "0")) 
 write.table(GOA_TC_treatmentinfo, file = "output/DEG_lists/Gill/GOA_TC_treatmentinfo.csv", row.names = FALSE)                                                                                                      
@@ -42,7 +44,7 @@ dds15_filt <- dds15[keep,]
 ```{r}
 
 # Filter data
-GOW_TC_treatmentinfo <- treatmentinfo.2 %>% filter(tissue == "G" | treatment == "control" | treatment == "OW") %>% filter(!(tissue == "F" | treatment == "OA" | treatment == "DO"))
+GOW_TC_treatmentinfo <- treatmentinfo %>% filter(tissue == "G" | treatment == "control" | treatment == "OW") %>% filter(!(tissue == "F" | treatment == "OA" | treatment == "DO"))
                                                                                                     GOW_TC_treatmentinfo <- GOW_TC_treatmentinfo %>%
   filter(!(treatment == "control" & day == "0")) 
 write.table(GOW_TC_treatmentinfo, file = "output/DEG_lists/Gill/GOW_TC_treatmentinfo.csv", row.names = FALSE)                                                                                                  
@@ -76,7 +78,7 @@ dds16_filt <- dds16[keep,]
 ```{r}
 
 # Filter data
-GDO_TC_treatmentinfo <- treatmentinfo.2 %>% filter(tissue == "G" | treatment == "control" | treatment == "DO") %>% filter(!(tissue == "F" | treatment == "OA" | treatment == "OW"))
+GDO_TC_treatmentinfo <- treatmentinfo %>% filter(tissue == "G" | treatment == "control" | treatment == "DO") %>% filter(!(tissue == "F" | treatment == "OA" | treatment == "OW"))
                                                                                       GDO_TC_treatmentinfo <- GDO_TC_treatmentinfo %>%
   filter(!(treatment == "control" & day == "0")) 
 write.table(GDO_TC_treatmentinfo, file = "output/DEG_lists/Gill/GDO_TC_treatmentinfo.csv", row.names = FALSE)                                                                                                      

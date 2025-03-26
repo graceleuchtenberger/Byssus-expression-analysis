@@ -82,12 +82,12 @@ dds13_filt <- dds13[keep,]
 FDO_TC_treatmentinfo <- read.delim("output/DEG_lists/Foot/FDO_TC_treatmentinfo.csv", sep= " ", header = TRUE)
 
 # Filter data
-FDO_TC_treatmentinfo <- treatmentinfo.2 %>% filter(tissue == "F" | tissue == "X" | treatment == "control" | treatment == "DO") %>% filter(!(tissue == "G" | treatment == "OA" | treatment == "OW" | day == "0"))
+FDO_TC_treatmentinfo <- treatmentinfo %>% filter(tissue == "F" | tissue == "X" | treatment == "control" | treatment == "DO") %>% filter(!(tissue == "G" | treatment == "OA" | treatment == "OW" | day == "0"))
                                                                                                     FDO_TC_treatmentinfo <- FDO_TC_treatmentinfo %>%
   filter(!(treatment == "control" & day == "0" & tissue == "X")) 
 write.table(FDO_TC_treatmentinfo, file = "output/DEG_lists/Foot/FDO_TC_treatmentinfo.csv", row.names = FALSE)                                                                                                       
-FDO_TC_countmatrix <- subset(gene_count_matrix, select=row.names(FDO_TC_treatmentinfo))
-write.table(FDO_TC_countmatrix, file = "output/DEG_lists/Foot/FDO_TC_countmatrix.csv", row.names = FALSE)  
+FDO_TC_countmatrix <- subset(gene_count_matrix_clean, select=FDO_TC_treatmentinfo$sample.1)
+write.csv(FDO_TC_countmatrix, file = "output/DEG_lists/Foot/FDO_TC_countmatrix.csv", row.names = TRUE)  
 
 # CaTCulate DESeq object
 dds14 <- DESeqDataSetFromMatrix(countData = FDO_TC_countmatrix,
@@ -98,9 +98,6 @@ dds14 <- DESeq(dds14)
 resultsNames(dds14) # lists the coefficients
 
 PCAdata <- plotPCA(vst(dds14), intgroup = c("treatment"), returnData=TRUE)
-# -- note: fitType='parametric', but the dispersion trend was not well captured by the
-#    function: y = a/x + b, and a local regression fit was automatically substituted.
-#    specify fitType='local' or 'mean' to avoid this message next time.
 percentVar <- round(100*attr(PCAdata, "percentVar")) #plot PCA of samples with all data
 ggplot(PCAdata, aes(PC1, PC2, color=treatment)) + 
   geom_point(size=4, alpha = 5/10) +

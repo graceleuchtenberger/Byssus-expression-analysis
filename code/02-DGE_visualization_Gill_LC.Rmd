@@ -121,7 +121,7 @@ dds9_filt <- dds9[keep,]
 ```{r}
 
 # Filter data
-GDO_LC_treatmentinfo <- treatmentinfo.2 %>% filter(tissue == "G" | treatment == "control" | treatment == "DO") %>% filter(!(tissue == "F" | treatment == "OA" | treatment == "OW"))
+GDO_LC_treatmentinfo <- treatmentinfo %>% filter(tissue == "G" | treatment == "control" | treatment == "DO") %>% filter(!(tissue == "F" | tissue == "X" | treatment == "OA" | treatment == "OW"))
                                                                                                     GDO_LC_treatmentinfo <- GDO_LC_treatmentinfo %>%
   filter(!(treatment == "control" & day == "3")) 
 write.table(GDO_LC_treatmentinfo, file = "output/DEG_lists/Gill/GDO_LC_treatmentinfo.csv", row.names = FALSE)                                                                                                         

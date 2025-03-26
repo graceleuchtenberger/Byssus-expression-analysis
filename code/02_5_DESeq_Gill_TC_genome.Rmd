@@ -36,7 +36,16 @@ library(pcaExplorer)
 library(PCAtools)
 ```
 
+### Load and clean up treatment info and gene count matrix 
+```{r}
+treatmentinfo <- read_csv("output/treatmentinfo_clean.csv")
+gene_count_matrix_clean_og <- read_delim("output/gene_count_matrix_clean.csv", delim = ",")
+rownames <- gene_count_matrix_clean$...1
+gene_count_matrix_clean <- subset(gene_count_matrix_clean, select = -c(...1))
 
+rownames(gene_count_matrix_clean) <- rownames
+gene_count_matrix_clean <- data.matrix(gene_count_matrix_clean)
+```
 
 ### All treatments
 ```{r}
@@ -78,12 +87,12 @@ ggplot(PCAdata, aes(PC1, PC2, color=treatment)) +
 ```
 
 
-### OA vs lab control
+### OA vs treatment control
 ```{r}
 # DEG in the Gill after exposure to ocean acidification
 GOA_TC_treatmentinfo <- read_delim("output/DEG_lists/Gill/GOA_TC_treatmentinfo.csv", delim = " ")
 
-GOA_TC_countmatrix <- subset(gene_count_matrix, select=(GOA_TC_treatmentinfo$sample.1))
+GOA_TC_countmatrix <- subset(gene_count_matrix_clean, select=(GOA_TC_treatmentinfo$sample.1))
 GOA_TC_countmatrix <- data.frame(GOA_TC_countmatrix)
 write.table(GOA_TC_countmatrix, file = "output/DEG_lists/Gill/GOA_TC_countmatrix.csv")
 #doesn't save correctly, need to figure this out
@@ -114,7 +123,7 @@ dds12_filt <- dds12[keep,]
 
 ```
 
-### OW vs lab control
+### OW vs treatment control
 ```{r}
 
 GOW_TC_treatmentinfo <- read_delim("output/DEG_lists/Gill/GOW_TC_treatmentinfo.csv", delim = " ")
@@ -150,12 +159,12 @@ dds13_filt <- dds13[keep,]
 
 ```
 
-### DO vs lab control
+### DO vs treatment control
 ```{r}
 GDO_TC_treatmentinfo <- read_delim("output/DEG_lists/Gill/GDO_TC_treatmentinfo.csv", delim = " ")
                                                                                                        
-GDO_TC_countmatrix <- subset(gene_count_matrix, select=(GDO_TC_treatmentinfo$sample.1))
-write.table(GDO_TC_countmatrix, file = "output/DEG_lists/Gill/GDO_TC_countmatrix.csv")
+GDO_TC_countmatrix <- subset(gene_count_matrix_clean, select=(GDO_TC_treatmentinfo$sample.1))
+write.csv(GDO_TC_countmatrix, file = "output/DEG_lists/Gill/GDO_TC_countmatrix.csv", row.names = TRUE)
 #still comes out wrong
 
 # CaTCulate DESeq object

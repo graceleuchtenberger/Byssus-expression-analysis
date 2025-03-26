@@ -4,11 +4,6 @@ output: html_document
 date: "2024-06-14"
 ---
 
----
-title: "DESeq_Foot_LC"
-output: html_document
-date: "2024-06-14"
----
 ```{r load libraries}
 if (!require("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
@@ -41,6 +36,18 @@ library(pcaExplorer)
 library(PCAtools)
 ```
 
+### Load and clean up treatment info and gene count matrix 
+```{r}
+treatmentinfo <- read_csv("output/treatmentinfo_clean.csv")
+gene_count_matrix_clean_og <- read_delim("output/gene_count_matrix_clean.csv", delim = ",")
+rownames <- gene_count_matrix_clean$...1
+gene_count_matrix_clean <- subset(gene_count_matrix_clean, select = -c(...1))
+
+rownames(gene_count_matrix_clean) <- rownames
+gene_count_matrix_clean <- data.matrix(gene_count_matrix_clean)
+```
+
+### Gill, all treatments
 ```{r}
 treatmentinfo <- read_delim("output/treatmentinfo_clean.csv", delim = " ")
 gene_count_matrix_clean <- read_delim("output/gene_count_matrix_clean.csv", delim = ",")
@@ -83,7 +90,7 @@ ggplot(PCAdata, aes(PC1, PC2, color=treatment)) +
 ### OA vs lab control
 ```{r}
 # DEG in the foot after exposure to ocean acidification
-GOA_LC_treatmentinfo <- read_delim("output/DEG_lists/Gill/GOA_LC_treatmentinfo.csv", delim = " ")
+treatmentinfo <- read_delim("output/treatmentinfo_clean.csv", delim = " ")
 
 GOA_LC_countmatrix <- subset(gene_count_matrix, select=(GOA_LC_treatmentinfo$sample.1))
 GOA_LC_countmatrix <- data.frame(GOA_LC_countmatrix)
@@ -155,9 +162,9 @@ dds2_filt <- dds2[keep,]
 ### DO vs lab control
 ```{r}
 GDO_LC_treatmentinfo <- read_delim("output/DEG_lists/Gill/GDO_LC_treatmentinfo.csv", delim = " ")
-                                                                                                      
-GDO_LC_countmatrix <- subset(gene_count_matrix, select=(GDO_LC_treatmentinfo$sample.1))
-write.table(GDO_LC_countmatrix, file = "output/DEG_lists/Gill/GDO_LC_countmatrix.csv")
+                                                                                                
+GDO_LC_countmatrix <- subset(gene_count_matrix_clean, select=(GDO_LC_treatmentinfo$sample.1))
+write.csv(GDO_LC_countmatrix, file = "output/DEG_lists/Gill/GDO_LC_countmatrix.csv", row.names = TRUE)
 #still comes out wrong
 
 # Calculate DESeq object

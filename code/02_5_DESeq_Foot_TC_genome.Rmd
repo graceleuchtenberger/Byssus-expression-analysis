@@ -36,7 +36,16 @@ library(pcaExplorer)
 library(PCAtools)
 ```
 
+### Load and clean up treatment info and gene count matrix 
+```{r}
+treatmentinfo <- read_csv("output/treatmentinfo_clean.csv")
+gene_count_matrix_clean_og <- read_delim("output/gene_count_matrix_clean.csv", delim = ",")
+rownames <- gene_count_matrix_clean$...1
+gene_count_matrix_clean <- subset(gene_count_matrix_clean, select = -c(...1))
 
+rownames(gene_count_matrix_clean) <- rownames
+gene_count_matrix_clean <- data.matrix(gene_count_matrix_clean)
+```
 
 ### All foot tissue, TC
 ```{r}

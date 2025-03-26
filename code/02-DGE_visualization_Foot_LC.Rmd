@@ -160,7 +160,7 @@ FDO_LC_treatmentinfo <- read_table("output/DEG_lists/Foot/FDO_LC_treatmentinfo.c
 
 
 # Filter data
-FDO_LC_treatmentinfo <- treatmentinfo.2 %>% filter(tissue == "F" | treatment == "control" | treatment == "DO") %>% filter(!(tissue == "G" | treatment == "OA" | treatment == "OW"))
+FDO_LC_treatmentinfo <- treatmentinfo %>% filter(tissue == "F" | treatment == "control" | treatment == "DO") %>% filter(!(tissue == "G" | tissue == "X" | treatment == "OA" | treatment == "OW"))
                                                                                                     FDO_LC_treatmentinfo <- FDO_LC_treatmentinfo %>%
   filter(!(treatment == "control" & day == "3")) 
 write.table(FDO_LC_treatmentinfo, file = "output/DEG_lists/Foot/FDO_LC_treatmentinfo.csv", row.names = FALSE)

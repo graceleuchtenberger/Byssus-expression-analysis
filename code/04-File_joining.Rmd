@@ -71,10 +71,10 @@ nrow(FDO_sigs_unID) # 99 unID'd genes
 # 460 total expressed 
 
 #Write file of merged files
-write.table(FDO_TC_siggene, file = "output/DEG_lists/GOterms_genome/FDO_sigs_merged.csv", row.names = FALSE)
+write_csv(FDO_TC_siggene, file = "output/DEG_lists/GOterms_genome/FDO_sigs_merged.csv")
 
-write.table(FDO_sigs_unID, file = "output/DEG_lists/GOterms_genome/FDO_sigs_unID.csv", row.names = FALSE)
-write.table(FDO_sigs_ID, file = "output/DEG_lists/GOterms_genome/FDO_sigs_ID.csv", row.names = FALSE)
+write_csv(FDO_sigs_unID, file = "output/DEG_lists/GOterms_genome/FDO_sigs_unID.csv")
+write_csv(FDO_sigs_ID, file = "output/DEG_lists/GOterms_genome/FDO_sigs_ID.csv")
 
 
 ```
@@ -113,9 +113,9 @@ nrow(GDO_sigs_unID) # 108 unID'd genes
 # 409 genes total diff expressed between GDO and GTC
 
 #Write file of merged files
-write.table(GDO_sigs_merged, file = "output/DEG_lists/GOterms_genome/GDO_sigs_merged.csv", row.names = FALSE)
-write.table(GDO_sigs_unID, file = "output/DEG_lists/GOterms_genome/GDO_sigs_unID.csv", row.names = FALSE)
-write.table(GDO_sigs_ID, file = "output/DEG_lists/GOterms_genome/GDO_sigs_ID.csv", row.names = FALSE)
+write_csv(GDO_sigs_merged, file = "output/DEG_lists/GOterms_genome/GDO_sigs_merged.csv")
+write_csv(GDO_sigs_unID, file = "output/DEG_lists/GOterms_genome/GDO_sigs_unID.csv")
+write_csv(GDO_sigs_ID, file = "output/DEG_lists/GOterms_genome/GDO_sigs_ID.csv")
 
 ```
 
@@ -124,7 +124,7 @@ write.table(GDO_sigs_ID, file = "output/DEG_lists/GOterms_genome/GDO_sigs_ID.csv
 #FOA_LC_siggene <- read.delim("output/DEG_lists/Foot/FOA_LC_siggene.csv", sep = " ", header = TRUE)
 FOA_TC_siggene <- read.delim("output/DEG_lists/Foot/FOA_TC_siggene.csv", sep = " ", header = TRUE)
 FOA_TC_siggene <- FOA_TC_siggene %>%
-  mutate(LOC_column = str_extract(gene, "LOC\\d+"))
+  mutate(LOC_ID = str_extract(gene, "LOC\\d+"))
 
 # FOA_sigs <- inner_join(FOA_TC_siggene, FOA_LC_siggene, by = 'gene')
 # #basemean x is TC, basemean y is LC
@@ -144,7 +144,7 @@ FOA_TC_siggene <- FOA_TC_siggene %>%
 # # change gene column to be called transcript
 # colnames(FOA_sigs_merged)  <- c("transcript", "baseMean", "log2FoldChange","lfcSE","pvalue", "padj")
 
-FOA_sigs_merged <- left_join(FOA_TC_siggene, masterID, by = "LOC_column")
+FOA_sigs_merged <- left_join(FOA_TC_siggene, masterID, by = "LOC_ID")
 
 FOA_sigs_unID <- FOA_sigs_merged[is.na(FOA_sigs_merged$geneID), ]
 FOA_sigs_ID <- FOA_sigs_merged[!is.na(FOA_sigs_merged$geneID), ]
@@ -153,9 +153,9 @@ nrow(FOA_sigs_unID) # 20 unID'd genes
 #92 genes total diff expressed between FOA and FTC
 
 #Write file of merged files
-write.table(FOA_sigs_merged, file = "output/DEG_lists/GOterms_genome/FOA_sigs_merged.csv", row.names = FALSE)
-write.table(FOA_sigs_unID, file = "output/DEG_lists/GOterms_genome/FOA_sigs_unID.csv", row.names = FALSE)
-write.table(FOA_sigs_ID, file = "output/DEG_lists/GOterms_genome/FOA_sigs_ID.csv", row.names = FALSE)
+write_csv(FOA_sigs_merged, file = "output/DEG_lists/GOterms_genome/FOA_sigs_merged.csv")
+write_csv(FOA_sigs_unID, file = "output/DEG_lists/GOterms_genome/FOA_sigs_unID.csv")
+write_csv(FOA_sigs_ID, file = "output/DEG_lists/GOterms_genome/FOA_sigs_ID.csv")
 
 
 ```
@@ -167,7 +167,7 @@ write.table(FOA_sigs_ID, file = "output/DEG_lists/GOterms_genome/FOA_sigs_ID.csv
 GOA_TC_siggene <- read.delim("output/DEG_lists/Gill/GOA_TC_siggene.csv", sep = " ", header = TRUE)
 
 GOA_TC_siggene <- GOA_TC_siggene %>%
-  mutate(LOC_column = str_extract(gene, "LOC\\d+"))
+  mutate(LOC_ID = str_extract(gene, "LOC\\d+"))
 
 #GOA_sigs <- inner_join(GOA_TC_siggene, GOA_LC_siggene, by = 'gene')
 #basemean x is TC, basemean y is LC
@@ -189,8 +189,8 @@ GOA_TC_siggene <- GOA_TC_siggene %>%
 # 
 
 GOA_TC_siggene <- GOA_TC_siggene %>%
-  filter(!is.na(LOC_column)) 
-GOA_sigs_merged <- left_join(GOA_TC_siggene, masterID, by = "LOC_column")
+  filter(!is.na(LOC_ID)) 
+GOA_sigs_merged <- left_join(GOA_TC_siggene, masterID, by = "LOC_ID")
 
 GOA_sigs_unID <- GOA_sigs_merged[is.na(GOA_sigs_merged$geneID), ]
 GOA_sigs_ID <- GOA_sigs_merged[!is.na(GOA_sigs_merged$geneID), ]
@@ -199,9 +199,9 @@ nrow(GOA_sigs_unID) # 248 unID'd genes
 # 830 genes total diff expressed between GOA and GTC
 
 #Write file of merged files
-write.table(GOA_sigs_merged, file = "output/DEG_lists/GOterms_genome/GOA_sigs_merged.csv", row.names = FALSE)
-write.table(GOA_sigs_unID, file = "output/DEG_lists/GOterms_genome/GOA_sigs_unID.csv", row.names = FALSE)
-write.table(GOA_sigs_ID, file = "output/DEG_lists/GOterms_genome/GOA_sigs_ID.csv", row.names = FALSE)
+write_csv(GOA_sigs_merged, file = "output/DEG_lists/GOterms_genome/GOA_sigs_merged.csv")
+write_csv(GOA_sigs_unID, file = "output/DEG_lists/GOterms_genome/GOA_sigs_unID.csv")
+write_csv(GOA_sigs_ID, file = "output/DEG_lists/GOterms_genome/GOA_sigs_ID.csv")
 
 ```
 
@@ -210,7 +210,7 @@ write.table(GOA_sigs_ID, file = "output/DEG_lists/GOterms_genome/GOA_sigs_ID.csv
 # FOW_LC_siggene <- read.delim("output/DEG_lists/Foot/FOW_LC_siggene.csv", sep = " ", header = TRUE)
 FOW_TC_siggene <- read.delim("output/DEG_lists/Foot/FOW_TC_siggene.csv", sep = " ", header = TRUE)
 FOW_TC_siggene <- FOW_TC_siggene %>%
-  mutate(LOC_column = str_extract(gene, "LOC\\d+"))
+  mutate(LOC_ID = str_extract(gene, "LOC\\d+"))
 # 
 # FOW_sigs <- inner_join(FOW_TC_siggene, FOW_LC_siggene, by = 'gene')
 # #basemean x is TC, basemean y is LC
@@ -230,7 +230,7 @@ FOW_TC_siggene <- FOW_TC_siggene %>%
 # # change gene column to be called transcript
 # colnames(FOW_sigs_merged)  <- c("transcript", "baseMean", "log2FoldChange","lfcSE","pvalue", "padj")
 
-FOW_sigs_merged <- left_join(FOW_TC_siggene, masterID, by = "LOC_column")
+FOW_sigs_merged <- left_join(FOW_TC_siggene, masterID, by = "LOC_ID")
 
 FOW_sigs_unID <- FOW_sigs_merged[is.na(FOW_sigs_merged$geneID), ]
 FOW_sigs_ID <- FOW_sigs_merged[!is.na(FOW_sigs_merged$geneID), ]
@@ -239,9 +239,9 @@ nrow(FOW_sigs_unID) # 49 unID'd genes
 # 201 genes total diff expressed between FOW and FTC
 
 #Write file of merged files
-write.table(FOW_sigs_merged, file = "output/DEG_lists/GOterms_genome/FOW_sigs_merged.csv", row.names = FALSE)
-write.table(FOW_sigs_unID, file = "output/DEG_lists/GOterms_genome/FOW_sigs_unID.csv", row.names = FALSE)
-write.table(FOW_sigs_ID, file = "output/DEG_lists/GOterms_genome/FOW_sigs_ID.csv", row.names = FALSE)
+write_csv(FOW_sigs_merged, file = "output/DEG_lists/GOterms_genome/FOW_sigs_merged.csv")
+write_csv(FOW_sigs_unID, file = "output/DEG_lists/GOterms_genome/FOW_sigs_unID.csv")
+write_csv(FOW_sigs_ID, file = "output/DEG_lists/GOterms_genome/FOW_sigs_ID.csv")
 
 ```
 
@@ -251,7 +251,7 @@ write.table(FOW_sigs_ID, file = "output/DEG_lists/GOterms_genome/FOW_sigs_ID.csv
 #GOW_LC_siggene <- read.delim("output/DEG_lists/Gill/GOW_LC_siggene.csv", sep = " ", header = TRUE)
 GOW_TC_siggene <- read.delim("output/DEG_lists/Gill/GOW_TC_siggene_apeglm.csv", sep = " ", header = TRUE)
 GOW_TC_siggene <- GOW_TC_siggene %>%
-  mutate(LOC_column = str_extract(gene, "LOC\\d+"))
+  mutate(LOC_ID = str_extract(gene, "LOC\\d+"))
 
 # GOW_sigs <- inner_join(GOW_TC_siggene, GOW_LC_siggene, by = 'gene')
 # #basemean x is TC, basemean y is LC
@@ -271,7 +271,7 @@ GOW_TC_siggene <- GOW_TC_siggene %>%
 # # change gene column to be called transcript
 # colnames(GOW_sigs_merged)  <- c("transcript", "baseMean", "log2FoldChange","lfcSE","pvalue", "padj")
 
-GOW_sigs_merged <- left_join(GOW_TC_siggene, masterID, by = "LOC_column")
+GOW_sigs_merged <- left_join(GOW_TC_siggene, masterID, by = "LOC_ID")
 
 GOW_sigs_unID <- GOW_sigs_merged[is.na(GOW_sigs_merged$geneID), ]
 GOW_sigs_ID <- GOW_sigs_merged[!is.na(GOW_sigs_merged$geneID), ]
@@ -280,9 +280,9 @@ nrow(GOW_sigs_unID) # 53 unID'd genes
 # 251 genes total diff expressed between GOW and GTC
 
 #Write file of merged files
-write.table(GOW_sigs_merged, file = "output/DEG_lists/GOterms_genome/GOW_sigs_merged.csv", row.names = FALSE)
-write.table(GOW_sigs_unID, file = "output/DEG_lists/GOterms_genome/GOW_sigs_unID.csv", row.names = FALSE)
-write.table(GOW_sigs_ID, file = "output/DEG_lists/GOterms_genome/GOW_sigs_ID.csv", row.names = FALSE)
+write_csv(GOW_sigs_merged, file = "output/DEG_lists/GOterms_genome/GOW_sigs_merged.csv")
+write_csv(GOW_sigs_unID, file = "output/DEG_lists/GOterms_genome/GOW_sigs_unID.csv")
+write_csv(GOW_sigs_ID, file = "output/DEG_lists/GOterms_genome/GOW_sigs_ID.csv")
 
 ```
 

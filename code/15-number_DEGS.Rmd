@@ -7,6 +7,9 @@ date: "2025-03-26"
 ```{r}
 library(tidyverse)
 library(ggplot2)
+install.packages("ggpattern")
+remotes::install_github("coolbutuseless/ggpattern")
+library(ggpattern)
 ```
 
 ### Load DEGS
@@ -59,7 +62,7 @@ FDO_neg<- nrow(filter(FDO_sigs, `"log2FoldChange"` < 0))
 
 ```{r}
 DEG_num <- data_frame(
-  tissue = c("F", "F","F","F","F","F","G","G","G","G","G","G"),
+  tissue = c("Foot", "Foot","Foot","Foot","Foot","Foot","Gill","Gill","Gill","Gill","Gill","Gill"),
   treatment = c("Ocean Warming", "Ocean Warming", "Ocean Acidification", "Ocean Acidification", "Hypoxia", "Hypoxia", "Ocean Warming", "Ocean Warming", "Ocean Acidification", "Ocean Acidification", "Hypoxia", "Hypoxia"),
   updown = c("up", "down","up", "down","up", "down","up", "down","up", "down","up", "down" ),
   num_genes = c(FOW_pos, FOW_neg, FOA_pos, FOA_neg, FDO_pos, FDO_neg, GOW_pos, GOW_neg,GOA_pos, GOA_neg, GDO_pos, GDO_neg )
@@ -69,7 +72,7 @@ DEG_num <- data_frame(
 
 ```{r}
 my_theme <- theme_classic()+
-    theme(axis.text.x = element_text(color="black",angle = 0, hjust = 0.5, size = 18),
+    theme(axis.text.x = element_text(color="black",angle = 45, vjust = 1, hjust = 1, size = 18),
         axis.title.x = element_text(color="black",size = 20),
         axis.title.y = element_text(color="black",size = 20),      
         axis.text.y = element_text(color="black",size = 18),
@@ -80,25 +83,16 @@ my_theme <- theme_classic()+
 
 ```{r}
 DEG_num %>%
-  filter(tissue == "F")%>%
   mutate(treatment = fct_relevel(treatment, c("Ocean Acidification", "Ocean Warming", "Hypoxia"))) %>% 
-  ggplot(aes(x=treatment, y = num_genes, fill=updown))+
+  ggplot(aes(x=tissue, y = num_genes, fill=updown))+
   geom_bar(stat= "identity", position = "dodge")+
-  my_theme+
+  facet_wrap(~treatment)+
   scale_fill_manual(labels= c("Decreased", "Increased"), values = c("red", "blue"))+
-  labs(x = "Treatment", y = "Number of DEG")
+  labs(x = "Treatment", y = "Number of DEG")+
+  theme(panel.spacing = unit(2, "lines"))+
+  my_theme
+
   
   
 ```
 
-```{r}
-DEG_num %>%
-  filter(tissue == "G")%>%
-  mutate(treatment = fct_relevel(treatment, c("Ocean Acidification", "Ocean Warming", "Hypoxia"))) %>% 
-  ggplot(aes(x=treatment, y = num_genes, fill=updown))+
-  geom_bar(stat= "identity", position = "dodge")+
-  my_theme+
-  scale_fill_manual(labels= c("Decreased", "Increased"), values = c("red", "blue"))+
-  labs(x = "Treatment", y = "Number of DEG")
-  
-```

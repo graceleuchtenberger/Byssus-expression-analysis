@@ -118,14 +118,12 @@ writeLines(unlist(GOW_sigs_uniprot_unique), "/home/shared/8TB_HDD_02/graceleucht
 
 ### FDO list
 ```{r}
-FDO_sigs_ID <- read.csv("/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/DEG_lists/GOterms_genome/FDO_sigs_ID.csv",
-                      sep = " "
-                      )
+FDO_sigs_ID <- read.csv("/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/DEG_lists/GOterms_genome/FDO_sigs_ID.csv")
 FDO_sigs_uniprot <- na.omit(FDO_sigs_ID$uniprot_accession)
 head(FDO_sigs_uniprot)
-length(FDO_sigs_uniprot) # 291
+length(FDO_sigs_uniprot) # 361
 FDO_sigs_uniprot_unique <- unique(FDO_sigs_uniprot)
-length(FDO_sigs_uniprot_unique) #225
+length(FDO_sigs_uniprot_unique) #275
 writeLines(unlist(FDO_sigs_uniprot_unique), "/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/DEG_lists/DAVID_lists/FDO_ID_uniprot_DAVID.txt")
 ```
 
@@ -133,14 +131,12 @@ writeLines(unlist(FDO_sigs_uniprot_unique), "/home/shared/8TB_HDD_02/graceleucht
 ### GDO list
 ```{r}
 # Read in tab-delimited file
-GDO_sigs_ID <- read.csv("/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/DEG_lists/GOterms_genome/GDO_sigs_ID.csv",
-                      sep = " "
-                      )
+GDO_sigs_ID <- read.csv("/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/DEG_lists/GOterms_genome/GDO_sigs_ID.csv")
 GDO_sigs_uniprot <- na.omit(GDO_sigs_ID$uniprot_accession)
 head(GDO_sigs_uniprot)
-length(GDO_sigs_uniprot) # 155
+length(GDO_sigs_uniprot) # 301
 GDO_sigs_uniprot_unique <- unique(GDO_sigs_uniprot)
-length(GDO_sigs_uniprot_unique) #126
+length(GDO_sigs_uniprot_unique) #217
 writeLines(unlist(GDO_sigs_uniprot_unique), "/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/DEG_lists/DAVID_lists/GDO_ID_uniprot_DAVID.txt")
 ```
 

@@ -11,7 +11,7 @@ library(tidyverse)
 
 ### Load files
 ```{r}
-gene_count_matrix1 <- read.table("/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/gene_count_matrix_clean",row.names = 1 )
+gene_count_matrix1 <- read_csv("/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/gene_count_matrix_clean.csv")
 g.spid <- read.table("/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/g.spid.txt", header = TRUE)
 colnames(g.spid) <- c("LOC_ID", "evalue", "uniprot_output", "transcript", "uniprot_acc")
 ```
@@ -20,19 +20,18 @@ colnames(g.spid) <- c("LOC_ID", "evalue", "uniprot_output", "transcript", "unipr
 ```{r}
 nrow(gene_count_matrix1) #47806
 filteredGCM <- gene_count_matrix1[rowSums(gene_count_matrix1 >= 10) >= ceiling(ncol(gene_count_matrix1)/ 3),]
-nrow(filteredGCM) #9386
+nrow(filteredGCM) #9476
                                   
 ```
 
 ### Extract LOC_ID from rownames
 ```{r}
 filteredGCM1 <- filteredGCM %>%
-  rownames_to_column(var = "row_name") %>%
   # Mutate to add the new column with part after the pipe (|) and place it after row names
-  mutate(LOC_ID = str_extract(row_name, "(?<=\\|).+")) %>%
+  mutate(LOC_ID = str_extract(...1, "(?<=\\|).+")) %>%
   # Reorder columns to make the new column the first one after row names
-  select(row_name, LOC_ID, everything())
-nrow(filteredGCM1)#9386
+  select(...1, LOC_ID, everything())
+nrow(filteredGCM1)#9476
 ```
 
 ### left join g.spid file mapping LOC ID's to Uniprot accession ID's to filtered gene count matrix
@@ -40,20 +39,20 @@ nrow(filteredGCM1)#9386
 filteredGCM2 <- filteredGCM1 %>%
   left_join(g.spid %>% select(LOC_ID, uniprot_acc), by = "LOC_ID") %>%
   select(LOC_ID, uniprot_acc, everything())
-nrow(filteredGCM2) #9873
+nrow(filteredGCM2) #9964
 
 filteredGCM2_unique <- filteredGCM2 %>%
-  distinct(row_name, .keep_all = TRUE)
-nrow(filteredGCM2_unique) #9386
+  distinct(...1, .keep_all = TRUE)
+nrow(filteredGCM2_unique) #9476
 ```
 
 ### Create BG for DAVID
 ```{r}
 uniprot_BG_DAVID <- na.omit(filteredGCM2_unique$uniprot_acc)
 head(uniprot_BG_DAVID)
-length(uniprot_BG_DAVID) #6365 with UNIPROT id's 
+length(uniprot_BG_DAVID) #6413 with UNIPROT id's 
 uniprot_BG_DAVID_unique <- unique(uniprot_BG_DAVID)
-length(uniprot_BG_DAVID_unique) #5547
+length(uniprot_BG_DAVID_unique) #5581
 writeLines(unlist(uniprot_BG_DAVID_unique), "/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/DEG_lists/DAVID_lists/uniprot_BG_DAVID.txt")
 ```
 

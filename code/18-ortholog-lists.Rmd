@@ -1,0 +1,159 @@
+---
+title: "18-ortholog-lists"
+output: html_document
+date: "2025-04-09"
+---
+
+```{r}
+# Required packages
+library(httr)
+library(jsonlite)
+library(dplyr)
+library(stringr)
+library(purrr)
+library(RCurl)
+```
+
+```{r}
+library(httr)
+library(jsonlite)
+library(dplyr)
+
+# Step 1: Load the species file
+species_df <- read.delim(gzfile("ortho_species.tab.gz"), header = FALSE, sep = "\t", stringsAsFactors = FALSE)
+colnames(species_df) <- c("orthodb_id", "orthodb_key", "species_name", "genome_acc")
+
+# Step 2: Function to get tax info from OrthoDB API
+get_species_info <- function(key) {
+  url <- paste0("https://www.orthodb.org/species/", key)
+  resp <- try(GET(url), silent = TRUE)
+  
+  if (inherits(resp, "try-error") || status_code(resp) != 200) return(NULL)
+  
+  json <- fromJSON(content(resp, "text", encoding = "UTF-8"))
+  
+  # Return taxid and lineage if available
+  if (!is.null(json$ncbi_taxid)) {
+    return(list(
+      orthodb_key = key,
+      ncbi_taxid = json$ncbi_taxid,
+      lineage = paste(json$lineage, collapse = "; ")
+    ))
+  } else {
+    return(NULL)
+  }
+}
+
+# Step 3: Loop through a limited number for testing first
+# For full run, use species_df$orthodb_key
+test_keys <- species_df$orthodb_key[1:100]  # change to all rows later
+
+results <- lapply(test_keys, get_species_info)
+results_clean <- do.call(rbind, lapply(results, as.data.frame))
+
+# Step 4: Merge back with species names
+merged_df <- left_join(results_clean, species_df, by = "orthodb_key")
+
+# Step 5: Filter for Mollusca species (taxid 6447 in lineage)
+mollusca_df <- merged_df %>% filter(grepl("Mollusca", lineage))
+
+# View result
+print(mollusca_df)
+
+```
+
+
+
+```{r cars}
+
+
+# Replace this with your actual vector of UniProt IDs
+top_genes <- read.csv("/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/Top_gene_summaries/Top_50_genes/GOW_topgenes.csv")
+
+uniprot_ids <- c(top_genes$uniprot_accession)   
+
+# Step 1: Get the list of Mollusca species from OrthoDB
+species_url <- "https://data.orthodb.org/current/download/odb12v1_species.tab.gz"
+dest_file <- "/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/Top_gene_summaries/ortho_species.tab.gz"
+
+# Download the file
+download.file(species_url, destfile = dest_file, mode = "wb")
+
+# Read the gzipped tab-delimited file
+species_df <- read.delim(gzfile(dest_file), header = FALSE, sep = "\t")
+species_df <- species_df[, 1:4]
+
+# Filter for Mollusca species
+mollusca_species <- c(6500, 370345, 6526, 112525,55810, 100452, 6565, 29159, 558553, 45954,188477,1093978, 80821, 2589376, 703304, 1735272, 6454,36100,356393, 225164, 6596, 6573, 6604,6549,6550, 29158, 42192, 37653, 2607531, 37623, 6465, 87960, 88005, 6579, 109671, 259542, 400727, 158019, 31201, 220873, 80829, 80833)
+mollusca_species <- as.integer(mollusca_species)
+mollusca_species <- as.data.frame(mollusca_species)
+colnames(mollusca_species) <- c("orthodb_id")
+
+mollusca_taxids <- left_join(mollusca_species, species_df, by = "orthodb_id"  )
+```
+
+```{r}
+# Function to get orthologs from OrthoDB for a given UniProt ID
+get_orthologs_for_uniprot <- function(uniprot_id, mollusca_taxids) {
+  test_result <- entrez_search(db="gene", term=uniprot_id, retmax=1, api_key="8f817031916b3cfee7ec443b712c426d9a08")
+  gene <- test_result$ids
+  # Step 1: Find ortholog group for UniProt ID
+  mapping_url <- paste0("https://www.orthodb.org/search?query=", uniprot_id, "&level=protein&format=json")
+  response <- GET(mapping_url)
+  
+  if (status_code(response) != 200) {
+    return(NULL)
+  }
+  
+  result <- content(response, as = "parsed", simplifyVector = TRUE)
+  
+  if (length(result) == 0 || is.null(result$OGs)) {
+    return(NULL)
+  }
+  
+  # Extract OG IDs (ortholog group IDs)
+  og_ids <- unique(result$OGs$OG)
+
+  # For each OG, get its orthologs and filter by Mollusca species
+  mollusca_orthologs <- map_df(og_ids, function(og) {
+    orthologs_url <- paste0("https://www.orthodb.org/og?id=", og, "&format=json")
+    ortho_response <- GET(orthologs_url)
+    
+    if (status_code(ortho_response) != 200) return(NULL)
+    
+    ortho_data <- content(ortho_response, as = "parsed", simplifyVector = TRUE)
+    if (is.null(ortho_data$members)) return(NULL)
+    
+    # Filter members by mollusca taxid
+    mollusca_hits <- ortho_data$members %>%
+      filter(taxid %in% mollusca_taxids) %>%
+      select(taxid, gene_id)
+    
+    if (nrow(mollusca_hits) == 0) return(NULL)
+    
+    mollusca_hits$uniprot_id <- uniprot_id
+    return(mollusca_hits)
+  })
+
+  return(mollusca_orthologs)
+}
+
+ortholog_results <- lapply(uniprot_ids, get_orthologs_for_uniprot)
+
+# Apply the function to each UniProt ID
+ortholog_results <- map_df(uniprot_ids, get_orthologs_for_uniprot, mollusca_taxids = mollusca_taxids)
+
+# Merge with species info for clarity
+ortholog_results_annotated <- ortholog_results %>%
+  left_join(mollusca_taxids, by = c("taxid" = "tax_id")) %>%
+  select(uniprot_id, gene_id, name, taxid, lineage)
+
+# Save to CSV
+write.csv(ortholog_results_annotated, "mollusca_orthologs_by_uniprot.csv", row.names = FALSE)
+
+# Preview
+head(ortholog_results_annotated)
+
+```
+
+

@@ -5,13 +5,14 @@ date: "2024-12-12"
 ---
 ### Load libraries
 ```{r}
-library(dplyr)
+library(tidyverse)
 library(ggplot2)
+library(readr)
 ```
 
 ### Load in gene count matrix and gene loc/gene ID key
 ```{r}
-gene_count_matrix <- read_csv("/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/gene_count_matrix_clean.csv")
+gene_count_matrix_clean <- read_csv("/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/gene_count_matrix_clean.csv")
 
 loc_go_blast <- read_delim("/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/LOC_GO_list.txt",delim = "\t")
 
@@ -19,11 +20,9 @@ colnames(loc_go_blast)[colnames(loc_go_blast) == "gene"] ="loc_id"
 ```
 
 ```{r}
-gene_count_matrix <- gene_count_matrix %>%
-  tibble::rownames_to_column("row_name") %>% # Convert row names to a column
-  mutate(loc_id = sub(".*\\|", "", row_name)) %>% # Extract part after the pipe
-  select(loc_id, everything()) %>% # Reorder columns
-  column_to_rownames("row_name") # Convert back to row names if needed
+gene_count_matrix_clean <- gene_count_matrix_clean %>%
+  mutate(loc_id = sub(".*\\|", "", ...1)) %>% # Extract part after the pipe
+  select(loc_id, everything()) 
 
 
 # View the updated data frame
@@ -31,7 +30,7 @@ print(df)
 ```
 
 ```{r}
-annot_GCM <- left_join(gene_count_matrix, loc_go_blast[,c("loc_id", "Protein.names", "uniprot_accession.y", "Gene.Names", "Organism")], by= "loc_id")
+annot_GCM <- left_join(gene_count_matrix_clean, loc_go_blast[,c("loc_id", "Protein.names", "uniprot_accession.y", "Gene.Names", "Organism")], by= "loc_id")
 
 annot_GCM <- annot_GCM %>%
   select(loc_id, Protein.names, uniprot_accession.y, Gene.Names, Organism, everything())
@@ -55,15 +54,20 @@ foot_byss_GCM <- rbind(foot_GCM, byss_GCM)
 
 write.csv(foot_byss_GCM , file = "/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/foot_byss_GCM.csv")
 ```
+
 ```{r}
 foot_GCM_1 <- foot_byss_GCM %>%
-  pivot_longer(!1:5, names_to = "sample", values_to = "count")
+  pivot_longer(!1:6, names_to = "sample", values_to = "count")
 
 colnames(treatmentinfo.2)[colnames(treatmentinfo.2) == "sample.1"] ="sample"
 
 foot_byss_GCM_2 <- left_join(foot_GCM_1, treatmentinfo.2, by = "sample")
 
 write.csv(foot_byss_GCM_2, file = "/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/foot_byss_GCM.csv")
+```
+
+```{r}
+foot_byss_GCM_2 <- read_csv("/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/foot_byss_GCM.csv")
 ```
 
 
@@ -93,6 +97,8 @@ gill_byss_gene_plot<- foot_byss_GCM_2 %>%
   theme(plot.margin = unit(c(0.5, 0.5, 0.5, 1), 
                                 "inches"))+
   ylim(1,10)
+
+gill_byss_gene_plot
 
 
 ggsave(gill_byss_gene_plot, file = "output/gill_byss_gene_plot.pdf")

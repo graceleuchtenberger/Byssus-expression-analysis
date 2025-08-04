@@ -12,9 +12,9 @@ library(readr)
 
 ### Load in gene count matrix and gene loc/gene ID key
 ```{r}
-gene_count_matrix_clean <- read_csv("/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/gene_count_matrix_clean.csv")
+gene_count_matrix_clean <- read_csv("/home/shared/8TB_HDD_02/graceleuchtenberger/byssus-exp-analysis/output/gene_count_matrix_clean.csv")
 
-loc_go_blast <- read_delim("/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/LOC_GO_list.txt",delim = "\t")
+loc_go_blast <- read_delim("/home/shared/8TB_HDD_02/graceleuchtenberger/byssus-exp-analysis/output/LOC_GO_list.txt",delim = "\t")
 
 colnames(loc_go_blast)[colnames(loc_go_blast) == "gene"] ="loc_id"
 ```
@@ -67,13 +67,14 @@ write.csv(foot_byss_GCM_2, file = "/home/shared/8TB_HDD_02/graceleuchtenberger/G
 ```
 
 ```{r}
-foot_byss_GCM_2 <- read_csv("/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/foot_byss_GCM.csv")
+foot_byss_GCM_2 <- read_csv("/home/shared/8TB_HDD_02/graceleuchtenberger/byssus-exp-analysis/output/foot_byss_GCM.csv")
 ```
 
 
 ```{r}
 foot_byss_gene_plot <- foot_byss_GCM_2 %>%
   filter(tissue == "F") %>%
+  filter(day == 3) %>%
   ggplot(aes(x=Protein.names, y=log(count), fill=treatment))+
   geom_boxplot()+
   theme_classic()+
@@ -82,7 +83,7 @@ foot_byss_gene_plot <- foot_byss_GCM_2 %>%
                                 "inches"))
 foot_byss_gene_plot
   
-ggsave(foot_byss_gene_plot, file = "output/foot_byss_gene_plot.pdf")
+ggsave(foot_byss_gene_plot, file = "/home/shared/8TB_HDD_02/graceleuchtenberger/byssus-exp-analysis/output/foot_byss_gene_plot.pdf")
 
 ```
 
@@ -90,6 +91,7 @@ ggsave(foot_byss_gene_plot, file = "output/foot_byss_gene_plot.pdf")
 ```{r}
 gill_byss_gene_plot<- foot_byss_GCM_2 %>%
   filter(tissue == "G") %>%
+  filter(day == 3) %>%
   ggplot(aes(x=Protein.names, y=log(count), fill=treatment))+
   geom_boxplot()+
   theme_classic()+
@@ -104,4 +106,37 @@ gill_byss_gene_plot
 ggsave(gill_byss_gene_plot, file = "output/gill_byss_gene_plot.pdf")
 ```
 
+
+```{r}
+genes_to_plot <- foot_byss_GCM_2 %>%
+  filter(tissue == "F", day == 3, treatment == "control") %>%
+  group_by(Protein.names) %>%
+  summarise(max_count = max(count, na.rm = TRUE)) %>%
+  filter(max_count > 0) %>%
+  pull(Protein.names)
+
+foot_byss_GCM_2 %>%
+  filter(tissue == "F", day == 3, Protein.names %in% genes_to_plot) %>%
+  ggplot(aes(x = Protein.names, y = log(count), fill = treatment)) +
+  geom_boxplot() +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        plot.margin = unit(c(0.5, 0.5, 0.5, 1), "inches"))
+```
+```{r}
+genes_to_plot_G <- foot_byss_GCM_2 %>%
+  filter(tissue == "G", day == 3, treatment == "control") %>%
+  group_by(Protein.names) %>%
+  summarise(max_count = max(count, na.rm = TRUE)) %>%
+  filter(max_count > 0) %>%
+  pull(Protein.names)
+
+foot_byss_GCM_2 %>%
+  filter(tissue == "G", day == 3, Protein.names %in% genes_to_plot_G) %>%
+  ggplot(aes(x = Protein.names, y = log(count), fill = treatment)) +
+  geom_boxplot() +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        plot.margin = unit(c(0.5, 0.5, 0.5, 1), "inches"))
+```
 

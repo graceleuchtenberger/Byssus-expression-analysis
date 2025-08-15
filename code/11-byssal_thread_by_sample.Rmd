@@ -112,17 +112,40 @@ genes_to_plot <- foot_byss_GCM_2 %>%
   filter(tissue == "F", day == 3, treatment == "control") %>%
   group_by(Protein.names) %>%
   summarise(max_count = max(count, na.rm = TRUE)) %>%
-  filter(max_count > 0) %>%
-  pull(Protein.names)
+  filter(max_count > 0.1) %>%
+  pull(Protein.names, Organism)
+
+genes_to_plot <- genes_to_plot[c(-(1:7), -17)]
+
+my_theme <- theme(line = element_line(linewidth=1.2), 
+                  rect = element_rect(linewidth=1.2),
+                  text = element_text(size=14,color="black"),
+                  panel.background = element_blank(),
+                  panel.grid.major = element_blank(),
+                  panel.grid.minor = element_blank(),
+                  axis.text.x = element_text(size=16,color="black",angle=45, hjust =1),
+                  axis.text.y = element_text(size=16,color="black"),
+                  axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)),
+                  axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)),
+                  axis.ticks.x = element_line(color="black"),
+                  axis.ticks.y = element_line(color="black"),
+                  # axis.line= element_line(color = "black", size = 0.1),
+                  panel.border = element_rect(color = "black", fill=NA, linewidth=1.2),
+                  legend.key = element_blank(), # removes background of legend bullets
+                  legend.position = "right",
+                  plot.margin = unit(c(0.5, 0.5, 0.5, 1), "inches"))
 
 foot_byss_GCM_2 %>%
   filter(tissue == "F", day == 3, Protein.names %in% genes_to_plot) %>%
   ggplot(aes(x = Protein.names, y = log(count), fill = treatment)) +
   geom_boxplot() +
   theme_classic() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1),
-        plot.margin = unit(c(0.5, 0.5, 0.5, 1), "inches"))
+  labs(fill = "Treatment",
+       x = "Structural foot proteins")+
+  scale_fill_manual(labels = c("Treatment control", "Hypoxia", "Ocean acidification", "Ocean warming"), values = c("purple", "green", "red", "orange"))+
+  my_theme
 ```
+
 ```{r}
 genes_to_plot_G <- foot_byss_GCM_2 %>%
   filter(tissue == "G", day == 3, treatment == "control") %>%

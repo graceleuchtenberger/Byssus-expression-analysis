@@ -105,7 +105,7 @@ gill_byss_gene_plot
 
 ggsave(gill_byss_gene_plot, file = "output/gill_byss_gene_plot.pdf")
 ```
-
+### Structural foot protein graph
 
 ```{r}
 genes_to_plot <- foot_byss_GCM_2 %>%
@@ -113,7 +113,7 @@ genes_to_plot <- foot_byss_GCM_2 %>%
   group_by(Protein.names) %>%
   summarise(max_count = max(count, na.rm = TRUE)) %>%
   filter(max_count > 0.1) %>%
-  pull(Protein.names, Organism)
+  pull(Protein.names) 
 
 genes_to_plot <- genes_to_plot[c(-(1:7), -17)]
 
@@ -133,8 +133,10 @@ my_theme <- theme(line = element_line(linewidth=1.2),
                   panel.border = element_rect(color = "black", fill=NA, linewidth=1.2),
                   legend.key = element_blank(), # removes background of legend bullets
                   legend.position = "right",
-                  plot.margin = unit(c(0.5, 0.5, 0.5, 1), "inches"))
+                  plot.margin = unit(c(0.5, 0.5, 0.5, 2), "inches"))
 
+install.packages("ggtext")
+library(ggtext)
 foot_byss_GCM_2 %>%
   filter(tissue == "F", day == 3, Protein.names %in% genes_to_plot) %>%
   ggplot(aes(x = Protein.names, y = log(count), fill = treatment)) +
@@ -143,7 +145,12 @@ foot_byss_GCM_2 %>%
   labs(fill = "Treatment",
        x = "Structural foot proteins")+
   scale_fill_manual(labels = c("Treatment control", "Hypoxia", "Ocean acidification", "Ocean warming"), values = c("purple", "green", "red", "orange"))+
-  my_theme
+  my_theme+
+  scale_x_discrete(labels = c("Foot protein 10", "Foot protein 11", "Foot protein 12", "Foot protein 13", "Foot protein 14", "Foot protein 15", "Foot protein 17", expression(paste("Foot protein 2 (", italic("M. edulis"), ")")), "Foot protein-4 variant-1"))
+
+
+genes_to_plot_list <- foot_byss_GCM_2 %>%
+  filter(tissue == "F", day == 3, Protein.names %in% genes_to_plot)
 ```
 
 ```{r}
@@ -161,5 +168,68 @@ foot_byss_GCM_2 %>%
   theme_classic() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1),
         plot.margin = unit(c(0.5, 0.5, 0.5, 1), "inches"))
+```
+### HSP isolation and graph
+```{r}
+HSP_GCM <- annot_GCM %>%
+  filter(grepl("heat shock", Protein.names, ignore.case = TRUE))
+
+HSP_GCM <- HSP_GCM %>%
+  distinct(uniprot_accession.y, .keep_all = TRUE)
+
+HSP_GCM_1 <- HSP_GCM %>%
+  pivot_longer(!1:6, names_to = "sample", values_to = "count")
+
+colnames(treatmentinfo)[colnames(treatmentinfo) == "sample.1"] ="sample"
+
+HSP_GCM_2 <- left_join(HSP_GCM_1, treatmentinfo, by = "sample")
+
+write.csv(HSP_GCM_2, file = "/home/shared/8TB_HDD_02/graceleuchtenberger/byssus-exp-analysis/output/HSP_GCM.csv")
+
+```
+
+
+```{r}
+genes_to_plot_hsp <- HSP_GCM_2 %>%
+  filter(tissue == "F", day == 3, treatment == "control") %>%
+  group_by(Protein.names) %>%
+  summarise(max_count = max(count, na.rm = TRUE)) %>%
+  filter(max_count > 0.1) %>%
+  pull(Protein.names) 
+
+
+HSP_GCM_2 %>%
+  filter(tissue == "F", day == 3, Protein.names %in% genes_to_plot_hsp) %>%
+  ggplot(aes(x = Protein.names, y = log(count), fill = treatment)) +
+  geom_boxplot() +
+  theme_classic() +
+  labs(fill = "Treatment",
+       x = "Heat shock proteins")+
+  scale_fill_manual(labels = c("Treatment control", "Hypoxia", "Ocean acidification", "Ocean warming"), values = c("purple", "green", "red", "orange"))+
+  theme(axis.text.x = element_text(color="black",angle=45, hjust = 1),
+        plot.margin = unit(c(0.5, 0.5, 0.5, 1.5), "inches"))+
+  scale_x_discrete(labels = function(x) str_wrap(x, width = 50))
+
+```
+```{r}
+genes_to_plot_hspG <- HSP_GCM_2 %>%
+  filter(tissue == "G", day == 3, treatment == "control") %>%
+  group_by(Protein.names) %>%
+  summarise(max_count = max(count, na.rm = TRUE)) %>%
+  filter(max_count > 0.1) %>%
+  pull(Protein.names) 
+
+
+HSP_GCM_2 %>%
+  filter(tissue == "G", day == 3, Protein.names %in% genes_to_plot_hspG) %>%
+  ggplot(aes(x = Protein.names, y = log(count), fill = treatment)) +
+  geom_boxplot() +
+  theme_classic() +
+  labs(fill = "Treatment",
+       x = "Structural foot proteins")+
+  scale_fill_manual(labels = c("Treatment control", "Hypoxia", "Ocean acidification", "Ocean warming"), values = c("purple", "green", "red", "orange"))+
+  theme(axis.text.x = element_text(color="black",angle=45, hjust = 1),
+        plot.margin = unit(c(0.5, 0.5, 0.5, 1.5), "inches"))+
+  scale_x_discrete(labels = function(x) str_wrap(x, width = 50))
 ```
 

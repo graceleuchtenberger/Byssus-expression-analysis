@@ -115,7 +115,7 @@ genes_to_plot <- foot_byss_GCM_2 %>%
   filter(max_count > 0.1) %>%
   pull(Protein.names) 
 
-genes_to_plot <- genes_to_plot[c(-(1:7), -17)]
+genes_to_plot <- genes_to_plot[c(-(2:7), -17)]
 
 my_theme <- theme(line = element_line(linewidth=1.2), 
                   rect = element_rect(linewidth=1.2),
@@ -123,7 +123,7 @@ my_theme <- theme(line = element_line(linewidth=1.2),
                   panel.background = element_blank(),
                   panel.grid.major = element_blank(),
                   panel.grid.minor = element_blank(),
-                  axis.text.x = element_text(size=16,color="black",angle=45, hjust =1),
+                  axis.text.x = element_text(size=14,color="black",angle=45, hjust =1),
                   axis.text.y = element_text(size=16,color="black"),
                   axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)),
                   axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)),
@@ -146,7 +146,7 @@ foot_byss_GCM_2 %>%
        x = "Structural foot proteins")+
   scale_fill_manual(labels = c("Treatment control", "Hypoxia", "Ocean acidification", "Ocean warming"), values = c("purple", "green", "red", "orange"))+
   my_theme+
-  scale_x_discrete(labels = c("Foot protein 10", "Foot protein 11", "Foot protein 12", "Foot protein 13", "Foot protein 14", "Foot protein 15", "Foot protein 17", expression(paste("Foot protein 2 (", italic("M. edulis"), ")")), "Foot protein-4 variant-1"))
+  scale_x_discrete(labels = c("Foot protein 1","Foot protein 10", "Foot protein 11", "Foot protein 12", "Foot protein 13", "Foot protein 14", "Foot protein 15", "Foot protein 17", expression(paste("Foot protein 2 (", italic("M. edulis"), ")")), "Foot protein-4 variant-1"))
 
 
 genes_to_plot_list <- foot_byss_GCM_2 %>%
@@ -197,6 +197,50 @@ genes_to_plot_hsp <- HSP_GCM_2 %>%
   filter(max_count > 0.1) %>%
   pull(Protein.names) 
 
+my_theme <- theme(line = element_line(linewidth=1.2), 
+                  rect = element_rect(linewidth=1.2),
+                  text = element_text(size=14,color="black"),
+                  panel.background = element_blank(),
+                  panel.grid.major = element_blank(),
+                  panel.grid.minor = element_blank(),
+                  axis.text.x = element_text(size=12,color="black",angle=45, hjust =1),
+                  axis.text.y = element_text(size=14,color="black"),
+                  axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)),
+                  axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)),
+                  axis.ticks.x = element_line(color="black"),
+                  axis.ticks.y = element_line(color="black"),
+                  # axis.line= element_line(color = "black", size = 0.1),
+                  panel.border = element_rect(color = "black", fill=NA, linewidth=1.2),
+                  legend.key = element_blank(), # removes background of legend bullets
+                  legend.position = "right",
+                  plot.margin = unit(c(0.5, 0.5, 0.5, 2), "inches"))
+
+
+labels_hsp <- c(
+  "10 kDa heat shock protein, mitochondrial", 
+  "60 kDa heat shock protein, mitochondrial", 
+  "97 kDa heat shock protein", 
+  "Activator of 90 kDa heat shock protein ATPase homolog 1", 
+  "DnaJ homologous subfamily A member 1 (Heat shock 40 kDa protein 4)", 
+  "Endoplasmin (Heat shock protein 90 kDa beta member 1)", 
+  "HSP70", 
+  "Heat shock 70 kDa protein 12A", 
+  "Heat shock 70 kDa protein 12B", 
+  "Heat shock 70 kDa protein 13", 
+  "Heat shock 70 kDa protein 14", 
+  "Heat shock cognate 71 kDa protein", 
+  "Heat shock factor protein", 
+  "Heat shock factor-binding protein 1", 
+  "Heat shock protein 70 A1", 
+  "Heat shock protein 70 B2", 
+  "Heat shock protein 75 kDa, mitochondrial", 
+  "Heat shock protein HSP 90-alpha", 
+  "Hsp70-binding protein 1 (HspBP1)", 
+  "HSPB1-associated protein 1", 
+  "HSPB1-associated protein 1 (Protein associated with small stress protein 1)", 
+  "Intraflagellar transport protein 25 homolog (Heat shock protein beta-11)", 
+  "Stress-70 protein, mitochondrial (Heat shock 70 kDa protein 9)"
+)
 
 HSP_GCM_2 %>%
   filter(tissue == "F", day == 3, Protein.names %in% genes_to_plot_hsp) %>%
@@ -208,9 +252,11 @@ HSP_GCM_2 %>%
   scale_fill_manual(labels = c("Treatment control", "Hypoxia", "Ocean acidification", "Ocean warming"), values = c("purple", "green", "red", "orange"))+
   theme(axis.text.x = element_text(color="black",angle=45, hjust = 1),
         plot.margin = unit(c(0.5, 0.5, 0.5, 1.5), "inches"))+
-  scale_x_discrete(labels = function(x) str_wrap(x, width = 50))
+  scale_x_discrete(labels = str_wrap(labels_hsp, width = 40))+
+  my_theme
 
 ```
+
 ```{r}
 genes_to_plot_hspG <- HSP_GCM_2 %>%
   filter(tissue == "G", day == 3, treatment == "control") %>%
@@ -229,7 +275,8 @@ HSP_GCM_2 %>%
        x = "Structural foot proteins")+
   scale_fill_manual(labels = c("Treatment control", "Hypoxia", "Ocean acidification", "Ocean warming"), values = c("purple", "green", "red", "orange"))+
   theme(axis.text.x = element_text(color="black",angle=45, hjust = 1),
-        plot.margin = unit(c(0.5, 0.5, 0.5, 1.5), "inches"))+
-  scale_x_discrete(labels = function(x) str_wrap(x, width = 50))
+        plot.margin = unit(c(0.5, 0.5, 0.5, 2), "inches"))+
+  scale_x_discrete(labels = function(x) str_wrap(x, width = 60))+
+  my_theme
 ```
 

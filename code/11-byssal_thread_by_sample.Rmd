@@ -280,3 +280,114 @@ HSP_GCM_2 %>%
   my_theme
 ```
 
+```{r}
+### HIF isolation and graph
+
+HIF_GCM <- annot_GCM %>%
+  filter(grepl("hypoxia", Protein.names, ignore.case = TRUE))
+
+HIF_GCM <- HIF_GCM %>%
+  distinct(uniprot_accession.y, .keep_all = TRUE)
+
+HIF_GCM_1 <- HIF_GCM %>%
+  pivot_longer(!1:6, names_to = "sample", values_to = "count")
+
+
+HIF_GCM_2 <- left_join(HIF_GCM_1, treatmentinfo, by = "sample")
+
+write.csv(HIF_GCM_2, file = "/home/shared/8TB_HDD_02/graceleuchtenberger/byssus-exp-analysis/output/HIF_GCM.csv")
+
+
+```
+
+
+```{r}
+genes_to_plot_hifF <- HIF_GCM_2 %>%
+  filter(tissue == "F", day == 3, treatment == "control") %>%
+  group_by(Protein.names) %>%
+  summarise(max_count = max(count, na.rm = TRUE)) %>%
+  filter(max_count > 0.1) %>%
+  pull(Protein.names) 
+
+
+HIF_GCM_2 %>%
+  filter(tissue == "F", day == 3, Protein.names %in% genes_to_plot_hifF) %>%
+  ggplot(aes(x = Protein.names, y = log(count), fill = treatment)) +
+  geom_boxplot() +
+  theme_classic() +
+  labs(fill = "Treatment",
+       x = "HIF proteins")+
+  scale_fill_manual(labels = c("Treatment control", "Hypoxia", "Ocean acidification", "Ocean warming"), values = c("purple", "green", "red", "orange"))+
+  theme(axis.text.x = element_text(color="black",angle=45, hjust = 1),
+        plot.margin = unit(c(0.5, 0.5, 0.5, 2), "inches"))+
+  scale_x_discrete(labels = function(x) str_wrap(x, width = 60))+
+  my_theme
+```
+
+```{r}
+genes_to_plot_hifG <- HIF_GCM_2 %>%
+  filter(tissue == "G", day == 3, treatment == "control") %>%
+  group_by(Protein.names) %>%
+  summarise(max_count = max(count, na.rm = TRUE)) %>%
+  filter(max_count > 0.1) %>%
+  pull(Protein.names) 
+
+
+HIF_GCM_2 %>%
+  filter(tissue == "G", day == 3, Protein.names %in% genes_to_plot_hifG) %>%
+  ggplot(aes(x = Protein.names, y = log(count), fill = treatment)) +
+  geom_boxplot() +
+  theme_classic() +
+  labs(fill = "Treatment",
+       x = "HIF proteins")+
+  scale_fill_manual(labels = c("Treatment control", "Hypoxia", "Ocean acidification", "Ocean warming"), values = c("purple", "green", "red", "orange"))+
+  theme(axis.text.x = element_text(color="black",angle=45, hjust = 1),
+        plot.margin = unit(c(0.5, 0.5, 0.5, 2), "inches"))+
+  scale_x_discrete(labels = function(x) str_wrap(x, width = 60))+
+  my_theme
+```
+### Peroxidase/catalase isolation
+```{r}
+toMatch <- c("peroxidase", "catalase")
+
+perox_GCM <- annot_GCM %>%
+  filter(grepl(paste(toMatch,collapse="|"), Protein.names, ignore.case = TRUE))
+
+perox_GCM <- perox_GCM %>%
+  distinct(uniprot_accession.y, .keep_all = TRUE)
+
+perox_GCM_1 <- perox_GCM %>%
+  pivot_longer(!1:6, names_to = "sample", values_to = "count")
+
+
+perox_GCM_2 <- left_join(perox_GCM_1, treatmentinfo, by = "sample")
+
+write.csv(perox_GCM_2, file = "/home/shared/8TB_HDD_02/graceleuchtenberger/byssus-exp-analysis/output/perox_GCM.csv")
+
+
+```
+
+
+```{r}
+genes_to_plot_peroxF <- perox_GCM_2 %>%
+  filter(tissue == "F", day == 3, treatment == "control") %>%
+  group_by(Protein.names) %>%
+  summarise(max_count = max(count, na.rm = TRUE)) %>%
+  filter(max_count > 0.1) %>%
+  pull(Protein.names) 
+
+
+perox_GCM_2 %>%
+  filter(tissue == "F", day == 3, Protein.names %in% genes_to_plot_peroxF) %>%
+  ggplot(aes(x = Protein.names, y = log(count), fill = treatment)) +
+  geom_boxplot() +
+  theme_classic() +
+  labs(fill = "Treatment",
+       x = "Peroxidase proteins")+
+  scale_fill_manual(labels = c("Treatment control", "Hypoxia", "Ocean acidification", "Ocean warming"), values = c("purple", "green", "red", "orange"))+
+  theme(axis.text.x = element_text(color="black",angle=45, hjust = 1),
+        plot.margin = unit(c(0.5, 0.5, 0.5, 2), "inches"))+
+  scale_x_discrete(labels = function(x) str_wrap(x, width = 60))+
+  my_theme
+```
+

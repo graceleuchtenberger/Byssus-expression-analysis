@@ -265,6 +265,34 @@ genes_to_plot_hspG <- HSP_GCM_2 %>%
   filter(max_count > 0.1) %>%
   pull(Protein.names) 
 
+genes_to_plot_hspG <- genes_to_plot_hspG[-16]
+
+labels_hspG <- c(
+  "10 kDa heat shock protein, mitochondrial", 
+  "60 kDa heat shock protein, mitochondrial", 
+  "97 kDa heat shock protein", 
+  "Activator of 90 kDa heat shock protein ATPase homolog 1", 
+  "DnaJ homologous subfamily A member 1 (Heat shock 40 kDa protein 4)", 
+  "Endoplasmin (Heat shock protein 90 kDa beta member 1)", 
+  "HSP70", 
+  "Heat shock 70 kDa protein 12A", 
+  "Heat shock 70 kDa protein 12B",
+  "Heat shock 70 kDa protein 12B (Heat shock protein family A member 12B)",
+  "Heat shock 70 kDa protein 13", 
+  "Heat shock 70 kDa protein 14", 
+  "Heat shock cognate 71 kDa protein", 
+  "Heat shock factor protein",
+  "Heat shock factor-binding protein 1", 
+  "Heat shock protein 70 A1", 
+  "Heat shock protein 70 B2", 
+  "Heat shock protein 75 kDa, mitochondrial", 
+  "Heat shock protein HSP 90-alpha", 
+  "Hsp70-binding protein 1 (HspBP1)", 
+  "HSPB1-associated protein 1", 
+  "HSPB1-associated protein 1 (Protein associated with small stress protein 1)", 
+  "Intraflagellar transport protein 25 homolog (Heat shock protein beta-11)", 
+  "Stress-70 protein, mitochondrial (Heat shock 70 kDa protein 9)"
+)
 
 HSP_GCM_2 %>%
   filter(tissue == "G", day == 3, Protein.names %in% genes_to_plot_hspG) %>%
@@ -276,7 +304,8 @@ HSP_GCM_2 %>%
   scale_fill_manual(labels = c("Treatment control", "Hypoxia", "Ocean acidification", "Ocean warming"), values = c("purple", "green", "red", "orange"))+
   theme(axis.text.x = element_text(color="black",angle=45, hjust = 1),
         plot.margin = unit(c(0.5, 0.5, 0.5, 2), "inches"))+
-  scale_x_discrete(labels = function(x) str_wrap(x, width = 60))+
+  scale_x_discrete(labels = str_wrap(labels_hspG, width = 40))+
+  #scale_x_discrete(labels = function(x) str_wrap(x, width = 40))+
   my_theme
 ```
 
@@ -309,6 +338,16 @@ genes_to_plot_hifF <- HIF_GCM_2 %>%
   filter(max_count > 0.1) %>%
   pull(Protein.names) 
 
+labels_hifF <- c(
+  "Aryl hydrocarbon receptor nuclear translocator (Class E basic helix-loop-helix protein 2) (Hypoxia-inducible factor 1-beta)",
+  "Aryl hydrocarbon receptor nuclear translocator (Hypoxia-inducible factor 1-beta)",
+  "Egl nine homologous 1 (Hypoxia-inducible factor prolyl hydroxylase 2)",
+  "Endothelial PAS domain-containing protein 1 (Hypoxia-inducible factor 2-alpha)",
+  "Hypoxia upregulated protein 1", 
+  "Hypoxia-inducible factor 1-alpha",
+  "Hypoxia-inducible factor 1-alpha inhibitor",
+  "Transmembrane prolyl 4-hydroxylase (Hypoxia-inducible factor prolyl hydroxylase 4)"
+)
 
 HIF_GCM_2 %>%
   filter(tissue == "F", day == 3, Protein.names %in% genes_to_plot_hifF) %>%
@@ -320,7 +359,7 @@ HIF_GCM_2 %>%
   scale_fill_manual(labels = c("Treatment control", "Hypoxia", "Ocean acidification", "Ocean warming"), values = c("purple", "green", "red", "orange"))+
   theme(axis.text.x = element_text(color="black",angle=45, hjust = 1),
         plot.margin = unit(c(0.5, 0.5, 0.5, 2), "inches"))+
-  scale_x_discrete(labels = function(x) str_wrap(x, width = 60))+
+  scale_x_discrete(labels = str_wrap(labels_hifF, width = 40))+
   my_theme
 ```
 
@@ -332,6 +371,16 @@ genes_to_plot_hifG <- HIF_GCM_2 %>%
   filter(max_count > 0.1) %>%
   pull(Protein.names) 
 
+labels_hifG <- c(
+  "Aryl hydrocarbon receptor nuclear translocator (Class E basic helix-loop-helix protein 2) (Hypoxia-inducible factor 1-beta)",
+  "Aryl hydrocarbon receptor nuclear translocator (Hypoxia-inducible factor 1-beta)",
+  "Egl nine homologous 1 (Hypoxia-inducible factor prolyl hydroxylase 2)",
+  "Endothelial PAS domain-containing protein 1 (Hypoxia-inducible factor 2-alpha)",
+  "Hypoxia upregulated protein 1", 
+  "Hypoxia-inducible factor 1-alpha",
+  "Hypoxia-inducible factor 1-alpha inhibitor",
+  "Transmembrane prolyl 4-hydroxylase (Hypoxia-inducible factor prolyl hydroxylase 4)"
+)
 
 HIF_GCM_2 %>%
   filter(tissue == "G", day == 3, Protein.names %in% genes_to_plot_hifG) %>%
@@ -343,7 +392,7 @@ HIF_GCM_2 %>%
   scale_fill_manual(labels = c("Treatment control", "Hypoxia", "Ocean acidification", "Ocean warming"), values = c("purple", "green", "red", "orange"))+
   theme(axis.text.x = element_text(color="black",angle=45, hjust = 1),
         plot.margin = unit(c(0.5, 0.5, 0.5, 2), "inches"))+
-  scale_x_discrete(labels = function(x) str_wrap(x, width = 60))+
+  scale_x_discrete(labels = str_wrap(labels_hifG, width = 40))+
   my_theme
 ```
 ### Peroxidase/catalase isolation
@@ -373,8 +422,28 @@ genes_to_plot_peroxF <- perox_GCM_2 %>%
   filter(tissue == "F", day == 3, treatment == "control") %>%
   group_by(Protein.names) %>%
   summarise(max_count = max(count, na.rm = TRUE)) %>%
-  filter(max_count > 0.1) %>%
+  filter(max_count > 1) %>%
   pull(Protein.names) 
+
+genes_to_plot_peroxF <- genes_to_plot_peroxF[-10]
+
+labels_peroxF <- c(
+  "Byssal peroxidase-like protein 4", 
+  "Catalase", 
+  "Chloride intracellular channel protein 2 (Glutaredoxin-like peroxidase CLIC2)", 
+  "Dye-decolorizing peroxidase YfeX", 
+  "Glutathione peroxidase (GPX)", 
+  "Gluthathione peroxidase (GPx) (GSHPx)", 
+  "Glutathione peroxidase 1", 
+  "Glutathione peroxidase 2", 
+  "Glutathione peroxidase 7",
+  "Glutathione S-transferase 3, mitochondrial (Glutathione peroxidase MGST3)", 
+  "Peroxiredoxin 4 (Thioredoxin peroxidase AO372)", 
+  "Peroxiredoxin 5, mitochondrial (Thioredoxin peroxidase PMP20)", 
+  "Peroxiredoxin 5, mitochondrial (Thioredoxin peroxidase)", 
+  "Peroxidredoxin 6 (Glutathione peroxidase 4)", 
+  "Phospholipid hydroperoxide glutathione peroxidase ", 
+  "Thioredoxin reductase 1, cytoplasmic (Peroxidase TXNRD1)")
 
 
 perox_GCM_2 %>%
@@ -387,7 +456,52 @@ perox_GCM_2 %>%
   scale_fill_manual(labels = c("Treatment control", "Hypoxia", "Ocean acidification", "Ocean warming"), values = c("purple", "green", "red", "orange"))+
   theme(axis.text.x = element_text(color="black",angle=45, hjust = 1),
         plot.margin = unit(c(0.5, 0.5, 0.5, 2), "inches"))+
-  scale_x_discrete(labels = function(x) str_wrap(x, width = 60))+
+  scale_x_discrete(labels = str_wrap(labels_peroxF, width = 40))+
+  #scale_x_discrete(labels = function(x) str_wrap(x, width = 40))+
   my_theme
 ```
 
+```{r}
+genes_to_plot_peroxG <- perox_GCM_2 %>%
+  filter(tissue == "G", day == 3, treatment == "control") %>%
+  group_by(Protein.names) %>%
+  summarise(max_count = max(count, na.rm = TRUE)) %>%
+  filter(max_count > 1) %>%
+  pull(Protein.names) 
+
+genes_to_plot_peroxG <- genes_to_plot_peroxG[-12]
+
+labels_peroxG <- c(
+  "Byssal peroxidase-like protein 4", 
+  "Catalase", 
+  "Chloride intracellular channel protein 2 (Glutaredoxin-like peroxidase CLIC2)", 
+  "Dye-decolorizing peroxidase YfeX", 
+  "Glutathione peroxidase (GPX)", 
+  "Gluthathione peroxidase (GPx) (GSHPx)", 
+  "Glutathione peroxidase 1", 
+  "Glutathione peroxidase 2", 
+  "Glutathione peroxidase 3", 
+  "Glutathione peroxidase 7",
+  "Glutathione S-transferase 3, mitochondrial (Glutathione peroxidase MGST3)",
+  "Peroxiredoxin-4 (Thioredoxin peroxidase AO372)", 
+  "Peroxiredoxin-5, mitochondrial (Thioredoxin peroxidase PMP20)", 
+  "Peroxiredoxin-5, mitochondrial (Thioredoxin peroxidase)", 
+  "Peroxidredoxin-6 (Glutathione peroxidase 4)", 
+  "Phospholipid hydroperoxide glutathione peroxidase", 
+  "Thioredoxin reductase 1, cytoplasmic (Peroxidase TXNRD1)")
+
+
+perox_GCM_2 %>%
+  filter(tissue == "G", day == 3, Protein.names %in% genes_to_plot_peroxG) %>%
+  ggplot(aes(x = Protein.names, y = log(count), fill = treatment)) +
+  geom_boxplot() +
+  theme_classic() +
+  labs(fill = "Treatment",
+       x = "Peroxidase proteins")+
+  scale_fill_manual(labels = c("Treatment control", "Hypoxia", "Ocean acidification", "Ocean warming"), values = c("purple", "green", "red", "orange"))+
+  theme(axis.text.x = element_text(color="black",angle=45, hjust = 1),
+        plot.margin = unit(c(0.5, 0.5, 0.5, 2), "inches"))+
+  #scale_x_discrete(labels = function(x) str_wrap(x, width = 40))
+  scale_x_discrete(labels = str_wrap(labels_peroxG, width = 40))+
+  my_theme
+```

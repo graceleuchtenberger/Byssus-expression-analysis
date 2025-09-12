@@ -115,6 +115,14 @@ genes_to_plot <- foot_byss_GCM_2 %>%
   filter(max_count > 0.1) %>%
   pull(Protein.names) 
 
+
+genes_to_plot_dataframe <- foot_byss_GCM_2 %>%
+  filter(tissue == "F", day == 3, treatment == "control") %>%
+  group_by(Protein.names, Organism) %>%   # group by both
+  summarise(max_count = max(count, na.rm = TRUE), .groups = "drop") %>%
+  filter(max_count > 0.1) %>%
+  select(Protein.names, Organism)
+
 genes_to_plot <- genes_to_plot[c(-(2:7), -17)]
 
 my_theme <- theme(line = element_line(linewidth=1.2), 
@@ -139,14 +147,31 @@ install.packages("ggtext")
 library(ggtext)
 foot_byss_GCM_2 %>%
   filter(tissue == "F", day == 3, Protein.names %in% genes_to_plot) %>%
+  mutate(
+    Protein.names = factor(
+      Protein.names,
+      levels = c(
+        "ACDC (Byssal EP-like protein 1) (EP-protein-1)",
+        "Foot protein 2",           # moved up
+        "Foot protein-4 variant-1",           # moved up
+        "Foot protein 10",
+        "Foot protein 11",
+        "Foot protein 12",
+        "Foot protein 13",
+        "Foot protein 14",
+        "Foot protein 15",
+        "Foot protein 17"
+      )
+    )
+  ) %>%
   ggplot(aes(x = Protein.names, y = log(count), fill = treatment)) +
-  geom_boxplot() +
+  geom_boxplot(alpha = 5/10) +
   theme_classic() +
   labs(fill = "Treatment",
        x = "Structural foot proteins")+
   scale_fill_manual(labels = c("Treatment control", "Hypoxia", "Ocean acidification", "Ocean warming"), values = c("purple", "green", "red", "orange"))+
   my_theme+
-  scale_x_discrete(labels = c("Foot protein 1","Foot protein 10", "Foot protein 11", "Foot protein 12", "Foot protein 13", "Foot protein 14", "Foot protein 15", "Foot protein 17", expression(paste("Foot protein 2 (", italic("M. edulis"), ")")), "Foot protein-4 variant-1"))
+  scale_x_discrete(labels = c(expression(paste("Foot protein 1 (", italic("M. coruscus"), ")")),expression(paste("Foot protein 2 (", italic("M. edulis"), ")")),"Foot protein-4 variant-1","Foot protein 10", "Foot protein 11", "Foot protein 12", "Foot protein 13", "Foot protein 14", "Foot protein 15", "Foot protein 17"))
 
 
 genes_to_plot_list <- foot_byss_GCM_2 %>%
@@ -215,6 +240,7 @@ my_theme <- theme(line = element_line(linewidth=1.2),
                   legend.position = "right",
                   plot.margin = unit(c(0.5, 0.5, 0.5, 2), "inches"))
 
+genes_to_plot_hsp <- genes_to_plot_hsp[-8]
 
 labels_hsp <- c(
   "10 kDa heat shock protein, mitochondrial", 
@@ -237,7 +263,6 @@ labels_hsp <- c(
   "Heat shock protein HSP 90-alpha", 
   "Hsp70-binding protein 1 (HspBP1)", 
   "HSPB1-associated protein 1", 
-  "HSPB1-associated protein 1 (Protein associated with small stress protein 1)", 
   "Intraflagellar transport protein 25 homolog (Heat shock protein beta-11)", 
   "Stress-70 protein, mitochondrial (Heat shock 70 kDa protein 9)"
 )
@@ -245,7 +270,7 @@ labels_hsp <- c(
 HSP_GCM_2 %>%
   filter(tissue == "F", day == 3, Protein.names %in% genes_to_plot_hsp) %>%
   ggplot(aes(x = Protein.names, y = log(count), fill = treatment)) +
-  geom_boxplot() +
+  geom_boxplot(alpha = 5/10) +
   theme_classic() +
   labs(fill = "Treatment",
        x = "Heat shock proteins")+
@@ -265,7 +290,7 @@ genes_to_plot_hspG <- HSP_GCM_2 %>%
   filter(max_count > 0.1) %>%
   pull(Protein.names) 
 
-genes_to_plot_hspG <- genes_to_plot_hspG[-16]
+genes_to_plot_hspG <- genes_to_plot_hspG[-c(8,16)]
 
 labels_hspG <- c(
   "10 kDa heat shock protein, mitochondrial", 
@@ -289,7 +314,6 @@ labels_hspG <- c(
   "Heat shock protein HSP 90-alpha", 
   "Hsp70-binding protein 1 (HspBP1)", 
   "HSPB1-associated protein 1", 
-  "HSPB1-associated protein 1 (Protein associated with small stress protein 1)", 
   "Intraflagellar transport protein 25 homolog (Heat shock protein beta-11)", 
   "Stress-70 protein, mitochondrial (Heat shock 70 kDa protein 9)"
 )
@@ -297,10 +321,10 @@ labels_hspG <- c(
 HSP_GCM_2 %>%
   filter(tissue == "G", day == 3, Protein.names %in% genes_to_plot_hspG) %>%
   ggplot(aes(x = Protein.names, y = log(count), fill = treatment)) +
-  geom_boxplot() +
+  geom_boxplot(alpha = 5/10) +
   theme_classic() +
   labs(fill = "Treatment",
-       x = "Structural foot proteins")+
+       x = "Heat shock proteins")+
   scale_fill_manual(labels = c("Treatment control", "Hypoxia", "Ocean acidification", "Ocean warming"), values = c("purple", "green", "red", "orange"))+
   theme(axis.text.x = element_text(color="black",angle=45, hjust = 1),
         plot.margin = unit(c(0.5, 0.5, 0.5, 2), "inches"))+
@@ -338,8 +362,10 @@ genes_to_plot_hifF <- HIF_GCM_2 %>%
   filter(max_count > 0.1) %>%
   pull(Protein.names) 
 
+
+genes_to_plot_hifF <- genes_to_plot_hifF[-1]
+
 labels_hifF <- c(
-  "Aryl hydrocarbon receptor nuclear translocator (Class E basic helix-loop-helix protein 2) (Hypoxia-inducible factor 1-beta)",
   "Aryl hydrocarbon receptor nuclear translocator (Hypoxia-inducible factor 1-beta)",
   "Egl nine homologous 1 (Hypoxia-inducible factor prolyl hydroxylase 2)",
   "Endothelial PAS domain-containing protein 1 (Hypoxia-inducible factor 2-alpha)",
@@ -352,10 +378,10 @@ labels_hifF <- c(
 HIF_GCM_2 %>%
   filter(tissue == "F", day == 3, Protein.names %in% genes_to_plot_hifF) %>%
   ggplot(aes(x = Protein.names, y = log(count), fill = treatment)) +
-  geom_boxplot() +
+  geom_boxplot(alpha = 5/10) +
   theme_classic() +
   labs(fill = "Treatment",
-       x = "HIF proteins")+
+       x = "Hypoxia-inducible factor proteins")+
   scale_fill_manual(labels = c("Treatment control", "Hypoxia", "Ocean acidification", "Ocean warming"), values = c("purple", "green", "red", "orange"))+
   theme(axis.text.x = element_text(color="black",angle=45, hjust = 1),
         plot.margin = unit(c(0.5, 0.5, 0.5, 2), "inches"))+
@@ -371,8 +397,9 @@ genes_to_plot_hifG <- HIF_GCM_2 %>%
   filter(max_count > 0.1) %>%
   pull(Protein.names) 
 
+genes_to_plot_hifG <- genes_to_plot_hifG[-1]
+
 labels_hifG <- c(
-  "Aryl hydrocarbon receptor nuclear translocator (Class E basic helix-loop-helix protein 2) (Hypoxia-inducible factor 1-beta)",
   "Aryl hydrocarbon receptor nuclear translocator (Hypoxia-inducible factor 1-beta)",
   "Egl nine homologous 1 (Hypoxia-inducible factor prolyl hydroxylase 2)",
   "Endothelial PAS domain-containing protein 1 (Hypoxia-inducible factor 2-alpha)",
@@ -385,10 +412,10 @@ labels_hifG <- c(
 HIF_GCM_2 %>%
   filter(tissue == "G", day == 3, Protein.names %in% genes_to_plot_hifG) %>%
   ggplot(aes(x = Protein.names, y = log(count), fill = treatment)) +
-  geom_boxplot() +
+  geom_boxplot(alpha = 5/10) +
   theme_classic() +
   labs(fill = "Treatment",
-       x = "HIF proteins")+
+       x = "Hypoxia-inducible factor proteins")+
   scale_fill_manual(labels = c("Treatment control", "Hypoxia", "Ocean acidification", "Ocean warming"), values = c("purple", "green", "red", "orange"))+
   theme(axis.text.x = element_text(color="black",angle=45, hjust = 1),
         plot.margin = unit(c(0.5, 0.5, 0.5, 2), "inches"))+
@@ -425,7 +452,7 @@ genes_to_plot_peroxF <- perox_GCM_2 %>%
   filter(max_count > 1) %>%
   pull(Protein.names) 
 
-genes_to_plot_peroxF <- genes_to_plot_peroxF[-10]
+genes_to_plot_peroxF <- genes_to_plot_peroxF[-c(8,10)]
 
 labels_peroxF <- c(
   "Byssal peroxidase-like protein 4", 
@@ -435,7 +462,6 @@ labels_peroxF <- c(
   "Glutathione peroxidase (GPX)", 
   "Gluthathione peroxidase (GPx) (GSHPx)", 
   "Glutathione peroxidase 1", 
-  "Glutathione peroxidase 2", 
   "Glutathione peroxidase 7",
   "Glutathione S-transferase 3, mitochondrial (Glutathione peroxidase MGST3)", 
   "Peroxiredoxin 4 (Thioredoxin peroxidase AO372)", 
@@ -449,7 +475,7 @@ labels_peroxF <- c(
 perox_GCM_2 %>%
   filter(tissue == "F", day == 3, Protein.names %in% genes_to_plot_peroxF) %>%
   ggplot(aes(x = Protein.names, y = log(count), fill = treatment)) +
-  geom_boxplot() +
+  geom_boxplot(alpha = 5/10) +
   theme_classic() +
   labs(fill = "Treatment",
        x = "Peroxidase proteins")+
@@ -469,7 +495,7 @@ genes_to_plot_peroxG <- perox_GCM_2 %>%
   filter(max_count > 1) %>%
   pull(Protein.names) 
 
-genes_to_plot_peroxG <- genes_to_plot_peroxG[-12]
+genes_to_plot_peroxG <- genes_to_plot_peroxG[-c(8,12)]
 
 labels_peroxG <- c(
   "Byssal peroxidase-like protein 4", 
@@ -479,7 +505,6 @@ labels_peroxG <- c(
   "Glutathione peroxidase (GPX)", 
   "Gluthathione peroxidase (GPx) (GSHPx)", 
   "Glutathione peroxidase 1", 
-  "Glutathione peroxidase 2", 
   "Glutathione peroxidase 3", 
   "Glutathione peroxidase 7",
   "Glutathione S-transferase 3, mitochondrial (Glutathione peroxidase MGST3)",
@@ -494,7 +519,7 @@ labels_peroxG <- c(
 perox_GCM_2 %>%
   filter(tissue == "G", day == 3, Protein.names %in% genes_to_plot_peroxG) %>%
   ggplot(aes(x = Protein.names, y = log(count), fill = treatment)) +
-  geom_boxplot() +
+  geom_boxplot(alpha = 5/10) +
   theme_classic() +
   labs(fill = "Treatment",
        x = "Peroxidase proteins")+

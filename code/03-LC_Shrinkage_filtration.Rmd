@@ -433,7 +433,7 @@ abline(h=c(-1.5,1.5), col="dodgerblue", lwd=2)
 dev.off()
 ```
 
-### Foot-LC-LC
+### Foot-TC-LC
 ```{r}
 #Run shrinkage estimates
 FTC_LC_normal_res_table <- lfcShrink(dds7_filt,
@@ -505,7 +505,7 @@ abline(h=c(-1.5,1.5), col="dodgerblue", lwd=2)
 dev.off()
 ```
 
-### Gill-LC-LC
+### Gill-TC-LC
 
 ```{r}
 #Run shrinkage estimates

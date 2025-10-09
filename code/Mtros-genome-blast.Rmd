@@ -37,6 +37,7 @@ cat /home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/data/
 
 
 ```
+
 ```{bash}
 /home/shared/ncbi-blast-2.15.0+/bin/blastx \
 -query /home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/data/ncbi_dataset/data/GCF_036588685.1/cds_from_genomic.fasta \

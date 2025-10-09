@@ -36,6 +36,7 @@ annot_GCM <- annot_GCM %>%
   select(loc_id, Protein.names, uniprot_accession.y, Gene.Names, Organism, everything())
 ```
 
+# Creating a gene count matrix of byssal thread genes
 ```{r}
 foot_GCM <- annot_GCM %>%
   filter(grepl("foot", Protein.names, ignore.case = TRUE))
@@ -55,6 +56,7 @@ foot_byss_GCM <- rbind(foot_GCM, byss_GCM)
 write.csv(foot_byss_GCM , file = "/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/foot_byss_GCM.csv")
 ```
 
+# Clean up foot-byss gene count matrix and join to treatment info
 ```{r}
 foot_GCM_1 <- foot_byss_GCM %>%
   pivot_longer(!1:6, names_to = "sample", values_to = "count")
@@ -66,11 +68,12 @@ foot_byss_GCM_2 <- left_join(foot_GCM_1, treatmentinfo.2, by = "sample")
 write.csv(foot_byss_GCM_2, file = "/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/foot_byss_GCM.csv")
 ```
 
+# Read in foot-byssus gene count matrix
 ```{r}
 foot_byss_GCM_2 <- read_csv("/home/shared/8TB_HDD_02/graceleuchtenberger/byssus-exp-analysis/output/foot_byss_GCM.csv")
 ```
 
-
+# Graph the log transcript counts of foot and byssus genes in foot tissue
 ```{r}
 foot_byss_gene_plot <- foot_byss_GCM_2 %>%
   filter(tissue == "F") %>%
@@ -87,7 +90,7 @@ ggsave(foot_byss_gene_plot, file = "/home/shared/8TB_HDD_02/graceleuchtenberger/
 
 ```
 
-
+# Graph the log transcript counts of foot and byssus genes in gill tissue
 ```{r}
 gill_byss_gene_plot<- foot_byss_GCM_2 %>%
   filter(tissue == "G") %>%
@@ -178,6 +181,7 @@ genes_to_plot_list <- foot_byss_GCM_2 %>%
   filter(tissue == "F", day == 3, Protein.names %in% genes_to_plot)
 ```
 
+### Structural foot protein graph in gill tissue
 ```{r}
 genes_to_plot_G <- foot_byss_GCM_2 %>%
   filter(tissue == "G", day == 3, treatment == "control") %>%
@@ -213,7 +217,7 @@ write.csv(HSP_GCM_2, file = "/home/shared/8TB_HDD_02/graceleuchtenberger/byssus-
 
 ```
 
-
+# HSP graph in foot tissue
 ```{r}
 genes_to_plot_hsp <- HSP_GCM_2 %>%
   filter(tissue == "F", day == 3, treatment == "control") %>%
@@ -281,7 +285,7 @@ HSP_GCM_2 %>%
   my_theme
 
 ```
-
+# HSP genes in gill tissue
 ```{r}
 genes_to_plot_hspG <- HSP_GCM_2 %>%
   filter(tissue == "G", day == 3, treatment == "control") %>%
@@ -332,7 +336,7 @@ HSP_GCM_2 %>%
   #scale_x_discrete(labels = function(x) str_wrap(x, width = 40))+
   my_theme
 ```
-
+# HIF gene isolation from GCM
 ```{r}
 ### HIF isolation and graph
 
@@ -353,7 +357,7 @@ write.csv(HIF_GCM_2, file = "/home/shared/8TB_HDD_02/graceleuchtenberger/byssus-
 
 ```
 
-
+# Graphing HIF transcript counts in foot tissue
 ```{r}
 genes_to_plot_hifF <- HIF_GCM_2 %>%
   filter(tissue == "F", day == 3, treatment == "control") %>%
@@ -389,6 +393,7 @@ HIF_GCM_2 %>%
   my_theme
 ```
 
+# Graphing HIF transcript counts in gill tissue
 ```{r}
 genes_to_plot_hifG <- HIF_GCM_2 %>%
   filter(tissue == "G", day == 3, treatment == "control") %>%
@@ -422,7 +427,7 @@ HIF_GCM_2 %>%
   scale_x_discrete(labels = str_wrap(labels_hifG, width = 40))+
   my_theme
 ```
-### Peroxidase/catalase isolation
+### Peroxidase/catalase transcript isolation
 ```{r}
 toMatch <- c("peroxidase", "catalase")
 
@@ -443,7 +448,7 @@ write.csv(perox_GCM_2, file = "/home/shared/8TB_HDD_02/graceleuchtenberger/byssu
 
 ```
 
-
+# Graphing peroxidase/catalase transcript counts in foot tissue
 ```{r}
 genes_to_plot_peroxF <- perox_GCM_2 %>%
   filter(tissue == "F", day == 3, treatment == "control") %>%
@@ -487,6 +492,7 @@ perox_GCM_2 %>%
   my_theme
 ```
 
+# Graphing peroxidase/catalase transcript counts in gill tissue
 ```{r}
 genes_to_plot_peroxG <- perox_GCM_2 %>%
   filter(tissue == "G", day == 3, treatment == "control") %>%

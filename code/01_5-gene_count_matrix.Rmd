@@ -21,6 +21,7 @@ treatmentinfo.2
 
 ## Clean up genome countmatrix
 ```{r}
+#Put transcript names as rownames for tibble
 rownames(gene_count_matrix) <- gene_count_matrix$gene_id
 rownames <- rownames(gene_count_matrix)
 gene_count_matrix <- gene_count_matrix[,-1]
@@ -75,7 +76,7 @@ treatmentinfo.2 <- treatmentinfo.2[complete.cases(treatmentinfo.2), ]
 
 rownames(treatmentinfo.2) <- treatmentinfo.2$sample.1
 
-#Removing T047 from treatment info because there isn't data for that
+#Removing T047 from treatment info because there isn't data for that, and T051 because of QC
 removal <- which(rownames(treatmentinfo.2) %in% c("T047F", "T051F", "T051G"))
 treatmentinfo.2 <- treatmentinfo.2[-removal,]
 removal2 <- which(names(gene_count_matrix) %in% c("T051F", "T051G"))
@@ -87,6 +88,7 @@ gene_count_matrix3 <- subset(gene_count_matrix, select=-(loc_id))
 #Check that columns and row names match
 all(rownames(treatmentinfo.2) == colnames(gene_count_matrix3))
 
+# Write gene count matrix files
 write.csv(gene_count_matrix3, file = "/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/gene_count_matrix_clean.csv", row.names = TRUE)
 write.csv(treatmentinfo.2, file = "/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/treatmentinfo_clean.csv", row.names = TRUE)
 ```

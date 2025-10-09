@@ -38,28 +38,30 @@ library(PCAtools)
 
 ### Load and clean up treatment info and gene count matrix 
 ```{r}
+# Load in treatment info and GCM files
 treatmentinfo <- read_csv("output/treatmentinfo_clean.csv")
 gene_count_matrix_clean_og <- read_delim("output/gene_count_matrix_clean.csv", delim = ",")
+
+# Make transcripts the row names
 rownames <- gene_count_matrix_clean$...1
 gene_count_matrix_clean <- subset(gene_count_matrix_clean, select = -c(...1))
-
 rownames(gene_count_matrix_clean) <- rownames
 gene_count_matrix_clean <- data.matrix(gene_count_matrix_clean)
 ```
 
 ### All treatments
 ```{r}
-treatmentinfo <- read_delim("output/treatmentinfo_clean.csv", delim = " ")
-gene_count_matrix_clean <- read_delim("output/gene_count_matrix_clean.csv", delim = ",")
-
+# Filter for gill tissue and treatment control
 G_TC_treatmentinfo <- treatmentinfo %>% filter(tissue == "G") %>%
   filter(!(day == "0")) 
 write.table(G_TC_treatmentinfo, file = "output/DEG_lists/Gill/G_TC_treatmentinfo.csv", row.names = FALSE)
 
+# Subset count matrix
 G_TC_countmatrix <- subset(gene_count_matrix_clean, select=(G_TC_treatmentinfo$sample.1))
 G_TC_countmatrix <- data.frame(G_TC_countmatrix)
 write.table(G_TC_countmatrix, file = "output/DEG_lists/Gill/G_TC_countmatrix.csv")
 
+# Run DESeq
 dds27 <- DESeqDataSetFromMatrix(countData = G_TC_countmatrix,
                               colData = G_TC_treatmentinfo,
                               design = ~ treatment)
@@ -67,6 +69,7 @@ dds27 <- DESeqDataSetFromMatrix(countData = G_TC_countmatrix,
 dds27 <- DESeq(dds27)
 resultsNames(dds27) # lists the coefficients
 
+# Graph dds results
 PCAdata <- plotPCA(vst(dds27), intgroup = c("treatment"), returnData=TRUE)
 percentVar <- round(100*attr(PCAdata, "percentVar")) #plot PCA of samples with all data
 ggplot(PCAdata, aes(PC1, PC2, color=treatment)) + 
@@ -89,13 +92,13 @@ ggplot(PCAdata, aes(PC1, PC2, color=treatment)) +
 
 ### OA vs treatment control
 ```{r}
-# DEG in the Gill after exposure to ocean acidification
+# Load gill ocean acidification treatment info, compared with treatment control
 GOA_TC_treatmentinfo <- read_delim("output/DEG_lists/Gill/GOA_TC_treatmentinfo.csv", delim = " ")
 
+# subset count matrix
 GOA_TC_countmatrix <- subset(gene_count_matrix_clean, select=(GOA_TC_treatmentinfo$sample.1))
 GOA_TC_countmatrix <- data.frame(GOA_TC_countmatrix)
 write.table(GOA_TC_countmatrix, file = "output/DEG_lists/Gill/GOA_TC_countmatrix.csv")
-#doesn't save correctly, need to figure this out
 
 # CaTCulate DESeq object
 dds12 <- DESeqDataSetFromMatrix(countData = GOA_TC_countmatrix,
@@ -105,6 +108,7 @@ dds12 <- DESeqDataSetFromMatrix(countData = GOA_TC_countmatrix,
 dds12 <- DESeq(dds12)
 resultsNames(dds12) # lists the coefficients
 
+# graph dds
 PCAdata <- plotPCA(vst(dds12), intgroup = c("treatment"), returnData=TRUE)
 percentVar <- round(100*attr(PCAdata, "percentVar")) #plot PCA of samples with all data
 ggplot(PCAdata, aes(PC1, PC2, color=treatment)) + 
@@ -125,9 +129,10 @@ dds12_filt <- dds12[keep,]
 
 ### OW vs treatment control
 ```{r}
-
+# Load in gill ocean warming samples with treatment control samples
 GOW_TC_treatmentinfo <- read_delim("output/DEG_lists/Gill/GOW_TC_treatmentinfo.csv", delim = " ")
-                                                                                                      
+
+# subset count matrix                                                                                                      
 GOW_TC_countmatrix <- subset(gene_count_matrix, select=(GOW_TC_treatmentinfo$sample.1))
 write.table(GOW_TC_countmatrix, file = "output/DEG_lists/Gill/GOW_TC_countmatrix.csv")
 #Doesn't work still
@@ -140,6 +145,7 @@ dds13 <- DESeqDataSetFromMatrix(countData = GOW_TC_countmatrix,
 dds13 <- DESeq(dds13)
 resultsNames(dds13) # lists the coefficients
 
+# graph dds results
 PCAdata <- plotPCA(vst(dds13), intgroup = c("treatment"), returnData=TRUE)
 percentVar <- round(100*attr(PCAdata, "percentVar")) #plot PCA of samples with all data
 ggplot(PCAdata, aes(PC1, PC2, color=treatment)) + 
@@ -161,8 +167,10 @@ dds13_filt <- dds13[keep,]
 
 ### DO vs treatment control
 ```{r}
+# Load in gill hypoxia and treatment control samples
 GDO_TC_treatmentinfo <- read_delim("output/DEG_lists/Gill/GDO_TC_treatmentinfo.csv", delim = " ")
-                                                                                                       
+
+# subset count matrix                                                                                                       
 GDO_TC_countmatrix <- subset(gene_count_matrix_clean, select=(GDO_TC_treatmentinfo$sample.1))
 write.csv(GDO_TC_countmatrix, file = "output/DEG_lists/Gill/GDO_TC_countmatrix.csv", row.names = TRUE)
 #still comes out wrong
@@ -175,6 +183,7 @@ dds14 <- DESeqDataSetFromMatrix(countData = GDO_TC_countmatrix,
 dds14 <- DESeq(dds14)
 resultsNames(dds14) # lists the coefficients
 
+# graph dds result
 PCAdata <- plotPCA(vst(dds14), intgroup = c("treatment"), returnData=TRUE)
 percentVar <- round(100*attr(PCAdata, "percentVar")) #plot PCA of samples with all data
 ggplot(PCAdata, aes(PC1, PC2, color=treatment)) + 

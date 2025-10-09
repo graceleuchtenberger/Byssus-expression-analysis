@@ -36,27 +36,31 @@ library(PCAtools)
 ```
 ### Load and clean up treatment info and gene count matrix 
 ```{r}
+# Load data
 treatmentinfo <- read_csv("output/treatmentinfo_clean.csv")
 gene_count_matrix_clean_og <- read_delim("output/gene_count_matrix_clean.csv", delim = ",")
+
+# Make transcripts the rownames and make data into a matrix
 rownames <- gene_count_matrix_clean$...1
 gene_count_matrix_clean <- subset(gene_count_matrix_clean, select = -c(...1))
-
 rownames(gene_count_matrix_clean) <- rownames
 gene_count_matrix_clean <- data.matrix(gene_count_matrix_clean)
 ```
 
-### Foot all treatments 
+### Foot all treatments with lab control
 ```{r}
+# Filter treatment info table for all foot tissue treatments with lab control
 F_LC_treatmentinfo <- treatmentinfo %>%
   filter( treatment %in% c("OA", "OW", "control", "DO") & tissue == "F") %>%
   filter(!(treatment == "control" & day == 3))
 
+# Write table 
 write.table(F_LC_treatmentinfo, file = "output/DEG_lists/Foot/F_LC_treatmentinfo.csv", row.names = FALSE)
 
+# Subset count matrix
 F_LC_countmatrix <- subset(gene_count_matrix_clean, select=(F_LC_treatmentinfo$sample.1))
 F_LC_countmatrix <- data.frame(F_LC_countmatrix)
 write.table(F_LC_countmatrix, file = "output/DEG_lists/Foot/F_LC_countmatrix.csv")
-#doesn't save correctly, need to figure this out
 
 # CaTCulate DESeq object
 dds29 <- DESeqDataSetFromMatrix(countData = F_LC_countmatrix,
@@ -66,6 +70,7 @@ dds29 <- DESeqDataSetFromMatrix(countData = F_LC_countmatrix,
 dds29 <- DESeq(dds29)
 resultsNames(dds29) # lists the coefficients
 
+# PCA of dds object
 PCAdata <- plotPCA(vst(dds29), intgroup = c("treatment"), returnData=TRUE)
 percentVar <- round(100*attr(PCAdata, "percentVar")) #plot PCA of samples with all data
 ggplot(PCAdata, aes(PC1, PC2, color=treatment)) + 
@@ -86,20 +91,21 @@ ggplot(PCAdata, aes(PC1, PC2, color=treatment)) +
 
 
 ```
-### All tissue all treatments
+
+### All tissue all treatments with lab control
 ```{r}
 gene_count_matrix_clean <- read_delim("output/gene_count_matrix_clean.csv", delim = ",")
 
+# Get all treatments with the lab control
 LC_treatmentinfo <- treatmentinfo %>%
   filter(!(treatment == "control" & day == 3))%>%
   filter(!(tissue == "X"))
-
+# Subset count matrix
 LC_countmatrix <- subset(gene_count_matrix_clean, select=(LC_treatmentinfo$sample.1))
 LC_countmatrix <- data.frame(LC_countmatrix)
 write.table(LC_countmatrix, file = "output/DEG_lists/LC_countmatrix.csv")
-#doesn't save correctly, need to figure this out
 
-# CaTCulate DESeq object
+# Calculate DESeq object
 dds30 <- DESeqDataSetFromMatrix(countData = LC_countmatrix,
                               colData = LC_treatmentinfo,
                               design = ~ treatment + tissue + tissue:treatment)
@@ -127,7 +133,7 @@ ggplot(PCAdata, aes(PC1, PC2, color=treatment, shape = tissue)) +
 
 ```
 
-### OA vs lab control
+### OA vs lab control foot tissue
 ```{r}
 # DEG in the foot after exposure to ocean acidification
 FOA_LC_treatmentinfo <- read_delim("output/DEG_lists/Foot/FOA_LC_treatmentinfo.csv", delim = " ")
@@ -135,7 +141,6 @@ FOA_LC_treatmentinfo <- read_delim("output/DEG_lists/Foot/FOA_LC_treatmentinfo.c
 FOA_LC_countmatrix <- subset(gene_count_matrix, select=(FOA_LC_treatmentinfo$sample.1))
 FOA_LC_countmatrix <- data.frame(FOA_LC_countmatrix)
 write.table(FOA_LC_countmatrix, file = "output/DEG_lists/Foot/FOA_LC_countmatrix.csv")
-#doesn't save correctly, need to figure this out
 
 # Calculate DESeq object
 dds4 <- DESeqDataSetFromMatrix(countData = FOA_LC_countmatrix,
@@ -163,7 +168,7 @@ dds4_filt <- dds4[keep,]
 
 ```
 
-### OW vs lab control
+### OW vs lab control foot tissue
 ```{r}
 
 FOW_LC_treatmentinfo <- read_delim("output/DEG_lists/Foot/FOW_LC_treatmentinfo.csv", delim = " ")
@@ -199,13 +204,13 @@ dds5_filt <- dds5[keep,]
 
 ```
 
-### DO vs lab control
+### DO vs lab control in the foot
 ```{r}
 FDO_LC_treatmentinfo <- read_delim("output/DEG_lists/Foot/FDO_LC_treatmentinfo.csv", delim = " ")
-                                                                                                      
+
+# Subset countmatrix                                                                                                      
 FDO_LC_countmatrix <- subset(gene_count_matrix_clean, select=(FDO_LC_treatmentinfo$sample.1))
 write.csv(FDO_LC_countmatrix, file = "output/DEG_lists/Foot/FDO_LC_countmatrix.csv", row.names = TRUE)
-#still comes out wrong
 
 # Calculate DESeq object
 dds6 <- DESeqDataSetFromMatrix(countData = FDO_LC_countmatrix,
@@ -234,15 +239,15 @@ dds6_filt <- dds6[keep,]
 ```
 
 
-### treatment control vs lab control
+### treatment control vs lab control in the foot
 ```{r}
-# RERUN THE DDS, accidentally overwrote it 
 # Filter data
 FTC_LC_treatmentinfo <- read_delim("output/DEG_lists/Foot/FTC_LC_treatmentinfo.csv", delim = " ")
-                                                                                 
+
+#Subset count matrix                                                                                 
 FTC_LC_countmatrix <- subset(gene_count_matrix, select=(FTC_LC_treatmentinfo$sample.1))
 write.table(FTC_LC_countmatrix, file = "output/DEG_lists/Foot/FTC_LC_countmatrix.csv")    
-#still wrong
+
 FTC_LC_treatmentinfo$day <- as.factor(FTC_LC_treatmentinfo$day)
 
 # Calculate DESeq object

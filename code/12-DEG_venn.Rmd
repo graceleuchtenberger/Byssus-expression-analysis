@@ -15,14 +15,15 @@ library(ggvenn)
 ### Load DEGS
 ```{r}
 # Gill (TC)
-GOW_sigs <- read_table("/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/DEG_lists/GOterms_genome/GOW_sigs_merged.csv")
-GOA_sigs <- read_table("/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/DEG_lists/GOterms_genome/GOA_sigs_merged.csv")
-GDO_sigs <- read_table("/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/DEG_lists/GOterms_genome/GDO_sigs_merged.csv")
+
+GOW_sigs <- read_csv("/home/shared/8TB_HDD_02/graceleuchtenberger/byssus-exp-analysis/output/DEG_lists/GOterms_genome/GOW_sigs_merged.csv")
+GOA_sigs <- read_csv("/home/shared/8TB_HDD_02/graceleuchtenberger/byssus-exp-analysis/output/DEG_lists/GOterms_genome/GOA_sigs_merged.csv")
+GDO_sigs <- read_csv("/home/shared/8TB_HDD_02/graceleuchtenberger/byssus-exp-analysis/output/DEG_lists/GOterms_genome/GDO_sigs_merged.csv")
 
 # Foot (TC)
-FOW_sigs <- read_table("/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/DEG_lists/GOterms_genome/FOW_sigs_merged.csv")
-FOA_sigs <- read_table("/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/DEG_lists/GOterms_genome/FOA_sigs_merged.csv")
-FDO_sigs <- read_table("/home/shared/8TB_HDD_02/graceleuchtenberger/Github/byssus-exp-analysis/output/DEG_lists/GOterms_genome/FDO_sigs_merged.csv")
+FOW_sigs <- read_csv("/home/shared/8TB_HDD_02/graceleuchtenberger/byssus-exp-analysis/output/DEG_lists/GOterms_genome/FOW_sigs_merged.csv")
+FOA_sigs <- read_csv("/home/shared/8TB_HDD_02/graceleuchtenberger/byssus-exp-analysis/output/DEG_lists/GOterms_genome/FOA_sigs_merged.csv")
+FDO_sigs <- read_csv("/home/shared/8TB_HDD_02/graceleuchtenberger/byssus-exp-analysis/output/DEG_lists/GOterms_genome/FDO_sigs_merged.csv")
 
 # Select only unique identifiers
 GOW_sigs <- unique(GOW_sigs)
@@ -39,15 +40,15 @@ FDO_sigs <- unique(FDO_sigs)
 ### Make lists for venn diagram
 ```{r}
 G_list <- list(
-  "Ocean warming" = GOW_sigs$`"gene"`, 
-  "Ocean acidification" = GOA_sigs$`"gene"`, 
-  "Hypoxia" = GDO_sigs$`"gene"`
+  "Ocean warming" = GOW_sigs$gene, 
+  "Ocean acidification" = GOA_sigs$gene, 
+  "Hypoxia" = GDO_sigs$gene
   )
 
 F_list <- list(
-  "Ocean warming" = FOW_sigs$`"gene"`, 
-  "Ocean acidification" = FOA_sigs$`"gene"`, 
-  "Hypoxia" = FDO_sigs$`"gene"`
+  "Ocean warming" = FOW_sigs$gene, 
+  "Ocean acidification" = FOA_sigs$gene, 
+  "Hypoxia" = FDO_sigs$gene
 )
 ```
 
@@ -56,16 +57,17 @@ F_list <- list(
 ggvenn(
   G_list, 
   fill_color = c("orange", "red", "green"),
-  stroke_size = 0.5, set_name_size = 7
+  stroke_size = 0.5, set_name_size =10,text_size = 13,show_percentage = FALSE
   )+
-  theme(aspect.ratio = 1)
+  theme(aspect.ratio = 1,
+        element_text(size = 20))
 ```
 ### Foot tissue venn all treatments
 ```{r}
 ggvenn(
   F_list, 
   fill_color = c("orange", "red", "green"),
-  stroke_size = 0.5, set_name_size = 7
+  stroke_size = 0.5, set_name_size = 10,text_size = 13,show_percentage = FALSE
   )+
   theme(aspect.ratio = 1)
 ```

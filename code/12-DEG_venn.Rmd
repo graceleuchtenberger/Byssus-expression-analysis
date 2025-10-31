@@ -26,13 +26,13 @@ FOA_sigs <- read_csv("/home/shared/8TB_HDD_02/graceleuchtenberger/byssus-exp-ana
 FDO_sigs <- read_csv("/home/shared/8TB_HDD_02/graceleuchtenberger/byssus-exp-analysis/output/DEG_lists/GOterms_genome/FDO_sigs_merged.csv")
 
 # Select only unique identifiers
-GOW_sigs <- unique(GOW_sigs)
+GOW_sigs_venn <- unique(GOW_sigs)
 GOA_sigs <- unique(GOA_sigs)
 GDO_sigs <- unique(GDO_sigs)
 
 FOW_sigs <- unique(FOW_sigs)
 FOA_sigs <- unique(FOA_sigs)
-FDO_sigs <- unique(FDO_sigs)
+FDO_sigs_venn <- unique(FDO_sigs)
 
 
 ```
